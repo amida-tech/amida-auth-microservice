@@ -1,8 +1,8 @@
 {
-  "name": "amida-api-boilerplate",
+  "name": "amida-messaging-microservice",
   "version": "0.1.0",
-  "description": "A Boilerplate application for building REST APIs",
-  "author": "Jacob Sachs <jacob@amida-tech.com>",
+  "description": "Microservice for a lightweight messaging application",
+  "author": "Jacob Sachs <jacob@amida.com>",
   "main": "index.js",
   "private": false,
   "engines": {

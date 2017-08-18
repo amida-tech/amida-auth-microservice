@@ -8,16 +8,16 @@ const Message = db.Message;
  */
 function load(req, res, next, id) {
     Message.findById(id)
-        .then(message => {
-            if (!user) {
-                const e = new Error('Message does not exist');
-                e.status = httpStatus.NOT_FOUND;
-                return next(e);
-            }
-            req.message = message; // eslint-disable-line no-param-reassign
-            return next();
-        })
-        .catch(e => next(e));
+    .then((message) => {
+        if (!message) {
+            const e = new Error('Message does not exist');
+            e.status = httpStatus.NOT_FOUND;
+            return next(e);
+        }
+        req.message = message; // eslint-disable-line no-param-reassign
+        return next();
+    })
+    .catch(e => next(e));
 }
 
 /**
@@ -42,11 +42,17 @@ function send(req, res, next) {
         from: req.body.from,
         subject: req.body.subject,
         message: req.body.message,
-        created: db.sequelize.fn('NOW')
+        created: db.sequelize.fn('NOW'),
     });
     message.save()
-        .then(savedMessage => res.json(savedMessage))
-        .catch(e => next(e));
+    .then(savedMessage => res.json(savedMessage))
+    .catch(e => next(e));
 }
 
-export default { send, get, list, count, remove, load};
+function list() {}
+
+function count() {}
+
+function remove() {}
+
+export default { send, get, list, count, remove, load };

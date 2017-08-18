@@ -9,12 +9,22 @@ const debug = require('debug')('amida-api-boilerplate:index');
 // make bluebird default Promise
 Promise = require('bluebird'); // eslint-disable-line no-global-assign
 
-// module.parent check is required to support mocha watch
-if (!module.parent) {
+function startServer() {
+  // module.parent check is required to support mocha watch
+    if (!module.parent) {
     // listen on port config.port
-    app.listen(config.port, () => {
-        console.info(`server started on port ${config.port} (${config.env})`);
-    });
+        app.listen(config.port, () => {
+            console.info(`server started on port ${config.port} (${config.env})`);
+        });
+    }
 }
+
+db.sequelize
+  .sync()
+  .then(startServer)
+  .catch((err) => {
+      if (err) console.log('An error occured %j', err);
+      else console.log('Database synchronized');
+  });
 
 export default app;

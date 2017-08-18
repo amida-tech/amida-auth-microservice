@@ -1,4 +1,4 @@
-module.exports = {
+{
     "extends": "airbnb-base",
     "plugins": [
         "import"
@@ -9,4 +9,4 @@ module.exports = {
     "parserOptions": {
         "sourceType": "module"
     }
-};
+}

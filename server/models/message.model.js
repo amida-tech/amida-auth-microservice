@@ -8,23 +8,24 @@ module.exports = (sequelize, DataTypes) => {
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
-            primaryKey: true
+            primaryKey: true,
         },
+        /* eslint-disable new-cap */
         to: {
             type: DataTypes.ARRAY(DataTypes.STRING),
-            allowNull: false
+            allowNull: false,
         },
         from: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
         },
         subject: {
             type: DataTypes.TEXT,
-            allowNull: false
+            allowNull: false,
         },
         message: {
             type: DataTypes.TEXT,
-            allowNull: false
+            allowNull: false,
         },
         createdAt: {
             type: DataTypes.DATE,

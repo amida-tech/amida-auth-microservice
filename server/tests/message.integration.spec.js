@@ -11,37 +11,134 @@ import {
 } from '../../config/sequelize';
 import _ from 'lodash';
 
+const baseURL = '/api/v1';
+
+const testMessageObject = {
+    to: ['user1'],
+    from: 'user0',
+    subject: 'Test Message',
+    message: 'Test post please ignore',
+};
+
 describe('Message API:', function () {
 
-    before(function () {
-        return Message.sync({
+    before(() => {
+        Message.sync({
             force: true
-        }).then(function () {
-            return sequelize.query('DELETE FROM "Messages"', {
-                type: sequelize.QueryTypes.DELETE
-            });
+        });
+    });
+    
+    after(() => {
+        Message.destroy({
+            where: {},
+            truncate: true
         });
     });
 
     describe('POST /message/send', function () {
 
-        it('should return OK');
+        xit('should return OK', done => {
+            request(app)
+                .post(baseURL + '/message/send')
+                .send(testMessageObject)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.text).to.equal('OK');
+                    done();
+                })
+                .catch(done);
+        });
         
-        it('should return the sent Message object');
+        xit('should return the sent Message object', done => {
+            request(app)
+                .post(baseURL + '/message/send')
+                .send(testMessageObject)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.body).to.deep.include(testMessageObject);
+                    done();
+                })
+                .catch(done);
+        });
 
-        it('should create a new Message in the DB');
+        xit('should create a new Message in the DB', done => {
+            request(app)
+                .post(baseURL + '/message/send')
+                .send(testMessageObject)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    let id = res.body.id;
+                    Message.findById(id)
+                        .then(message => {
+                            expect(message).to.deep.include(testMessageObject);
+                            done();
+                        });
+                })
+                .catch(done);
+        });
 
-        it('should have a createdAt timestamp');
+        xit('should have a createdAt timestamp', done => {
+            request(app)
+                .post(baseURL + '/message/send')
+                .send(testMessageObject)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.body.createdAt).to.not.be.null;
+                    expect(res.body.createdAt).to.not.be.undefined;
+                    done();
+                })
+                .catch(done);
+        });
 
-        it('should have readAt set to NULL');
+        xit('should have readAt set to NULL', done => {
+            request(app)
+                .post(baseURL + '/message/send')
+                .send(testMessageObject)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.body.readAt).to.be.null;
+                    done();
+                })
+                .catch(done);
+        });
 
     });
 
     describe('GET /message/list/:userId', function () {
 
-        it('should return OK');
+        let userId;
 
-        it('should return all Message addressed to a user');
+        before(done => {
+            Message.create(testMessageObject)
+                .then(message => {
+                    userId = message.from;
+                    done();
+                });
+        });
+
+        xit('should return OK', done => {
+            request(app)
+                .get(baseURL + '/message/list' + userId)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.text).to.equal('OK');
+                    done();
+                })
+                .catch(done);
+        });
+
+        xit('should return all Message addressed to a user', done => {
+            request(app)
+                .get(baseURL + '/message/list' + userId)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.body)
+                        .to.be.an('array')
+                        .that.deep.includes(testMessageObject);
+                    done();
+                })
+                .catch(done);
+        });
 
         it('has an option to limit Message returned');
 
@@ -53,31 +150,157 @@ describe('Message API:', function () {
     
     describe('GET /message/count/:userId', function () {
 
-        it('should return OK');
+        let userId;
 
-        it('should return a count for total Message');
+        before(done => {
+            Message.destroy({
+                where: {},
+                truncate: true
+            }).then(() => {
+                Message.create(testMessageObject)
+                    .then(message => {
+                        userId = message.from;
+                        done();
+                    });
+            });
+        });
 
-        it('should return a count for unread Message');
+        xit('should return OK', done => {
+            request(app)
+                .get(baseURL + '/message/count' + userId)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.text).to.equal('OK');
+                    done();
+                })
+                .catch(done);
+        });
+
+        xit('should return a count for total Message', done => {
+            request(app)
+                .get(baseURL + '/message/count' + userId)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.body.total).to.equal(1);
+                    done();
+                })
+                .catch(done);
+        });
+
+        xit('should return a count for unread Message', done => {
+            request(app)
+                .get(baseURL + '/message/count' + userId)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.body.unread).to.equal(1);
+                    done();
+                })
+                .catch(done);
+        });
 
     });
     
     describe('GET /message/get/:messageId', function () {
 
-        it('should return OK');
+        let messageId;
+        
+        before(done => {
+            Message.create(testMessageObject)
+                .then(message => {
+                    messageId = message.id;
+                    done();
+                });
+        });
 
-        it('should return the specified Message');
+        xit('should return OK', done => {
+            request(app)
+                .get(baseURL + '/message/get' + messageId)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.text).to.equal('OK');
+                    done();
+                })
+                .catch(done);
+        });
 
-        it('should mark the Message retrieved as read');
+        xit('should return the specified Message', done => {
+            request(app)
+                .get(baseURL + '/message/get' + messageId)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.body).to.deep.include(testMessageObject);
+                    done();
+                })
+                .catch(done);
+        });
+
+        xit('should mark the Message retrieved as read', done => {
+            request(app)
+                .get(baseURL + '/message/get' + messageId)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.body.readAt).to.not.be.null;
+                    expect(res.body.readAt).to.be.a('Date');
+                    done();
+                })
+                .catch(done);
+        });
 
     });
 
     describe('DELETE /message/delete/:messageId', function () {
 
-        it('should return OK');
+        let messageId;
+        
+        beforeEach(done => {
+            Message.destroy({
+                where: {},
+                truncate: true
+            }).then(() => {
+                Message.create(testMessageObject)
+                    .then(message => {
+                        messageId = message.id;
+                        done();
+                    });
+            });
+        });
 
-        it('should return the deleted Message');
+        xit('should return OK', done => {
+            request(app)
+                .delete(baseURL + '/message/delete' + messageId)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.text).to.equal('OK');
+                    done();
+                })
+                .catch(done);
+        });
 
-        it('should delete the message from the DB');
+        xit('should return the deleted Message', done => {
+            request(app)
+                .delete(baseURL + '/message/delete' + messageId)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    expect(res.body).to.deep.include(testMessageObject);
+                    done();
+                })
+                .catch(done);
+        });
+
+        xit('should delete the message from the DB', done => {
+            request(app)
+                .delete(baseURL + '/message/delete' + messageId)
+                .expect(httpStatus.OK)
+                .then(res => {
+                    let id = res.body.id;
+                    Message.findById(id)
+                        .then(message => {
+                            expect(message).to.be.null;
+                            done();
+                        });
+                })
+                .catch(done);
+        });
 
     });
     

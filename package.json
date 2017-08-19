@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "gulp serve",
-    "start:debug": "cross-env DEBUG=amida-api-boilerplate:* yarn start",
+    "start:debug": "cross-env DEBUG=amida-messaging-microservice:* yarn start",
     "build": "gulp",
     "lint": "esw -c .eslintrc *.js server config --color",
     "lint:watch": "yarn lint -- --watch",

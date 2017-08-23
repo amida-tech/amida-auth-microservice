@@ -22,38 +22,41 @@
     "test:watch": "yarn test -- --watch",
     "test:coverage": "cross-env NODE_ENV=test ./node_modules/.bin/istanbul cover _mocha -- --ui bdd --reporter spec --colors --compilers js:babel-core/register server/tests --recursive",
     "test:check-coverage": "yarn test:coverage && istanbul check-coverage",
-    "report-coverage": "coveralls < ./coverage/lcov.info"
+    "report-coverage": "coveralls < ./coverage/lcov.info",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "bluebird": "3.4.6",
-    "body-parser": "1.15.2",
+    "body-parser": "1.17.2",
     "chai": "^3.4.1",
-    "compression": "1.6.2",
+    "compression": "1.7.0",
     "cookie-parser": "1.4.3",
     "cors": "2.8.1",
     "debug": "^2.4.5",
     "del": "^2.2.0",
     "dotenv": "^4.0.0",
-    "express": "4.14.0",
-    "express-jwt": "5.1.0",
+    "express": "4.15.3",
+    "express-jwt": "5.3.0",
     "express-validation": "1.0.1",
     "express-winston": "2.1.2",
     "gulp": "3.9.1",
     "gulp-load-plugins": "^1.2.0",
-    "helmet": "3.1.0",
+    "helmet": "3.6.1",
     "http-status": "^0.2.0",
     "joi": "10.0.6",
-    "jsonwebtoken": "7.1.9",
+    "jsonwebtoken": "7.4.1",
     "lodash": "4.17.4",
     "method-override": "^2.3.5",
-    "morgan": "1.7.0",
-    "pg": "6.1.5",
+    "morgan": "1.8.2",
+    "pg": "6.1.6",
     "pg-hstore": "2.3.2",
     "run-sequence": "^1.1.5",
     "sequelize": "3.30.4",
     "supertest": "2.0.1",
     "supertest-as-promised": "4.0.2",
-    "winston": "2.3.0"
+    "winston": "2.3.0",
+    "snyk": "^1.40.0"
   },
   "devDependencies": {
     "babel-cli": "6.18.0",
@@ -85,5 +88,6 @@
     "plugins": [
       "add-module-exports"
     ]
-  }
+  },
+  "snyk": true
 }

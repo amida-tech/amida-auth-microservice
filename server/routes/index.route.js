@@ -1,6 +1,6 @@
 import express from 'express';
 import messageRoutes from './message.route';
-import p from '../../package.json';
+import p from '../../package';
 
 const router = express.Router(); // eslint-disable-line new-cap
 const version = p.version.split('.').shift();

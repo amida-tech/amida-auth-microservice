@@ -1,7 +1,7 @@
 {
-  "name": "amida-messaging-microservice",
+  "name": "amida-auth-microservice",
   "version": "0.1.0",
-  "description": "Microservice for a lightweight messaging application",
+  "description": "Microservice for a lightweight auth application using JWT",
   "author": "Jacob Sachs <jacob@amida.com>",
   "main": "index.js",
   "private": false,
@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "gulp serve",
-    "start:debug": "cross-env DEBUG=amida-messaging-microservice:* yarn start",
+    "start:debug": "cross-env DEBUG=amida-auth-microservice:* yarn start",
     "build": "gulp",
     "lint": "esw -c .eslintrc *.js server config --color",
     "lint:watch": "yarn lint -- --watch",

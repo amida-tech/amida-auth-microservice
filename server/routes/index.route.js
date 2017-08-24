@@ -12,6 +12,6 @@ router.get('/health-check', (req, res) =>
 );
 
 // mount message routes at /message
-router.use(`${baseURL}/message`, messageRoutes);
+//router.use(`${baseURL}/message`, messageRoutes);
 
 export default router;

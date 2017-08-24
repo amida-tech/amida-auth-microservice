@@ -47,7 +47,7 @@ Start server:
 yarn start
 
 # Selectively set DEBUG env var to get logs
-DEBUG=amida-messaging-microservice:* yarn start
+DEBUG=amida-auth-microservice:* yarn start
 ```
 
 Tests:

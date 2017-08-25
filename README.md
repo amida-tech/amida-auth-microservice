@@ -1,4 +1,4 @@
-# Amida Messaging Microservice
+# Amida Auth Microservice
 
 
 ## Design

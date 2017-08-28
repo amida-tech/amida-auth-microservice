@@ -9,6 +9,7 @@ import httpStatus from 'http-status';
 import expressWinston from 'express-winston';
 import expressValidation from 'express-validation';
 import helmet from 'helmet';
+import Sequelize from 'sequelize';
 import winstonInstance from './winston';
 import routes from '../server/routes/index.route';
 import config from './config';
@@ -51,7 +52,11 @@ app.use('/api', routes);
 
 // if error is not an instanceOf APIError, convert it.
 app.use((err, req, res, next) => {
-    if (err instanceof expressValidation.ValidationError) {
+    if (err instanceof Sequelize.ValidationError) {
+        const unifiedErrors = JSON.stringify(err.errors);
+        const error = new APIError(unifiedErrors, httpStatus.BAD_REQUEST, true);
+        return next(error);
+    } else if (err instanceof expressValidation.ValidationError) {
         // validation error contains errors which is an array of error each containing message[]
         const unifiedErrorMessage = err.errors.map(error => error.messages.join('. ')).join(' and ');
         const error = new APIError(unifiedErrorMessage, err.status, true);

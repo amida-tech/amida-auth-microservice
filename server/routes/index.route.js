@@ -1,5 +1,6 @@
 import express from 'express';
-import messageRoutes from './message.route';
+import authRoutes from './auth.route';
+import userRoutes from './user.route';
 import p from '../../package';
 
 const router = express.Router(); // eslint-disable-line new-cap
@@ -11,7 +12,8 @@ router.get('/health-check', (req, res) =>
   res.send('OK')
 );
 
-// mount message routes at /message
-//router.use(`${baseURL}/message`, messageRoutes);
+// mount routes
+//router.use(`${baseURL}/auth`, authRoutes);
+router.use(`${baseURL}/user`, userRoutes);
 
 export default router;

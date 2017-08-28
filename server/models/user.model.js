@@ -1,3 +1,5 @@
+/* eslint no-param-reassign: ["error", { "props": false }] */
+/* eslint new-cap: 0 */
 import crypto from 'crypto';
 import uuid from 'uuid';
 
@@ -5,15 +7,16 @@ import uuid from 'uuid';
  * User Schema
  */
 module.exports = (sequelize, DataTypes) => {
-    
     const hooks = {
-        beforeCreate(user) {
-            this.salt = uuid.v4();
-            this.password = crypto.pbkdf2Sync(user.password, Buffer.from(this.salt), 100000, 128, 'sha256').toString('hex');
+        beforeValidate: (user) => {
+            if (user.changed('password')) {
+                user.salt = uuid.v4();
+                user.password = crypto.pbkdf2Sync(user.password, Buffer.from(user.salt), 100000, 128, 'sha256').toString('hex');
+            }
         },
-    }
+    };
 
-    const classMethods;
+    const classMethods = {};
 
     const instanceMethods = {
         setPassword(newPassword) {
@@ -26,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
             return crypto.pbkdf2Sync(testPassword, Buffer.from(this.salt), 100000, 128, 'sha256').toString('hex') === this.password;
         },
     };
-    
+
     const User = sequelize.define('User', {
         id: {
             type: DataTypes.INTEGER,
@@ -34,33 +37,33 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
         },
         username: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
             unique: true,
             allowNull: false,
         },
         email: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
             unique: true,
             allowNull: false,
         },
         password: {
-            type: Sequelize.STRING(512),
+            type: DataTypes.STRING(512),
             allowNull: false,
         },
         salt: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
             allowNull: false,
         },
-        // scopes: {
-        //     type: DataTypes.ARRAY(DataTypes.STRING),
-        //     allowNull: true,
-        // },
+        scopes: {
+            type: DataTypes.ARRAY(DataTypes.STRING),
+            allowNull: true,
+        },
         resetToken: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
         },
         resetTime: {
-            type: Sequelize.DATE,
-        }
+            type: DataTypes.DATE,
+        },
     }, {
         hooks,
         classMethods,

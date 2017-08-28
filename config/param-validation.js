@@ -1,13 +1,16 @@
 import Joi from 'joi';
 
 export default {
-  // POST /message/send
-    sendMessage: {
+    createUser: {
         body: {
-            to: Joi.array().items(Joi.string()).required(),
-            from: Joi.string().required(),
-            subject: Joi.string().required(),
-            message: Joi.string().required(),
+            username: Joi.string().required(),
+            email: Joi.string().email().required(),
+            password: Joi.string().min(8).max(64).required(),
+        },
+    },
+    updateUser: {
+        body: {
+            email: Joi.string().email(),
         },
     },
 };

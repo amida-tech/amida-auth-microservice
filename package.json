@@ -53,10 +53,11 @@
     "pg-hstore": "2.3.2",
     "run-sequence": "^1.1.5",
     "sequelize": "3.30.4",
+    "snyk": "^1.40.0",
     "supertest": "2.0.1",
     "supertest-as-promised": "4.0.2",
-    "winston": "2.3.0",
-    "snyk": "^1.40.0"
+    "uuid": "3.1.0",
+    "winston": "2.3.0"
   },
   "devDependencies": {
     "babel-cli": "6.18.0",

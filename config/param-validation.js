@@ -13,4 +13,10 @@ export default {
             email: Joi.string().email(),
         },
     },
+    login: {
+        body: {
+            username: Joi.string().required(),
+            password: Joi.string().required(),
+        },
+    },
 };

@@ -6,6 +6,18 @@
 
 ### Integration with other services
 
+In order to use the auth microservice with other applications, you will need to protect your API resources with a JWT strategy. The easiest way to do this is with [Passport JWT](https://www.npmjs.com/package/passport-jwt), which is what this repository uses for its own protected resources. For direct examples of how we set up the strategy, take a look at [passport.js](./config/passport.js), [express.js](./config/express.js), and [auth.route.js](./server/routes/auth.route.js).
+
+In general, the authentication flow will be as follows:
+1. `POST /login` with username and password to get a token.
+2. Send the JWT in a header `Authorization: Bearer <JWT>` when using a protected resource.
+
+It is the responsibility of the integrated service to extract the JWT, verify it against a shared secret or public/private key pair, and use it to fetch information on the authenticated User.
+For example, one API endpoint could allow _any_ authenticated user to view certain information about all users. Another endpoint may allow password updates, but only for the specific authenticated user. It is up to the developer to ensure that endpoints are protected appropriately.
+
+#### Roles
+// TODO
+
 ### API Spec
 
 ### Features

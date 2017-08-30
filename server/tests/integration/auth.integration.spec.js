@@ -107,7 +107,7 @@ describe('Auth API:', () => {
 
     // describe('# POST /auth/logout');
 
-    describe('POST /auth/reset-password', () => {
+    describe('POST /auth/update-password', () => {
         before((done) => {
             request(app)
                 .post(`${baseURL}/user`)
@@ -121,7 +121,7 @@ describe('Auth API:', () => {
 
         after(() => User.destroy({ where: {} }));
 
-        beforeEach((done) => {
+        before((done) => {
             request(app)
                 .post(`${baseURL}/auth/login`)
                 .send(validUserCredentials)
@@ -140,28 +140,29 @@ describe('Auth API:', () => {
 
         it('should update user password when user is authenticated', (done) => {
             request(app)
-                .post(`${baseURL}/auth/reset-password`)
-                .set('Authorization', `Bearer ${jwtToken}`)
+                .post(`${baseURL}/auth/update-password`)
+                .set('Authorization', jwtToken)
                 .send({
                     password: 'newerpass',
                 })
                 .expect(httpStatus.OK)
                 .then((res) => {
-                    expect(res.body.message).to.equal('OK');
+                    expect(res.text).to.equal('OK');
                     done();
                 })
                 .catch(done);
         });
 
         it('should return 401 when user is not authenticated', (done) => {
+            console.log(jwtToken);
             request(app)
-                .post(`${baseURL}/auth/reset-password`)
-                .set('Authorization', `Bearer ${jwtToken}`)
+                .post(`${baseURL}/auth/update-password`)
                 .send({
                     password: 'newerpass',
                 })
-                .expect(httpStatus.OK)
-                .then(() => {
+                .expect(httpStatus.UNAUTHORIZED)
+                .then((res) => {
+                    expect(res.text).to.equal('Unauthorized');
                     done();
                 })
                 .catch(done);
@@ -169,13 +170,14 @@ describe('Auth API:', () => {
 
         it('should return 401 when JWT is invalid', (done) => {
             request(app)
-                .post(`${baseURL}/auth/reset-password`)
-                .set('Authorization', `Bearer ${jwtToken}`)
+                .post(`${baseURL}/auth/update-password`)
+                .set('Authorization', 'Bearer BadJWT')
                 .send({
                     password: 'newerpass',
                 })
-                .expect(httpStatus.OK)
-                .then(() => {
+                .expect(httpStatus.UNAUTHORIZED)
+                .then((res) => {
+                    expect(res.text).to.equal('Unauthorized');
                     done();
                 })
                 .catch(done);
@@ -183,8 +185,8 @@ describe('Auth API:', () => {
 
         it('should return 400 if password is invalid', (done) => {
             request(app)
-                .post(`${baseURL}/auth/reset-password`)
-                .set('Authorization', `Bearer ${jwtToken}`)
+                .post(`${baseURL}/auth/update-password`)
+                .set('Authorization', jwtToken)
                 .send({
                     password: 'badpass',
                 })

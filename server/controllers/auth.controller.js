@@ -34,9 +34,8 @@ function login(req, res, next) {
             return next(err);
         }
         const token = jwt.sign({
-            username: user.username,
-            expiresIn: 3600,
-        }, config.jwtSecret);
+            username: userResult.username,
+        }, config.jwtSecret, { expiresIn: '1h' });
         return res.json({
             token,
             username: user.username,

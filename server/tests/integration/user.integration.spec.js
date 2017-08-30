@@ -16,18 +16,16 @@ chai.config.includeStack = true;
 const version = p.version.split('.').shift();
 const baseURL = (version > 0 ? `/api/v${version}` : '/api');
 
-/**
- * root level hooks
- */
-before(() => {
-    sequelize.sync();
-});
-
-after(() => {
-    User.drop();
-});
 
 describe('User API:', () => {
+    before(() => sequelize.sync({
+        force: true,
+    }));
+
+    after(() => User.drop({
+        force: true,
+    }));
+
     const user = {
         username: 'KK123',
         email: 'test@amida.com',

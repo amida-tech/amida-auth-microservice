@@ -13,7 +13,7 @@ router.get('/health-check', (req, res) =>
 );
 
 // mount routes
-//router.use(`${baseURL}/auth`, authRoutes);
+router.use(`${baseURL}/auth`, authRoutes);
 router.use(`${baseURL}/user`, userRoutes);
 
 export default router;

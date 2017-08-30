@@ -1,7 +1,10 @@
 # Amida Auth Microservice
 
+// TODO add badges!
 
 ## Design
+
+### Integration with other services
 
 ### API Spec
 

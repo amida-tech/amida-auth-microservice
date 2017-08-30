@@ -5,10 +5,9 @@ import authCtrl from '../controllers/auth.controller';
 
 const router = express.Router(); // eslint-disable-line new-cap
 
-router.route('/create')
-      .post(validate(paramValidation.createUser), authCtrl.create);
+router.route('/login')
+    .post(validate(paramValidation.login), authCtrl.login);
 
-router.route('/me')
-      .get(authCtrl.me);
+router.route('/logout');
 
 export default router;

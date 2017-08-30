@@ -9,11 +9,13 @@ import httpStatus from 'http-status';
 import expressWinston from 'express-winston';
 import expressValidation from 'express-validation';
 import helmet from 'helmet';
+import passport from 'passport';
 import Sequelize from 'sequelize';
 import winstonInstance from './winston';
 import routes from '../server/routes/index.route';
 import config from './config';
 import APIError from '../server/helpers/APIError';
+import passportConfig from './passport';
 
 const app = express();
 
@@ -46,6 +48,11 @@ if (config.env === 'development') {
         colorStatus: true, // Color the status code (default green, 3XX cyan, 4XX yellow, 5XX red).
     }));
 }
+
+// set up Passport middleware
+passportConfig(passport);
+app.use(passport.initialize());
+
 
 // mount all routes on /api path
 app.use('/api', routes);

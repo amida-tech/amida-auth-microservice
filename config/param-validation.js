@@ -13,6 +13,11 @@ export default {
             email: Joi.string().email(),
         },
     },
+    updatePassword: {
+        body: {
+            password: Joi.string().min(8).max(64).required(),
+        },
+    },
     login: {
         body: {
             username: Joi.string().required(),

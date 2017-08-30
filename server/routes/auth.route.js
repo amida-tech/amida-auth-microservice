@@ -1,5 +1,6 @@
 import express from 'express';
 import validate from 'express-validation';
+import passport from 'passport';
 import paramValidation from '../../config/param-validation';
 import authCtrl from '../controllers/auth.controller';
 
@@ -9,5 +10,12 @@ router.route('/login')
     .post(validate(paramValidation.login), authCtrl.login);
 
 router.route('/logout');
+
+router.route('/update_password')
+    .post(validate(paramValidation.updatePassword),
+          passport.authenticate('jwt', { session: false }),
+          authCtrl.updatePassword);
+
+router.route('/forgot_password');
 
 export default router;

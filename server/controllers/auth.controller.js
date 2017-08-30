@@ -53,6 +53,16 @@ function logout() {}
  * @param next
  * @returns {*}
  */
-function updatePassword() {}
+function updatePassword(req, res, next) {
+    const user = req.user;
+    user.password = req.body.password;
+    user.save()
+        .then(() => {
+            return res.sendStatus(httpStatus.OK)
+        })
+        .catch(error => next(error));
+        // TODO should we produce a new token? A user could change the password
+        // and change it again without re-authenticating
+}
 
 export default { login, logout, updatePassword };

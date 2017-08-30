@@ -12,15 +12,9 @@ const opts = {
 
 module.exports = (passport) => {
     passport.use(new JwtStrategy(opts, (jwtPayload, done) => {
-        User.findOne({ where: { username: jwtPayload.username } }, (err, user) => {
-            if (err) {
-                return done(err, false);
-            } else if (user) {
-                return done(null, user);
-            }
-            return done(null, false);
-                // or you could create a new account
-        });
+        User.findOne({ where: { username: jwtPayload.username } })
+            .then(user => done(null, user))
+            .catch(err => done(err, false));
     }));
 };
 

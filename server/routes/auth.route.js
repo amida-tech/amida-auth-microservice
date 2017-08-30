@@ -11,11 +11,11 @@ router.route('/login')
 
 router.route('/logout');
 
-router.route('/update_password')
+router.route('/update-password')
     .post(validate(paramValidation.updatePassword),
           passport.authenticate('jwt', { session: false }),
           authCtrl.updatePassword);
 
-router.route('/forgot_password');
+router.route('/forgot-password');
 
 export default router;

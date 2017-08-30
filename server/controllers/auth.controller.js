@@ -46,4 +46,13 @@ function login(req, res, next) {
 
 function logout() {}
 
-export default { login, logout };
+/**
+ * Returns 200 OK if password was updated successfully
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function updatePassword() {}
+
+export default { login, logout, updatePassword };

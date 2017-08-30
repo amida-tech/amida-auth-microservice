@@ -8,6 +8,7 @@ import chai, { expect } from 'chai';
 import app from '../../../index';
 import p from '../../../package';
 import {
+    User,
     sequelize,
 } from '../../../config/sequelize';
 import config from '../../../config/config';
@@ -17,53 +18,52 @@ chai.config.includeStack = true;
 const version = p.version.split('.').shift();
 const baseURL = (version > 0 ? `/api/v${version}` : '/api');
 
-/**
- * root level hooks
- */
-before(() => sequelize.sync({
-    force: true,
-}));
+const user = {
+    username: 'KK123',
+    email: 'test@amida.com',
+    password: 'testpass',
+};
 
-after(() => sequelize.query('DELETE FROM "Users"', {
-    type: sequelize.QueryTypes.DELETE,
-}));
+const badPassword = {
+    username: 'KK123',
+    password: 'badpassword',
+};
+
+const missingUsername = {
+    username: 'missing',
+    password: 'testpass',
+};
+
+const validUserCredentials = {
+    username: 'KK123',
+    password: 'testpass',
+};
 
 describe('Auth API:', () => {
-    const user = {
-        username: 'KK123',
-        email: 'test@amida.com',
-        password: 'testpass',
-    };
+    before(() => sequelize.sync({
+        force: true,
+    }));
 
-    const badPassword = {
-        username: 'KK123',
-        password: 'badpassword',
-    };
-
-    const missingUsername = {
-        username: 'missing',
-        password: 'testpass',
-    };
-
-    const validUserCredentials = {
-        username: 'KK123',
-        password: 'testpass',
-    };
-
-    before((done) => {
-        request(app)
-            .post(`${baseURL}/user`)
-            .send(user)
-            .expect(httpStatus.OK)
-            .then(() => {
-                done();
-            })
-            .catch(done);
-    });
+    after(() => User.drop({
+        force: true,
+    }));
 
     let jwtToken;
 
     describe('POST /auth/login', () => {
+        before((done) => {
+            request(app)
+                .post(`${baseURL}/user`)
+                .send(user)
+                .expect(httpStatus.OK)
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+
+        after(() => User.destroy({ where: {} }));
+
         it('should return 401 error with bad password', (done) => {
             request(app)
                 .post(`${baseURL}/auth/login`)
@@ -98,7 +98,6 @@ describe('Auth API:', () => {
                     jwt.verify(res.body.token, config.jwtSecret, (err, decoded) => {
                         expect(err).to.not.be.ok; // eslint-disable-line no-unused-expressions
                         expect(decoded.username).to.equal(validUserCredentials.username);
-                        jwtToken = `Bearer ${res.body.token}`;
                         done();
                     });
                 })
@@ -107,4 +106,94 @@ describe('Auth API:', () => {
     });
 
     // describe('# POST /auth/logout');
+
+    describe('POST /auth/reset-password', () => {
+        before((done) => {
+            request(app)
+                .post(`${baseURL}/user`)
+                .send(user)
+                .expect(httpStatus.OK)
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+
+        after(() => User.destroy({ where: {} }));
+
+        beforeEach((done) => {
+            request(app)
+                .post(`${baseURL}/auth/login`)
+                .send(validUserCredentials)
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body).to.have.property('token');
+                    jwt.verify(res.body.token, config.jwtSecret, (err, decoded) => {
+                        expect(err).to.not.be.ok; // eslint-disable-line no-unused-expressions
+                        expect(decoded.username).to.equal(validUserCredentials.username);
+                        jwtToken = `Bearer ${res.body.token}`;
+                        done();
+                    });
+                })
+                .catch(done);
+        });
+
+        it('should update user password when user is authenticated', (done) => {
+            request(app)
+                .post(`${baseURL}/auth/reset-password`)
+                .set('Authorization', `Bearer ${jwtToken}`)
+                .send({
+                    password: 'newerpass',
+                })
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body.message).to.equal('OK');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('should return 401 when user is not authenticated', (done) => {
+            request(app)
+                .post(`${baseURL}/auth/reset-password`)
+                .set('Authorization', `Bearer ${jwtToken}`)
+                .send({
+                    password: 'newerpass',
+                })
+                .expect(httpStatus.OK)
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('should return 401 when JWT is invalid', (done) => {
+            request(app)
+                .post(`${baseURL}/auth/reset-password`)
+                .set('Authorization', `Bearer ${jwtToken}`)
+                .send({
+                    password: 'newerpass',
+                })
+                .expect(httpStatus.OK)
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('should return 400 if password is invalid', (done) => {
+            request(app)
+                .post(`${baseURL}/auth/reset-password`)
+                .set('Authorization', `Bearer ${jwtToken}`)
+                .send({
+                    password: 'badpass',
+                })
+                .expect(httpStatus.BAD_REQUEST)
+                .then((res) => {
+                    expect(res.text).to.contain('length must be at least 8 characters long');
+                    done();
+                })
+                .catch(done);
+        });
+    });
 });

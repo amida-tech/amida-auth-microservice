@@ -1,12 +1,17 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 /* eslint new-cap: 0 */
 import crypto from 'crypto';
+import moment from 'moment';
 import uuid from 'uuid';
 
 /**
  * User Schema
  */
 module.exports = (sequelize, DataTypes) => {
+    const randomBytes = sequelize.Promise.promisify(crypto.randomBytes, {
+        context: crypto,
+    });
+
     const hooks = {
         beforeValidate: (user) => {
             if (user.changed('password')) {
@@ -16,17 +21,67 @@ module.exports = (sequelize, DataTypes) => {
         },
     };
 
-    const classMethods = {};
-
-    const instanceMethods = {
-        setPassword(newPassword) {
-            this.salt = uuid.v4();
-            this.password = crypto.pbkdf2Sync(newPassword, Buffer.from(this.salt), 100000, 128, 'sha256').toString('hex');
-            return this.save();
+    const classMethods = {
+        resetPasswordToken(email, expTime) {
+            return this.find({
+                where: {
+                    email,
+                },
+            })
+            .then((user) => {
+                if (!user) {
+                    const err = new Error('Email not found');
+                    return sequelize.Promise.reject(err);
+                }
+                return user.updateResetPasswordToken(expTime);
+            });
         },
 
+        resetPassword(token, newPassword) {
+            const rejection = () => {
+                const err = new Error('Password reset token is invalid or has expired.');
+                return sequelize.Promise.reject(err);
+            };
+            return this.find({
+                where: {
+                    resetToken: token,
+                },
+            }).then((user) => {
+                if (!user) {
+                    return rejection();
+                }
+                const expires = user.resetExpires;
+                const mExpires = moment.utc(expires);
+                if (moment.utc().isAfter(mExpires)) {
+                    return rejection();
+                }
+                user.password = newPassword;
+                return user.save();
+            });
+        },
+    };
+
+    const instanceMethods = {
         testPassword(testPassword) {
             return crypto.pbkdf2Sync(testPassword, Buffer.from(this.salt), 100000, 128, 'sha256').toString('hex') === this.password;
+        },
+
+        updateResetPasswordToken(expTime) {
+            return randomBytes(20)
+                .then((buf) => {
+                    const token = buf.toString('hex');
+                    return token;
+                }).then(token => randomBytes(10).then(password => ({
+                    token,
+                    password,
+                }))).then((tokens) => {
+                    this.resetToken = tokens.token;
+                    this.password = tokens.password;
+                    const m = moment.utc();
+                    m.add(expTime, 'seconds');
+                    this.resetExpires = m.format();
+                    return this.save().then(() => tokens.token);
+                });
         },
     };
 
@@ -61,7 +116,7 @@ module.exports = (sequelize, DataTypes) => {
         resetToken: {
             type: DataTypes.STRING,
         },
-        resetTime: {
+        resetExpires: {
             type: DataTypes.DATE,
         },
     }, {

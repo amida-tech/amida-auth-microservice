@@ -154,7 +154,6 @@ describe('Auth API:', () => {
         });
 
         it('should return 401 when user is not authenticated', (done) => {
-            console.log(jwtToken);
             request(app)
                 .post(`${baseURL}/auth/update-password`)
                 .send({

@@ -17,6 +17,8 @@ const testUser = {
     password: 'testpass',
 };
 
+const expTime = 3600;
+
 describe('User models:', () => {
     before(() => sequelize.sync({
         force: true,
@@ -124,6 +126,121 @@ describe('User models:', () => {
                     done();
                 })
                 .catch(done);
+        });
+    });
+
+    describe('Password reset:', () => {
+        describe('resetPasswordToken', () => {
+            it('should error if the supplied email does not match a user', (done) => {
+                User.create(testUser)
+                    .then(() => {
+                        User.resetPasswordToken('bad@email.com', expTime)
+                            .catch((err) => {
+                                expect(err).to.be.an.error;
+                                expect(err.message).to.contain('Email not found');
+                                done();
+                            });
+                    })
+                    .catch(done);
+            });
+
+            it('should return a token if successful', (done) => {
+                User.create(testUser)
+                    .then(() => User.resetPasswordToken(testUser.email, expTime))
+                    .then((token) => {
+                        expect(token).to.exist;
+                        expect(token).to.have.lengthOf(40);
+                        done();
+                    })
+                    .catch(done);
+            });
+
+            it('should set the password reset token and expiration time if successful', (done) => {
+                User.create(testUser)
+                    .then((user) => {
+                        User.resetPasswordToken(testUser.email, expTime)
+                            .then((token) => {
+                                user.reload()
+                                    .then(() => {
+                                        expect(user.resetToken).to.equal(token);
+                                        expect(user.resetExpires).to.be.a.date;
+                                        done();
+                                    });
+                            });
+                    })
+                    .catch(done);
+            });
+        });
+
+        describe('resetPassword', () => {
+            it('should error if the supplied token is not found', (done) => {
+                User.create(testUser)
+                    .then(() => User.resetPasswordToken(testUser.email, expTime))
+                    .then(() => User.resetPassword('badtoken', 'newerpass'))
+                    .catch((err) => {
+                        expect(err).to.be.an.error;
+                        expect(err.message).to.contain('reset token is invalid');
+                        done();
+                    })
+                    .catch(done);
+            });
+
+            it('should error if the current time is after the expiration time', (done) => {
+                User.create(testUser)
+                    .then(() => User.resetPasswordToken(testUser.email, 0))
+                    .then(token => User.resetPassword(token, 'newerpass'))
+                    .catch((err) => {
+                        expect(err).to.be.an.error;
+                        expect(err.message).to.contain('reset token is invalid');
+                        done();
+                    })
+                    .catch(done);
+            });
+
+            it('should update the password if the supplied token is valid', (done) => {
+                User.create(testUser)
+                    .then(() => User.resetPasswordToken(testUser.email, expTime))
+                    .then(token => User.resetPassword(token, 'newerpass'))
+                    .then(() => {
+                        User.find({
+                            where: {
+                                username: testUser.username,
+                            },
+                        }).then((user) => {
+                            expect(user.testPassword('newerpass')).to.be.true;
+                            done();
+                        }).catch(done);
+                    })
+                    .catch(done);
+            }).timeout(4000);
+        });
+
+        describe('updateResetPasswordToken', () => {
+            it('should set a random token and the supplied expiration time', (done) => {
+                User.create(testUser)
+                    .then((user) => {
+                        user.updateResetPasswordToken(expTime)
+                            .then((token) => {
+                                user.reload()
+                                    .then(() => {
+                                        expect(user.resetToken).to.equal(token);
+                                        expect(user.resetExpires).to.be.a.date;
+                                        done();
+                                    });
+                            });
+                    })
+                    .catch(done);
+            });
+
+            it('should return the reset token', (done) => {
+                User.create(testUser)
+                    .then(user => user.updateResetPasswordToken(expTime))
+                    .then((token) => {
+                        expect(token).to.exist;
+                        done();
+                    })
+                    .catch(done);
+            });
         });
     });
 });

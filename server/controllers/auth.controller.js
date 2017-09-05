@@ -102,11 +102,11 @@ function resetToken(req, res, next) {
  * @returns {*}
  */
 function resetPassword(req, res, next) {
-    const token = _.get(req, 'body.token');
+    const token = _.get(req, 'params.token');
     const newPassword = _.get(req, 'body.password');
     User.resetPassword(token, newPassword)
         .then(() => {
-            res.status(200).end();
+            res.sendStatus(httpStatus.OK);
         })
         .catch(error => next(error));
 }

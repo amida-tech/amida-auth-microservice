@@ -25,7 +25,6 @@ export default {
     },
     resetPassword: {
         body: {
-            token: Joi.string().required(),
             password: Joi.string().min(8).max(64).required(),
         },
     },

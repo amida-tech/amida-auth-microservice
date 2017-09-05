@@ -6,7 +6,7 @@ module.exports = {
 
     sendEmail(res, email, text, token, next) {
         const options = {
-            from: util.format('"%s" <%s>', config.emailName, config.emailFrom),
+            from: util.format('"%s"', config.mailer.user),
             to: email,
             subject: 'Password Reset',
             text,
@@ -16,7 +16,13 @@ module.exports = {
                 token,
             });
         } else {
-            const transporter = nodemailer.createTransport(config.emailUri);
+            const transporter = nodemailer.createTransport({
+                service: config.mailer.service,
+                auth: {
+                    user: config.mailer.user,
+                    pass: config.user.password,
+                },
+            });
             transporter.sendMail(options, (err) => {
                 if (err) {
                     return next(err);

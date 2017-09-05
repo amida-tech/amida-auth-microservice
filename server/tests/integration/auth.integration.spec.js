@@ -107,6 +107,116 @@ describe('Auth API:', () => {
 
     // describe('# POST /auth/logout');
 
+    describe('POST /auth/reset-password', () => {
+        before((done) => {
+            request(app)
+                .post(`${baseURL}/user`)
+                .send(user)
+                .expect(httpStatus.OK)
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+
+        after(() => User.destroy({ where: {} }));
+
+        before((done) => {
+            request(app)
+                .post(`${baseURL}/auth/login`)
+                .send(validUserCredentials)
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body).to.have.property('token');
+                    jwt.verify(res.body.token, config.jwtSecret, (err, decoded) => {
+                        expect(err).to.not.be.ok; // eslint-disable-line no-unused-expressions
+                        expect(decoded.username).to.equal(validUserCredentials.username);
+                        jwtToken = `Bearer ${res.body.token}`;
+                        done();
+                    });
+                })
+                .catch(done);
+        });
+
+        let resetToken;
+
+        xit('should set the password to a random string', (done) => {
+            request(app)
+                .post(`${baseURL}/auth/reset-password`)
+                .send({
+                    email: user.email,
+                })
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    // check User for password
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('should generate a token (test env only)', done => {
+            request(app)
+                .post(`${baseURL}/auth/reset-password`)
+                .send({
+                    email: user.email,
+                })
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body.token).to.exist;
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('should accept the reset token', done => {
+            request(app)
+                .post(`${baseURL}/auth/reset-password`)
+                .send({
+                    email: user.email,
+                })
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    resetToken = res.body.token;
+                    request(app)
+                        .post(`${baseURL}/auth/reset-password/${resetToken}`)
+                        .send({
+                            password: 'newerpass'
+                        })
+                        .expect(httpStatus.OK)
+                        .then((res) => {
+                            expect(res.text).to.equal('OK');
+                            done();
+                        })
+                        .catch(done);
+                })
+                .catch(done);
+        });
+
+        xit('should update the password', done => {
+            request(app)
+                .post(`${baseURL}/auth/reset-password`)
+                .send({
+                    email: user.email,
+                })
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    resetToken = res.body.token;
+                    request(app)
+                        .post(`${baseURL}/auth/reset-password/${resetToken}`)
+                        .send({
+                            password: 'newerpass'
+                        })
+                        .expect(httpStatus.OK)
+                        .then((res) => {
+                            // check User for password
+                            done();
+                        })
+                        .catch(done);
+                })
+                .catch(done);
+        });
+    });
+
     describe('POST /auth/update-password', () => {
         before((done) => {
             request(app)

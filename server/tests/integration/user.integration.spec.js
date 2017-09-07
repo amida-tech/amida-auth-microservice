@@ -56,14 +56,7 @@ describe('User API:', () => {
         password: 'testpass',
     };
 
-    beforeEach((done) => {
-        User.destroy({
-            where: {},
-            truncate: true,
-        }).then(() => {
-            done();
-        });
-    });
+    beforeEach(() => User.destroy({ where: {} }));
 
     describe('# POST /api/users', () => {
         it('should create a new user and return it without password info', (done) => {

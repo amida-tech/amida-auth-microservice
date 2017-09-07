@@ -57,24 +57,24 @@ describe('User models:', () => {
     });
 
     describe('beforeUpdate', () => {
-        it('should automatically update the hashed password on password change', () => 
+        it('should automatically update the hashed password on password change', () =>
             User.create(testUser)
                 .then((user) => {
                     const firstPass = user.password;
                     user.password = '12345678';
                     return user.save()
                         .then(() => user.reload)
-                        .then(() => expect(user.password).to.not.equal(firstPass))
+                        .then(() => expect(user.password).to.not.equal(firstPass));
                 })
         );
 
-        it('should not update the password if it was not changed', () => 
+        it('should not update the password if it was not changed', () =>
             User.create(testUser)
                 .then((user) => {
                     const firstPass = user.password;
                     return user.save()
                         .then(() => user.reload)
-                        .then(() => expect(user.password).to.equal(firstPass))
+                        .then(() => expect(user.password).to.equal(firstPass));
                 })
         );
     });

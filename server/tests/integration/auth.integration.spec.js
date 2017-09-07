@@ -170,93 +170,68 @@ describe('Auth API:', () => {
     });
 
     describe('POST /auth/update-password', () => {
-        before((done) => {
-            request(app)
-                .post(`${baseURL}/user`)
-                .send(user)
-                .expect(httpStatus.OK)
-                .then(() => {
-                    done();
-                })
-                .catch(done);
-        });
+        before(() => request(app)
+            .post(`${baseURL}/user`)
+            .send(user)
+            .expect(httpStatus.OK)
+        );
 
         after(() => User.destroy({ where: {} }));
 
-        before((done) => {
-            request(app)
-                .post(`${baseURL}/auth/login`)
-                .send(validUserCredentials)
-                .expect(httpStatus.OK)
-                .then((res) => {
-                    expect(res.body).to.have.property('token');
-                    jwt.verify(res.body.token, config.jwtSecret, (err, decoded) => {
-                        expect(err).to.not.be.ok; // eslint-disable-line no-unused-expressions
-                        expect(decoded.username).to.equal(validUserCredentials.username);
-                        jwtToken = `Bearer ${res.body.token}`;
-                        done();
-                    });
-                })
-                .catch(done);
-        });
+        before(() => request(app)
+            .post(`${baseURL}/auth/login`)
+            .send(validUserCredentials)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('token');
+                const decoded = jwt.verify(res.body.token, config.jwtSecret);
+                expect(decoded.username).to.equal(validUserCredentials.username);
+                jwtToken = `Bearer ${res.body.token}`;
+                return;
+            })
+        );
 
-        it('should update user password when user is authenticated', (done) => {
+        it('should update user password when user is authenticated', () =>
             request(app)
                 .post(`${baseURL}/auth/update-password`)
                 .set('Authorization', jwtToken)
-                .send({
-                    password: 'newerpass',
-                })
+                .send({ password: 'newerpass' })
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.text).to.equal('OK');
-                    done();
+                    return request(app).post(`${baseURL}/auth/login`)
+                        .send({
+                            username: 'KK123',
+                            password: 'newerpass',
+                        })
+                        .expect(httpStatus.OK);
                 })
-                .catch(done);
-        });
+        );
 
-        it('should return 401 when user is not authenticated', (done) => {
+        it('should return 401 when user is not authenticated', () =>
             request(app)
                 .post(`${baseURL}/auth/update-password`)
-                .send({
-                    password: 'newerpass',
-                })
+                .send({ password: 'newerpass' })
                 .expect(httpStatus.UNAUTHORIZED)
-                .then((res) => {
-                    expect(res.text).to.equal('Unauthorized');
-                    done();
-                })
-                .catch(done);
-        });
+                .then(res => expect(res.text).to.equal('Unauthorized'))
+        );
 
-        it('should return 401 when JWT is invalid', (done) => {
+        it('should return 401 when JWT is invalid', () =>
             request(app)
                 .post(`${baseURL}/auth/update-password`)
                 .set('Authorization', 'Bearer BadJWT')
-                .send({
-                    password: 'newerpass',
-                })
+                .send({ password: 'newerpass' })
                 .expect(httpStatus.UNAUTHORIZED)
-                .then((res) => {
-                    expect(res.text).to.equal('Unauthorized');
-                    done();
-                })
-                .catch(done);
-        });
+                .then(res => expect(res.text).to.equal('Unauthorized'))
+        );
 
-        it('should return 400 if password is invalid', (done) => {
+        it('should return 400 if password update is invalid', () =>
             request(app)
                 .post(`${baseURL}/auth/update-password`)
                 .set('Authorization', jwtToken)
-                .send({
-                    password: 'badpass',
-                })
+                .send({ password: 'badpass' })
                 .expect(httpStatus.BAD_REQUEST)
-                .then((res) => {
-                    expect(res.text).to.contain('length must be at least 8 characters long');
-                    done();
-                })
-                .catch(done);
-        });
+                .then(res => expect(res.text).to.contain('length must be at least 8 characters long'))
+        );
     });
 });

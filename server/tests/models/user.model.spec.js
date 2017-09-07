@@ -31,39 +31,23 @@ describe('User models:', () => {
     afterEach(() => User.destroy({ where: {} }));
 
     describe('create', () => {
-        it('should create a new object with all properties', (done) => {
-            User.create(testUser)
+        it('should create a new object with all properties', () => User.create(testUser)
                 .then((user) => {
                     expect(user.id).to.exist;
                     expect(user.username).to.equal(testUser.username);
                     expect(user.email).to.equal(testUser.email);
                     expect(user.password).to.have.lengthOf(256);
                     expect(user.salt).to.have.lengthOf(36);
-                    done();
-                })
-                .catch(done);
-        });
+                }));
     });
 
     describe('remove', () => {
-        it('should remove the specified object', (done) => {
-            User.create(testUser)
-                .then((user) => {
-                    User.destroy({ where: {
-                        id: user.id,
-                    } })
-                    .then(() => {
-                        User.findAll()
-                            .then((users) => {
-                                expect(users).to.have.lengthOf(0);
-                                done();
-                            })
-                            .catch(done);
-                    })
-                    .catch(done);
-                })
-                .catch(done);
-        });
+        it('should remove the specified object', () => User.create(testUser)
+            .then(user => User.destroy({ where: { id: user.id } }))
+            .then(() => User.findAll())
+            .then((users) => {
+                expect(users).to.have.lengthOf(0);
+            }));
     });
 
     describe('update', () => {
@@ -72,37 +56,27 @@ describe('User models:', () => {
         it('should update passwords via salt and hash');
     });
 
-    describe('beforeValidate', () => {
-        it('should automatically update the hashed password on password change', (done) => {
+    describe('beforeUpdate', () => {
+        it('should automatically update the hashed password on password change', () => 
             User.create(testUser)
                 .then((user) => {
                     const firstPass = user.password;
                     user.password = '12345678';
-                    user.save()
-                        .then(user.reload)
-                        .then(() => {
-                            expect(user.password).to.not.equal(firstPass);
-                            done();
-                        })
-                        .catch(done);
+                    return user.save()
+                        .then(() => user.reload)
+                        .then(() => expect(user.password).to.not.equal(firstPass))
                 })
-                .catch(done);
-        });
+        );
 
-        it('should not update the password if it was not changed', (done) => {
+        it('should not update the password if it was not changed', () => 
             User.create(testUser)
                 .then((user) => {
                     const firstPass = user.password;
-                    user.save()
-                        .then(user.reload)
-                        .then(() => {
-                            expect(user.password).to.equal(firstPass);
-                            done();
-                        })
-                        .catch(done);
+                    return user.save()
+                        .then(() => user.reload)
+                        .then(() => expect(user.password).to.equal(firstPass))
                 })
-                .catch(done);
-        });
+        );
     });
 
     describe('setPassword', () => {

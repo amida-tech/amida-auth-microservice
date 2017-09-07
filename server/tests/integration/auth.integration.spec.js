@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 /* eslint no-unused-expressions: 0 */
 
-import request from 'supertest-as-promised';
+import request from 'supertest';
 import httpStatus from 'http-status';
 import jwt from 'jsonwebtoken';
 import chai, { expect } from 'chai';
@@ -51,92 +51,62 @@ describe('Auth API:', () => {
     let jwtToken;
 
     describe('POST /auth/login', () => {
-        before((done) => {
-            request(app)
-                .post(`${baseURL}/user`)
-                .send(user)
-                .expect(httpStatus.OK)
-                .then(() => {
-                    done();
-                })
-                .catch(done);
-        });
+        before(() => request(app)
+            .post(`${baseURL}/user`)
+            .send(user)
+            .expect(httpStatus.OK)
+        );
 
         after(() => User.destroy({ where: {} }));
 
-        it('should return 401 error with bad password', (done) => {
-            request(app)
-                .post(`${baseURL}/auth/login`)
+        it('should return 401 error with bad password', () =>
+            request(app).post(`${baseURL}/auth/login`)
                 .send(badPassword)
                 .expect(httpStatus.UNAUTHORIZED)
-                .then((res) => {
-                    expect(res.body.message).to.equal('Incorrect password');
-                    done();
-                })
-                .catch(done);
-        });
+                .then(res => expect(res.body.message).to.equal('Incorrect password'))
+        );
 
-        it('should return 404 when there is no username found', (done) => {
-            request(app)
-                .post(`${baseURL}/auth/login`)
+        it('should return 404 when there is no username found', () =>
+            request(app).post(`${baseURL}/auth/login`)
                 .send(missingUsername)
                 .expect(httpStatus.NOT_FOUND)
-                .then((res) => {
-                    expect(res.body.message).to.equal('Username not found');
-                    done();
-                })
-                .catch(done);
-        });
+                .then(res => expect(res.body.message).to.equal('Username not found'))
+        );
 
-        it('should get valid JWT token', (done) => {
-            request(app)
-                .post(`${baseURL}/auth/login`)
+        it('should get valid JWT token', () =>
+            request(app).post(`${baseURL}/auth/login`)
                 .send(validUserCredentials)
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body).to.have.property('token');
-                    jwt.verify(res.body.token, config.jwtSecret, (err, decoded) => {
-                        expect(err).to.not.be.ok; // eslint-disable-line no-unused-expressions
-                        expect(decoded.username).to.equal(validUserCredentials.username);
-                        done();
-                    });
+                    const decoded = jwt.verify(res.body.token, config.jwtSecret);
+                    expect(decoded.username).to.equal(validUserCredentials.username);
                 })
-                .catch(done);
-        });
+        );
     });
 
-    // describe('# POST /auth/logout');
+    // TODO describe('# POST /auth/logout');
 
     describe('POST /auth/reset-password', () => {
-        before((done) => {
-            request(app)
-                .post(`${baseURL}/user`)
-                .send(user)
-                .expect(httpStatus.OK)
-                .then(() => {
-                    done();
-                })
-                .catch(done);
-        });
+        before(() => request(app)
+            .post(`${baseURL}/user`)
+            .send(user)
+            .expect(httpStatus.OK)
+        );
 
         after(() => User.destroy({ where: {} }));
 
-        before((done) => {
-            request(app)
-                .post(`${baseURL}/auth/login`)
-                .send(validUserCredentials)
-                .expect(httpStatus.OK)
-                .then((res) => {
-                    expect(res.body).to.have.property('token');
-                    jwt.verify(res.body.token, config.jwtSecret, (err, decoded) => {
-                        expect(err).to.not.be.ok; // eslint-disable-line no-unused-expressions
-                        expect(decoded.username).to.equal(validUserCredentials.username);
-                        jwtToken = `Bearer ${res.body.token}`;
-                        done();
-                    });
-                })
-                .catch(done);
-        });
+        before(() => request(app)
+            .post(`${baseURL}/auth/login`)
+            .send(validUserCredentials)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('token');
+                const decoded = jwt.verify(res.body.token, config.jwtSecret);
+                expect(decoded.username).to.equal(validUserCredentials.username);
+                jwtToken = `Bearer ${res.body.token}`;
+            })
+        );
 
         let resetToken;
 
@@ -154,45 +124,27 @@ describe('Auth API:', () => {
                 .catch(done);
         });
 
-        it('should generate a token (test env only)', done => {
-            request(app)
-                .post(`${baseURL}/auth/reset-password`)
-                .send({
-                    email: user.email,
-                })
+        it('should generate a token (test env only)', () =>
+            request(app).post(`${baseURL}/auth/reset-password`)
+                .send({ email: user.email })
                 .expect(httpStatus.OK)
-                .then((res) => {
-                    expect(res.body.token).to.exist;
-                    done();
-                })
-                .catch(done);
-        });
+                .then(res => expect(res.body.token).to.exist)
+        );
 
-        it('should accept the reset token', done => {
-            request(app)
-                .post(`${baseURL}/auth/reset-password`)
-                .send({
-                    email: user.email,
-                })
+        it('should accept the reset token', () =>
+            request(app).post(`${baseURL}/auth/reset-password`)
+                .send({ email: user.email })
                 .expect(httpStatus.OK)
-                .then((res) => {
-                    resetToken = res.body.token;
-                    request(app)
-                        .post(`${baseURL}/auth/reset-password/${resetToken}`)
-                        .send({
-                            password: 'newerpass'
-                        })
+                .then((res1) => {
+                    resetToken = res1.body.token;
+                    return request(app).post(`${baseURL}/auth/reset-password/${resetToken}`)
+                        .send({ password: 'newerpass' })
                         .expect(httpStatus.OK)
-                        .then((res) => {
-                            expect(res.text).to.equal('OK');
-                            done();
-                        })
-                        .catch(done);
+                        .then(res2 => expect(res2.text).to.equal('OK'));
                 })
-                .catch(done);
-        });
+        );
 
-        xit('should update the password', done => {
+        xit('should update the password', (done) => {
             request(app)
                 .post(`${baseURL}/auth/reset-password`)
                 .send({
@@ -204,7 +156,7 @@ describe('Auth API:', () => {
                     request(app)
                         .post(`${baseURL}/auth/reset-password/${resetToken}`)
                         .send({
-                            password: 'newerpass'
+                            password: 'newerpass',
                         })
                         .expect(httpStatus.OK)
                         .then((res) => {

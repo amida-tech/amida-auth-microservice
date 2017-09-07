@@ -76,7 +76,7 @@ function updatePassword(req, res, next) {
  * @returns {*}
  */
 function resetToken(req, res, next) {
-    const userLine = 'You have requested the reset of the password for your GFTrade account';
+    const userLine = 'You have requested the reset of the password for your account';
     const clickLine = 'Please click on the following link, or paste into your browser:';
     const ifNotLine = 'If you or your admin did not request a reset, please ignore this email.';
 

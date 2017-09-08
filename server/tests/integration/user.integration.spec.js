@@ -18,7 +18,7 @@ const baseURL = (version > 0 ? `/api/v${version}` : '/api');
 
 
 describe('User API:', () => {
-    before(() => User.sync({
+    before(() => sequelize.sync({
         force: true,
     }));
 

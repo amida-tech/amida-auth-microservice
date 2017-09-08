@@ -20,7 +20,7 @@ const testUser = {
 const expTime = 3600;
 
 describe('User models:', () => {
-    before(() => User.sync({
+    before(() => sequelize.sync({
         force: true,
     }));
 
@@ -48,11 +48,7 @@ describe('User models:', () => {
             }));
     });
 
-    describe('update', () => {
-        it('should allow email update');
-
-        it('should update passwords via salt and hash');
-    });
+    // describe('beforeCreate');
 
     describe('beforeUpdate', () => {
         it('should automatically update the hashed password on password change', () =>
@@ -77,8 +73,21 @@ describe('User models:', () => {
         );
     });
 
-    describe('setPassword', () => {
-        it('should return a new salted and hashed password');
+    describe('updatePassword', () => {
+        it('should set a new salted and hashed password and a new salt', () =>
+            User.create(testUser)
+                .then((user) => {
+                    const originalHash = user.password;
+                    const originalSalt = user.salt;
+                    user.password = 'newerpass';
+                    user.updatePassword();
+                    expect(user.password).to.not.equal(originalHash);
+                    expect(user.salt).to.not.equal(originalSalt);
+                    expect(user.password).to.have.lengthOf(256);
+                    expect(user.salt).to.have.lengthOf(36);
+                    return;
+                })
+        );
     });
 
     describe('testPassword', () => {

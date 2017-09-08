@@ -40,7 +40,7 @@ const validUserCredentials = {
 };
 
 describe('Auth API:', () => {
-    before(() => User.sync({
+    before(() => sequelize.sync({
         force: true,
     }));
 

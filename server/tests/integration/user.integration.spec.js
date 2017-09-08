@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 /* eslint no-unused-expressions: 0 */
 
-import request from 'supertest-as-promised';
+import request from 'supertest';
 import httpStatus from 'http-status';
 import chai, { expect } from 'chai';
 import app from '../../../index';
@@ -22,9 +22,7 @@ describe('User API:', () => {
         force: true,
     }));
 
-    after(() => User.drop({
-        force: true,
-    }));
+    after(() => User.destroy({ where: {} }));
 
     const user = {
         username: 'KK123',
@@ -56,14 +54,7 @@ describe('User API:', () => {
         password: 'testpass',
     };
 
-    beforeEach((done) => {
-        User.destroy({
-            where: {},
-            truncate: true,
-        }).then(() => {
-            done();
-        });
-    });
+    beforeEach(() => User.destroy({ where: {} }));
 
     describe('# POST /api/users', () => {
         it('should create a new user and return it without password info', (done) => {

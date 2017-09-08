@@ -18,6 +18,16 @@ export default {
             password: Joi.string().min(8).max(64).required(),
         },
     },
+    resetToken: {
+        body: {
+            email: Joi.string().email().required(),
+        },
+    },
+    resetPassword: {
+        body: {
+            password: Joi.string().min(8).max(64).required(),
+        },
+    },
     login: {
         body: {
             username: Joi.string().required(),

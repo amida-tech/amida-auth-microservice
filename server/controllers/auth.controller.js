@@ -1,10 +1,15 @@
 
 import _ from 'lodash';
+import util from 'util';
 import httpStatus from 'http-status';
 import jwt from 'jsonwebtoken';
 import db from '../../config/sequelize';
 import APIError from '../helpers/APIError';
 import config from '../../config/config';
+import {
+    sendEmail,
+    generateLink,
+} from '../helpers/mailer';
 
 const User = db.User;
 
@@ -57,12 +62,53 @@ function updatePassword(req, res, next) {
     const user = req.user;
     user.password = req.body.password;
     user.save()
-        .then(() => {
-            return res.sendStatus(httpStatus.OK)
-        })
+        .then(() => res.sendStatus(httpStatus.OK))
         .catch(error => next(error));
         // TODO should we produce a new token? A user could change the password
         // and change it again without re-authenticating
 }
 
-export default { login, logout, updatePassword };
+/**
+ * Returns 200 OK if password was reset successfully
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function resetToken(req, res, next) {
+    const userLine = 'You have requested the reset of the password for your account';
+    const clickLine = 'Please click on the following link, or paste into your browser:';
+    const ifNotLine = 'If you or your admin did not request a reset, please ignore this email.';
+
+    const email = _.get(req, 'body.email');
+    if (!email) {
+        const err = new APIError('Invalid email', httpStatus.BAD_REQUEST, true);
+        return next(err);
+    }
+    return User.resetPasswordToken(email, 3600)
+        .then((token) => {
+            const link = generateLink(req, token);
+            const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);
+            sendEmail(res, email, text, token, next);
+        })
+        .catch(error => next(error));
+}
+
+/**
+ * Returns 200 OK if password was reset successfully
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function resetPassword(req, res, next) {
+    const token = _.get(req, 'params.token');
+    const newPassword = _.get(req, 'body.password');
+    User.resetPassword(token, newPassword)
+        .then(() => {
+            res.sendStatus(httpStatus.OK);
+        })
+        .catch(error => next(error));
+}
+
+export default { login, logout, updatePassword, resetToken, resetPassword };

@@ -2,17 +2,22 @@ import Sequelize from 'sequelize';
 import _ from 'lodash';
 import config from './config';
 
+const dbLogging = config.env !== 'test';
+
 const db = {};
 
 // // connect to postgres db
-const sequelize = new Sequelize(config.postgres.db,
-  config.postgres.user,
-  config.postgres.passwd,
+const sequelize = new Sequelize(
+    config.postgres.db,
+    config.postgres.user,
+    config.postgres.passwd,
     {
         dialect: 'postgres',
         port: config.postgres.port,
         host: config.postgres.host,
-    });
+        logging: dbLogging,
+    }
+);
 
 db.User = sequelize.import('../server/models/user.model');
 

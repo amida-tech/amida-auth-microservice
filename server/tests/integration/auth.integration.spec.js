@@ -18,7 +18,7 @@ chai.config.includeStack = true;
 const version = p.version.split('.').shift();
 const baseURL = (version > 0 ? `/api/v${version}` : '/api');
 
-const user = {
+const testUser = {
     username: 'KK123',
     email: 'test@amida.com',
     password: 'testpass',
@@ -40,20 +40,18 @@ const validUserCredentials = {
 };
 
 describe('Auth API:', () => {
-    before(() => sequelize.sync({
+    before(() => User.sync({
         force: true,
     }));
 
-    after(() => User.drop({
-        force: true,
-    }));
+    after(() => User.destroy({ where: {} }));
 
     let jwtToken;
 
     describe('POST /auth/login', () => {
         before(() => request(app)
             .post(`${baseURL}/user`)
-            .send(user)
+            .send(testUser)
             .expect(httpStatus.OK)
         );
 
@@ -88,9 +86,11 @@ describe('Auth API:', () => {
     // TODO describe('# POST /auth/logout');
 
     describe('POST /auth/reset-password', () => {
+        let resetToken;
+
         before(() => request(app)
             .post(`${baseURL}/user`)
-            .send(user)
+            .send(testUser)
             .expect(httpStatus.OK)
         );
 
@@ -108,32 +108,33 @@ describe('Auth API:', () => {
             })
         );
 
-        let resetToken;
-
-        xit('should set the password to a random string', (done) => {
-            request(app)
-                .post(`${baseURL}/auth/reset-password`)
-                .send({
-                    email: user.email,
-                })
-                .expect(httpStatus.OK)
-                .then((res) => {
-                    // check User for password
-                    done();
-                })
-                .catch(done);
-        });
+        it('should set the password to a random string', () =>
+            User.find({ where: { username: testUser.username } })
+                .then(oldUser => request(app)
+                    .post(`${baseURL}/auth/reset-password`)
+                    .send({ email: testUser.email })
+                    .expect(httpStatus.OK)
+                    .then(() => User.find({ where: { username: testUser.username } }))
+                    .then((user) => {
+                        expect(user.password).to.have.lengthOf(256);
+                        expect(user.password).to.not.equal(oldUser.password);
+                        return;
+                    })
+                )
+        );
 
         it('should generate a token (test env only)', () =>
-            request(app).post(`${baseURL}/auth/reset-password`)
-                .send({ email: user.email })
+            request(app)
+                .post(`${baseURL}/auth/reset-password`)
+                .send({ email: testUser.email })
                 .expect(httpStatus.OK)
                 .then(res => expect(res.body.token).to.exist)
         );
 
         it('should accept the reset token', () =>
-            request(app).post(`${baseURL}/auth/reset-password`)
-                .send({ email: user.email })
+            request(app)
+                .post(`${baseURL}/auth/reset-password`)
+                .send({ email: testUser.email })
                 .expect(httpStatus.OK)
                 .then((res1) => {
                     resetToken = res1.body.token;
@@ -144,35 +145,32 @@ describe('Auth API:', () => {
                 })
         );
 
-        xit('should update the password', (done) => {
+        it('should update the password', () =>
             request(app)
                 .post(`${baseURL}/auth/reset-password`)
-                .send({
-                    email: user.email,
-                })
+                .send({ email: testUser.email })
                 .expect(httpStatus.OK)
-                .then((res) => {
-                    resetToken = res.body.token;
-                    request(app)
+                .then((res1) => {
+                    resetToken = res1.body.token;
+                    return request(app)
                         .post(`${baseURL}/auth/reset-password/${resetToken}`)
-                        .send({
-                            password: 'newerpass',
-                        })
+                        .send({ password: 'newerpass' })
                         .expect(httpStatus.OK)
-                        .then((res) => {
-                            // check User for password
-                            done();
-                        })
-                        .catch(done);
+                        .then(() => request(app)
+                                .post(`${baseURL}/auth/login`)
+                                .send({
+                                    username: 'KK123',
+                                    password: 'newerpass',
+                                })
+                                .expect(httpStatus.OK));
                 })
-                .catch(done);
-        });
+        );
     });
 
     describe('POST /auth/update-password', () => {
         before(() => request(app)
             .post(`${baseURL}/user`)
-            .send(user)
+            .send(testUser)
             .expect(httpStatus.OK)
         );
 

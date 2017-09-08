@@ -20,13 +20,11 @@ const testUser = {
 const expTime = 3600;
 
 describe('User models:', () => {
-    before(() => sequelize.sync({
+    before(() => User.sync({
         force: true,
     }));
 
-    after(() => User.drop({
-        force: true,
-    }));
+    after(() => User.destroy({ where: {} }));
 
     afterEach(() => User.destroy({ where: {} }));
 

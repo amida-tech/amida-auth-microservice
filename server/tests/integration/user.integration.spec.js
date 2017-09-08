@@ -18,13 +18,11 @@ const baseURL = (version > 0 ? `/api/v${version}` : '/api');
 
 
 describe('User API:', () => {
-    before(() => sequelize.sync({
+    before(() => User.sync({
         force: true,
     }));
 
-    after(() => User.drop({
-        force: true,
-    }));
+    after(() => User.destroy({ where: {} }));
 
     const user = {
         username: 'KK123',

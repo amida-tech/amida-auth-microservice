@@ -107,8 +107,8 @@ module.exports = (sequelize, DataTypes) => {
         return;
     };
 
-    User.prototype.testPassword = function testPassword(testPassword) {
-        return crypto.pbkdf2Sync(testPassword, Buffer.from(this.salt), 100000, 128, 'sha256').toString('hex') === this.password;
+    User.prototype.testPassword = function testPassword(password) {
+        return crypto.pbkdf2Sync(password, Buffer.from(this.salt), 100000, 128, 'sha256').toString('hex') === this.password;
     };
 
     User.prototype.updateResetPasswordToken = function updateResetPasswordToken(expTime) {

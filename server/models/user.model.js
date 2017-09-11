@@ -50,6 +50,7 @@ module.exports = (sequelize, DataTypes) => {
         scopes: {
             type: DataTypes.ARRAY(DataTypes.STRING),
             allowNull: true,
+            default: [''],
         },
         resetToken: {
             type: DataTypes.STRING,

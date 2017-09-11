@@ -13,6 +13,11 @@ export default {
             email: Joi.string().email(),
         },
     },
+    updateUserScopes: {
+        body: {
+            scopes: Joi.array().unique().items(Joi.string().allow('')).required(),
+        },
+    },
     updatePassword: {
         body: {
             password: Joi.string().min(8).max(64).required(),

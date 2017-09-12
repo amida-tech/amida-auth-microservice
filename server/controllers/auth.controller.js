@@ -40,6 +40,8 @@ function login(req, res, next) {
         }
         const token = jwt.sign({
             username: userResult.username,
+            email: userResult.email,
+            scopes: userResult.scopes,
         }, config.jwtSecret, { expiresIn: '1h' });
         return res.json({
             token,

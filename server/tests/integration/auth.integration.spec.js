@@ -22,6 +22,7 @@ const testUser = {
     username: 'KK123',
     email: 'test@amida.com',
     password: 'testpass',
+    scopes: ['admin'],
 };
 
 const badPassword = {
@@ -79,6 +80,8 @@ describe('Auth API:', () => {
                     expect(res.body).to.have.property('token');
                     const decoded = jwt.verify(res.body.token, config.jwtSecret);
                     expect(decoded.username).to.equal(validUserCredentials.username);
+                    expect(decoded.email).to.equal(testUser.email);
+                    // expect(decoded.scopes).to.deep.equal(testUser.scopes);
                 })
         );
     });

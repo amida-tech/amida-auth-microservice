@@ -241,10 +241,12 @@ describe('User API:', () => {
                     scopes: ['newScope'],
                 })
                 .expect(httpStatus.OK)
-                .then((userRes) => {
-                    expect(userRes.body.scopes).to.deep.equal(['newScope']);
-                    return;
-                })
+                .then(() => request(app)
+                        .get(`${baseURL}/user/${userId}`)
+                        .then((userRes) => {
+                            expect(userRes.body.scopes).to.deep.equal(['newScope']);
+                            return;
+                        }))
         );
 
         it('should work with an empty array update', () =>

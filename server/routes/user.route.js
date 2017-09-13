@@ -6,7 +6,7 @@ import paramValidation from '../../config/param-validation';
 import userCtrl from '../controllers/user.controller';
 
 const router = express.Router(); // eslint-disable-line new-cap
-const permissions = guard({permissionsProperty: 'scopes'});
+const permissions = guard({ permissionsProperty: 'scopes' });
 
 router.route('/')
     /** GET /api/users - Get list of users */
@@ -26,7 +26,7 @@ router.route('/:userId')
     .delete(userCtrl.remove);
 
 router.route('/scopes/:userId')
-    /** PUT /api/users/scopes/:userId - Update user scopes */
+    /** PUT /api/user/scopes/:userId - Update user scopes */
     .put(validate(paramValidation.updateUserScopes),
          passport.authenticate('jwt', { session: false }),
          permissions.check('admin'),

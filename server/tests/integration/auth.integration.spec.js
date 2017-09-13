@@ -81,7 +81,8 @@ describe('Auth API:', () => {
                     const decoded = jwt.verify(res.body.token, config.jwtSecret);
                     expect(decoded.username).to.equal(validUserCredentials.username);
                     expect(decoded.email).to.equal(testUser.email);
-                    // expect(decoded.scopes).to.deep.equal(testUser.scopes);
+                    expect(decoded.scopes).to.deep.equal(testUser.scopes);
+                    return;
                 })
         );
     });

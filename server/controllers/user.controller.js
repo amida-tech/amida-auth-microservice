@@ -56,8 +56,8 @@ function update() {}
  * Returns JSON of the updated user.
  */
 function updateScopes(req, res, next) {
-    req.user
-        .update({ scopes: req.body.scopes })
+    User.findById(req.params.userId)
+        .then(user => user.update({ scopes: req.body.scopes }))
         .then(updatedUser => res.json(updatedUser))
         .catch(e => next(e));
 }

@@ -237,16 +237,26 @@ describe('User API:', () => {
             request(app)
                 .put(`${baseURL}/user/scopes/${userId}`)
                 .set('Authorization', jwtToken)
-                .send({
-                    scopes: ['newScope'],
-                })
+                .send({ scopes: ['newScope'] })
                 .expect(httpStatus.OK)
                 .then(() => request(app)
-                        .get(`${baseURL}/user/${userId}`)
-                        .then((userRes) => {
-                            expect(userRes.body.scopes).to.deep.equal(['newScope']);
-                            return;
-                        }))
+                    .get(`${baseURL}/user/${userId}`)
+                    .then((userRes) => {
+                        expect(userRes.body.scopes).to.deep.equal(['newScope']);
+                        return;
+                    }))
+        );
+
+        it('should return the new information of the changed user', () =>
+            request(app)
+                .put(`${baseURL}/user/scopes/${userId}`)
+                .set('Authorization', jwtToken)
+                .send({ scopes: ['newScope'] })
+                .expect(httpStatus.OK)
+                .then((userRes) => {
+                    expect(userRes.body.scopes).to.deep.equal(['newScope']);
+                    return;
+                })
         );
 
         it('should work with an empty array update', () =>

@@ -24,23 +24,23 @@ function load(req, res, next, id) {
 
 /**
  * Get user
- * @returns {User}
+ * Returns JSON of the specified user
  */
 function get(req, res) {
     return res.json(req.user);
 }
 
 /**
- * Create new user
- * @property {string} req.body.username - The username of the new user.
- * @property {string} req.body.email - The email of the new user.
- * @returns {User}
+ * Create and save a new user
+ * Returns JSON of the saved user
+ * TODO: this should return a virtual, omitting sensitive info
  */
 function create(req, res, next) {
     const user = User.build({
         username: req.body.username,
         email: req.body.email,
         password: req.body.password,
+        scopes: req.body.scopes,
     });
 
     user.save()
@@ -49,6 +49,18 @@ function create(req, res, next) {
 }
 
 function update() {}
+
+/**
+ * Update authorization scopes for a given user.
+ * Overwrites existing scopes array with the provided one.
+ * Returns JSON of the updated user.
+ */
+function updateScopes(req, res, next) {
+    User.findById(req.params.userId)
+        .then(user => user.update({ scopes: req.body.scopes }))
+        .then(updatedUser => res.json(updatedUser))
+        .catch(e => next(e));
+}
 
 function list() {}
 
@@ -61,6 +73,7 @@ export default {
     get,
     create,
     update,
+    updateScopes,
     list,
     remove,
     me,

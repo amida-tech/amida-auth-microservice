@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-export default {
+const userValidation = {
     createUser: {
         body: {
             username: Joi.string().required(),
@@ -13,6 +13,14 @@ export default {
             email: Joi.string().email(),
         },
     },
+    updateUserScopes: {
+        body: {
+            scopes: Joi.array().unique().items(Joi.string().allow('')).required(),
+        },
+    },
+};
+
+const authValidation = {
     updatePassword: {
         body: {
             password: Joi.string().min(8).max(64).required(),
@@ -34,4 +42,9 @@ export default {
             password: Joi.string().required(),
         },
     },
+};
+
+export default {
+    userValidation,
+    authValidation,
 };

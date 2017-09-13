@@ -30,6 +30,11 @@ describe('User API:', () => {
         password: 'testpass',
     };
 
+    const userCredentials = {
+        username: 'KK123',
+        password: 'testpass',
+    };
+
     const userBadPassword = {
         username: 'KK123',
         email: 'test@amida.com',
@@ -54,9 +59,21 @@ describe('User API:', () => {
         password: 'testpass',
     };
 
+    const adminUser = {
+        username: 'admin',
+        email: 'admin@amida.com',
+        password: 'adminpass',
+        scopes: ['admin'],
+    };
+
+    const adminUserCredentials = {
+        username: 'admin',
+        password: 'adminpass',
+    };
+
     beforeEach(() => User.destroy({ where: {} }));
 
-    describe('# POST /api/users', () => {
+    describe('POST /api/user:', () => {
         it('should create a new user and return it without password info', (done) => {
             request(app)
                 .post(`${baseURL}/user`)
@@ -145,5 +162,115 @@ describe('User API:', () => {
                 })
                 .catch(done);
         });
+    });
+
+    describe(('PUT /api/user/scopes/:userId'), () => {
+        let userId;
+        let jwtToken;
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/user`)
+            .send(adminUser)
+            .expect(httpStatus.OK)
+        );
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/user`)
+            .send(user)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                userId = res.body.id;
+                return;
+            })
+        );
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/auth/login`)
+            .send(adminUserCredentials)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('token');
+                jwtToken = `Bearer ${res.body.token}`;
+                return;
+            })
+        );
+
+        it('should require admin permissions to use this route', () =>
+            request(app)
+                .post(`${baseURL}/auth/login`)
+                .send(userCredentials)
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body).to.have.property('token');
+                    jwtToken = `Bearer ${res.body.token}`;
+                    return request(app)
+                        .put(`${baseURL}/user/scopes/${userId}`)
+                        .set('Authorization', jwtToken)
+                        .send({
+                            scopes: ['newScope'],
+                        })
+                        .expect(httpStatus.FORBIDDEN);
+                })
+        );
+
+        it('should reject updates to scopes not using an array', () =>
+            request(app)
+                .put(`${baseURL}/user/scopes/${userId}`)
+                .set('Authorization', jwtToken)
+                .send({
+                    scopes: 'badscope',
+                })
+                .expect(httpStatus.BAD_REQUEST)
+        );
+
+        it('should reject updates with duplicate values', () =>
+            request(app)
+                .put(`${baseURL}/user/scopes/${userId}`)
+                .set('Authorization', jwtToken)
+                .send({
+                    scopes: ['notUnique', 'notUnique'],
+                })
+                .expect(httpStatus.BAD_REQUEST)
+        );
+
+        it('should overwrite the old array', () =>
+            request(app)
+                .put(`${baseURL}/user/scopes/${userId}`)
+                .set('Authorization', jwtToken)
+                .send({ scopes: ['newScope'] })
+                .expect(httpStatus.OK)
+                .then(() => request(app)
+                    .get(`${baseURL}/user/${userId}`)
+                    .then((userRes) => {
+                        expect(userRes.body.scopes).to.deep.equal(['newScope']);
+                        return;
+                    }))
+        );
+
+        it('should return the new information of the changed user', () =>
+            request(app)
+                .put(`${baseURL}/user/scopes/${userId}`)
+                .set('Authorization', jwtToken)
+                .send({ scopes: ['newScope'] })
+                .expect(httpStatus.OK)
+                .then((userRes) => {
+                    expect(userRes.body.scopes).to.deep.equal(['newScope']);
+                    return;
+                })
+        );
+
+        it('should work with an empty array update', () =>
+            request(app)
+                .put(`${baseURL}/user/scopes/${userId}`)
+                .set('Authorization', jwtToken)
+                .send({
+                    scopes: [''],
+                })
+                .expect(httpStatus.OK)
+                .then((userRes) => {
+                    expect(userRes.body.scopes).to.deep.equal(['']);
+                    return;
+                })
+        );
     });
 });

@@ -49,8 +49,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         scopes: {
             type: DataTypes.ARRAY(DataTypes.STRING),
-            allowNull: true,
-            default: [''],
+            defaultValue: [''],
         },
         resetToken: {
             type: DataTypes.STRING,
@@ -102,6 +101,10 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     // Instance methods
+    User.prototype.isAdmin = function isAdmin() {
+        return this.scopes.includes('admin');
+    };
+
     User.prototype.updatePassword = function updatePassword() {
         this.salt = uuid.v4();
         this.password = crypto.pbkdf2Sync(this.password, Buffer.from(this.salt), 100000, 128, 'sha256').toString('hex');

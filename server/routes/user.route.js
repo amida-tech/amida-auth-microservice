@@ -20,7 +20,9 @@ router.route('/:userId')
     .get(userCtrl.get)
 
     /** PUT /api/users/:userId - Update user */
-    .put(validate(userValidation.updateUser), userCtrl.update)
+    .put(validate(userValidation.updateUser),
+         passport.authenticate('jwt', { session: false }),
+         userCtrl.update)
 
     /** DELETE /api/users/:userId - Delete user */
     .delete(userCtrl.remove);
@@ -35,7 +37,8 @@ router.route('/scopes/:userId')
 router.route('/me')
     .get(userCtrl.me);
 
-/** Load user when API with userId route parameter is hit */
+// Load user when API with userId route parameter is hit
+// NOTE: this will be overwritten by the JWT user on protected routes
 router.param('userId', userCtrl.load);
 
 export default router;

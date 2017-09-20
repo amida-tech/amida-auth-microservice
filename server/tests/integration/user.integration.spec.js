@@ -164,7 +164,90 @@ describe('User API:', () => {
         });
     });
 
-    describe(('PUT /api/user/scopes/:userId'), () => {
+    describe('PUT /api/user/:userId', () => {
+        let userId;
+        let adminUserId;
+        let jwtToken;
+        let adminJwtToken;
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/user`)
+            .send(adminUser)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                adminUserId = res.body.id;
+                return;
+            })
+        );
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/user`)
+            .send(user)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                userId = res.body.id;
+                return;
+            })
+        );
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/auth/login`)
+            .send(userCredentials)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('token');
+                jwtToken = `Bearer ${res.body.token}`;
+                return;
+            })
+        );
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/auth/login`)
+            .send(adminUserCredentials)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('token');
+                adminJwtToken = `Bearer ${res.body.token}`;
+                return;
+            })
+        );
+
+        it('should update a user\'s email', () =>
+            request(app)
+                .put(`${baseURL}/user/${userId}`)
+                .set('Authorization', jwtToken)
+                .send({ email: 'newemail@email.com' })
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body.username).to.equal('KK123');
+                    expect(res.body.email).to.equal('newemail@email.com');
+                    return;
+                })
+        );
+
+        it('should allow admins to update another user\'s email', () =>
+            request(app)
+                .put(`${baseURL}/user/${userId}`)
+                .set('Authorization', adminJwtToken)
+                .send({ email: 'newemail@email.com' })
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body.username).to.equal('KK123');
+                    expect(res.body.email).to.equal('newemail@email.com');
+                    return;
+                })
+        );
+
+        it('should forbid users from updating another user\'s email', () => {
+            request(app)
+                .put(`${baseURL}/user/${adminUserId}`)
+                .set('Authorization', jwtToken)
+                .send({ email: 'newemail' })
+                .expect(httpStatus.FORBIDDEN);
+        });
+    });
+
+    describe('PUT /api/user/scopes/:userId', () => {
         let userId;
         let jwtToken;
 

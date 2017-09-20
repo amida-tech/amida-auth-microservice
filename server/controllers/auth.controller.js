@@ -14,7 +14,7 @@ import {
 const User = db.User;
 
 /**
- * Returns jwt token if valid username and password is provided
+ * Sends back jwt token if valid username and password is provided
  * @param req
  * @param res
  * @param next
@@ -54,7 +54,7 @@ function login(req, res, next) {
 function logout() {}
 
 /**
- * Returns 200 OK if password was updated successfully
+ * Sends back 200 OK if password was updated successfully
  * @param req
  * @param res
  * @param next
@@ -71,7 +71,7 @@ function updatePassword(req, res, next) {
 }
 
 /**
- * Returns 200 OK if password was reset successfully
+ * Sends back 200 OK if password was reset successfully
  * @param req
  * @param res
  * @param next
@@ -97,7 +97,7 @@ function resetToken(req, res, next) {
 }
 
 /**
- * Returns 200 OK if password was reset successfully
+ * Sends back 200 OK if password was reset successfully
  * @param req
  * @param res
  * @param next

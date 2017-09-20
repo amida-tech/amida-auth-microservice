@@ -1,80 +1,61 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: http://docs.amidaauth.apiary.io/
 
-# jacobsachs
+# Amida Auth
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+This is an API allowing authentication and basic authorization using JSON Web Tokens.
 
-## Questions Collection [/questions]
+# Group Miscellaneous
 
-### List All Questions [GET]
+Resources related to utility actions, such as health checks.
 
-+ Response 200 (application/json)
+## Health Check [/health-check]
 
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
+### Show Health Check [GET]
 
-### Create a New Question [POST]
+# Group Users
 
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+Resources related to User identity management, such as creating and updating Users.
+This includes editing user scopes for authorization purposes.
 
-+ Request (application/json)
+## Users Collection [/user]
 
-        {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
+### List All Users [GET]
 
-+ Response 201 (application/json)
+### Create New User [POST]
 
-    + Headers
+## Single User Actions [/user/:userId]
 
-            Location: /questions/2
+### Get Single User [GET]
 
-    + Body
+### Update User [PUT]
 
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
-            }
+### Delete User [DELETE]
+
+## User Scopes [/user/scopes/:userId]
+
+### Update User Scopes [PUT]
+
+## Me [/user/me]
+
+### Get Logged-in User [GET]
+
+# Group Auth
+
+Resources related to authentication, such as login and password changes.
+
+## Login [/auth/login]
+
+### Authenticate For JWT [POST]
+
+## Update Password [/auth/update-password]
+
+### Submit New Password  [POST]
+
+## Reset Password Initiation [/auth/reset-password]
+
+### Submit Reset Password Request [POST]
+
+## Reset Password [/auth/reset-password/:token]
+
+### Submit New Password [POST]

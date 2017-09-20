@@ -7,6 +7,11 @@ const User = db.User;
 /**
  * Load user and append to req.
  * Used for populating requests with a userID param.
+ * @param req
+ * @param res
+ * @param next
+ * @param id
+ * @returns {*}
  */
 function load(req, res, next, id) {
     User.findById(id)
@@ -24,7 +29,10 @@ function load(req, res, next, id) {
 
 /**
  * Get user
- * Returns JSON of the specified user
+ * Sends back JSON of the specified user
+ * @param req
+ * @param res
+ * @returns {*}
  */
 function get(req, res) {
     return res.json(req.user);
@@ -32,8 +40,12 @@ function get(req, res) {
 
 /**
  * Create and save a new user
- * Returns JSON of the saved user
+ * Sends back JSON of the saved user
  * TODO: this should return a virtual, omitting sensitive info
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
  */
 function create(req, res, next) {
     const user = User.build({
@@ -53,7 +65,11 @@ function update() {}
 /**
  * Update authorization scopes for a given user.
  * Overwrites existing scopes array with the provided one.
- * Returns JSON of the updated user.
+ * Sends back JSON of the updated user.
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
  */
 function updateScopes(req, res, next) {
     User.findById(req.params.userId)

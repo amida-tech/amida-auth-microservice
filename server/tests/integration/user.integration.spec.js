@@ -150,7 +150,7 @@ describe('User API:', () => {
                 .catch(done);
         });
 
-        xit('should return only necessary User information', (done) => {
+        it('should return only necessary User information', (done) => {
             request(app)
                 .post(`${baseURL}/user`)
                 .send(user)

@@ -20,7 +20,7 @@ module.exports = {
                 service: config.mailer.service,
                 auth: {
                     user: config.mailer.user,
-                    pass: config.user.password,
+                    pass: config.mailer.password,
                 },
             });
             transporter.sendMail(options, (err) => {

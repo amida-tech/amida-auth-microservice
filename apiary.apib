@@ -13,6 +13,12 @@ Resources related to utility actions, such as health checks.
 
 ### Show Health Check [GET]
 
++ Response 200 (text/html; charset=utf-8)
+
+    + Body
+
+            OK
+
 # Group Users
 
 Resources related to User identity management, such as creating and updating Users.
@@ -23,6 +29,24 @@ This includes editing user scopes for authorization purposes.
 ### List All Users [GET]
 
 ### Create New User [POST]
+
++ Request (application/json; charset=utf-8)
+
+        {
+            "username": "test123",
+            "email": "test@amida.com",
+            "password": "testpass",
+            "scopes": [
+                "admin"
+            ]
+        }
+
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {"id":17,"username":"test123","email":"test@amida.com","scopes":["admin"]}
+
 
 ## Single User Actions [/user/:userId]
 
@@ -36,6 +60,28 @@ This includes editing user scopes for authorization purposes.
 
 ### Update User Scopes [PUT]
 
++ Request (application/json; charset=utf-8)
+
+    + Headers
+
+            Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxMjMiLCJlbWFpbCI6InRlc3RAYW1pZGEuY29tIiwic2NvcGVzIjpbImFkbWluIl0sImlhdCI6MTUwNjUzNDE5NywiZXhwIjoxNTA2NTM3Nzk3fQ.wnjoNrllnvx2EL411bRRMSemPxuNdeq5VXxXjpYl67E
+
+    + Body
+
+            {
+                "scopes": [
+                    "admin",
+                    "new"
+                ]
+            }
+
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {"id":17,"username":"test123","email":"test@amida.com","scopes":["admin","new"]}
+
+
 ## Me [/user/me]
 
 ### Get Logged-in User [GET]
@@ -48,14 +94,79 @@ Resources related to authentication, such as login and password changes.
 
 ### Authenticate For JWT [POST]
 
++ Request (application/json; charset=utf-8)
+
+        {
+            "username": "test123",
+            "password": "testpass"
+        }
+
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxMjMiLCJlbWFpbCI6InRlc3RAYW1pZGEuY29tIiwic2NvcGVzIjpbImFkbWluIl0sImlhdCI6MTUwNjUzNDE5NywiZXhwIjoxNTA2NTM3Nzk3fQ.wnjoNrllnvx2EL411bRRMSemPxuNdeq5VXxXjpYl67E"}
+
 ## Update Password [/auth/update-password]
 
 ### Submit New Password  [POST]
 
++ Request (application/json; charset=utf-8)
+
+    + Headers
+
+            Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxMjMiLCJlbWFpbCI6InRlc3RAYW1pZGEuY29tIiwic2NvcGVzIjpbImFkbWluIl0sImlhdCI6MTUwNjUzNDYwMywiZXhwIjoxNTA2NTM4MjAzfQ.l0I_BJAdpmaw4EwlZmJzqhC4J6O5mZimRnJ7YB4YI-g
+
+    + Body
+
+            {
+                "password": "newerpass"
+            }
+
++ Response 200 (text/plain; charset=utf-8)
+
+    + Body
+
+            OK
+
 ## Reset Password Initiation [/auth/reset-password]
 
 ### Submit Reset Password Request [POST]
+In non-test environments, sends a password reset link to the user's email.
+
++ Request (application/json; charset=utf-8)
+
+    + Headers
+
+            Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxMjMiLCJlbWFpbCI6InRlc3RAYW1pZGEuY29tIiwic2NvcGVzIjpbImFkbWluIl0sImlhdCI6MTUwNjUzNDYwMywiZXhwIjoxNTA2NTM4MjAzfQ.l0I_BJAdpmaw4EwlZmJzqhC4J6O5mZimRnJ7YB4YI-g
+
+    + Body
+
+            {
+                "email": "test@amida.com"
+            }
+
++ Response 200 (text/plain; charset=utf-8)
+
+    + Body
+
+            OK
 
 ## Reset Password [/auth/reset-password/:token]
 
 ### Submit New Password [POST]
+Should only be executed by clicking the password reset link for non-test environments.
+
++ Request (application/json; charset=utf-8)
+
+    + Body
+
+            {
+                "password": "newerpass"
+            }
+
++ Response 200 (text/plain; charset=utf-8)
+
+    + Body
+
+            OK

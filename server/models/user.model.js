@@ -102,6 +102,15 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     // Instance methods
+    User.prototype.getBasicUserInfo = function getBasicUserInfo() {
+        return {
+            id: this.id,
+            username: this.username,
+            email: this.email,
+            scopes: this.scopes,
+        };
+    };
+
     User.prototype.updatePassword = function updatePassword() {
         this.salt = uuid.v4();
         this.password = crypto.pbkdf2Sync(this.password, Buffer.from(this.salt), 100000, 128, 'sha256').toString('hex');

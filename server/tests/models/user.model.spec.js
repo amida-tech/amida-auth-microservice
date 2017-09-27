@@ -15,6 +15,7 @@ const testUser = {
     username: 'KK123',
     email: 'test@amida.com',
     password: 'testpass',
+    scopes: ['test'],
 };
 
 const expTime = 3600;
@@ -69,6 +70,22 @@ describe('User models:', () => {
                     return user.save()
                         .then(() => user.reload)
                         .then(() => expect(user.password).to.equal(firstPass));
+                })
+        );
+    });
+
+    describe('getBasicUserInfo', () => {
+        it('should return only the fields necessary for a client', () =>
+            User.create(testUser)
+                .then((user) => {
+                    const userInfo = user.getBasicUserInfo();
+                    expect(userInfo.id).to.exist;
+                    expect(userInfo.username).to.equal(testUser.username);
+                    expect(userInfo.email).to.equal(testUser.email);
+                    expect(userInfo.scopes).to.deep.equal(testUser.scopes);
+                    expect(userInfo.password).to.not.exist;
+                    expect(userInfo.salt).to.not.exist;
+                    return;
                 })
         );
     });

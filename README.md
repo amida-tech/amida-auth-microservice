@@ -16,10 +16,10 @@ It is the responsibility of the integrated service to extract the JWT, verify it
 For example, one API endpoint could allow _any_ authenticated user to view certain information about all users. Another endpoint may allow password updates, but only for the specific authenticated user. It is up to the developer to ensure that endpoints are protected appropriately.
 
 #### Roles
-// TODO
+In order to support fine-grained permissions, the User model contains a `scopes` field. This is an array of arbitrary strings meant to indicate roles and permissions for a User. Within the auth service, the only significant scope is `admin`. Other scopes may be added and used as necessary.
 
 ### API Spec
-// TODO
+Apiary docs can be found at http://docs.amidaauth.apiary.io/.
 
 ### Features
 

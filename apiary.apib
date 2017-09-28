@@ -2,11 +2,9 @@ FORMAT: 1A
 HOST: http://docs.amidaauth.apiary.io/
 
 # Amida Auth
-
 This is an API allowing authentication and basic authorization using JSON Web Tokens.
 
 # Group Miscellaneous
-
 Resources related to utility actions, such as health checks.
 
 ## Health Check [/health-check]
@@ -20,15 +18,17 @@ Resources related to utility actions, such as health checks.
             OK
 
 # Group Users
-
 Resources related to User identity management, such as creating and updating Users.
 This includes editing user scopes for authorization purposes.
 
 ## Users Collection [/user]
 
 ### List All Users [GET]
+Get a complete list of users. Must be admin.
 
 ### Create New User [POST]
+Create a single new user by providing username, password, and email info.
+TODO: should not create scopes by default, this is a security risk.
 
 + Request (application/json; charset=utf-8)
 
@@ -51,10 +51,13 @@ This includes editing user scopes for authorization purposes.
 ## Single User Actions [/user/:userId]
 
 ### Get Single User [GET]
+Get a single user by ID. Must be admin.
 
 ### Update User [PUT]
+Update a single user's email by ID. Must be admin or the user being updated.
 
 ### Delete User [DELETE]
+Delete a single user by ID. Must be admin.
 
 ## User Scopes [/user/scopes/:userId]
 
@@ -85,9 +88,9 @@ This includes editing user scopes for authorization purposes.
 ## Me [/user/me]
 
 ### Get Logged-in User [GET]
+Get profile info of the logged-in user (i.e. provided JWT).
 
 # Group Auth
-
 Resources related to authentication, such as login and password changes.
 
 ## Login [/auth/login]

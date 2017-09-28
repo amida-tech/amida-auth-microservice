@@ -1,5 +1,6 @@
 
 import _ from 'lodash';
+import fs from 'fs';
 import util from 'util';
 import httpStatus from 'http-status';
 import jwt from 'jsonwebtoken';
@@ -38,11 +39,21 @@ function login(req, res, next) {
             const err = new APIError('Incorrect password', httpStatus.UNAUTHORIZED, true);
             return next(err);
         }
-        const token = jwt.sign({
+
+        const userInfo = {
             username: userResult.username,
             email: userResult.email,
             scopes: userResult.scopes,
-        }, config.jwtSecret, { expiresIn: '1h' });
+        };
+        let token;
+
+        if (config.jwtMode === 'rsa') {
+            const cert = fs.readFileSync(config.jwtPrivateKeyPath);  // get private key
+            token = jwt.sign(userInfo, cert, { algorithm: 'RS256', expiresIn: '1h' });
+        } else {
+            token = jwt.sign(userInfo, config.jwtSecret, { expiresIn: '1h' });
+        }
+
         return res.json({
             token,
             username: user.username,

@@ -87,8 +87,6 @@ describe('Auth API:', () => {
         );
     });
 
-    // TODO describe('# POST /auth/logout');
-
     describe('POST /auth/reset-password', () => {
         let resetToken;
 

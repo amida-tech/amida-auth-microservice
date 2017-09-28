@@ -10,8 +10,12 @@ const envVarsSchema = Joi.object({
         .default('development'),
     PORT: Joi.number()
         .default(4000),
-    JWT_SECRET: Joi.string().required()
+    JWT_MODE: Joi.string().allow(['rsa', 'hmac']).default('hmac')
+        .description('Signing algorithm for JWT'),
+    JWT_SECRET: Joi.string()
         .description('JWT Secret required to sign'),
+    JWT_PRIVATE_KEY_PATH: Joi.string()
+        .description('Absolute or relative path to RSA private key'),
     PG_DB: Joi.string().required()
         .description('Postgres database name'),
     PG_PORT: Joi.number()
@@ -78,7 +82,9 @@ if (error) {
 const config = {
     env: envVars.NODE_ENV,
     port: envVars.PORT,
+    jwtMode: envVars.JWT_MODE,
     jwtSecret: envVars.JWT_SECRET,
+    jwtPrivateKeyPath: envVars.JWT_PRIVATE_KEY_PATH,
     postgres: {
         db: envVars.PG_DB,
         port: envVars.PG_PORT,

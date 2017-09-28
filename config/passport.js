@@ -6,7 +6,7 @@ import fs from 'fs';
 import { User } from './sequelize';
 import config from './config';
 
-var key;
+let key;
 if (config.jwtMode === 'rsa') {
     key = fs.readFileSync(config.jwtPublicKeyPath);
 } else {

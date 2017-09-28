@@ -27,7 +27,7 @@ function load(req, res, next, id) {
  * Returns JSON of the specified user
  */
 function get(req, res) {
-    return res.json(req.user);
+    return res.json(req.user.getBasicUserInfo());
 }
 
 /**
@@ -44,7 +44,7 @@ function create(req, res, next) {
     });
 
     user.save()
-        .then(savedUser => res.json(savedUser))
+        .then(savedUser => res.json(savedUser.getBasicUserInfo()))
         .catch(e => next(e));
 }
 
@@ -70,7 +70,7 @@ function update(req, res, next) {
 function updateScopes(req, res, next) {
     User.findById(req.params.userId)
         .then(user => user.update({ scopes: req.body.scopes }))
-        .then(updatedUser => res.json(updatedUser))
+        .then(updatedUser => res.json(updatedUser.getBasicUserInfo()))
         .catch(e => next(e));
 }
 

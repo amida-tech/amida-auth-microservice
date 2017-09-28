@@ -103,6 +103,15 @@ module.exports = (sequelize, DataTypes) => {
     // Instance methods
     User.prototype.isAdmin = function isAdmin() {
         return this.scopes.includes('admin');
+    }
+    
+    User.prototype.getBasicUserInfo = function getBasicUserInfo() {
+        return {
+            id: this.id,
+            username: this.username,
+            email: this.email,
+            scopes: this.scopes,
+        };
     };
 
     User.prototype.updatePassword = function updatePassword() {

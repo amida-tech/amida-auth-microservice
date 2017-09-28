@@ -48,7 +48,19 @@ function create(req, res, next) {
         .catch(e => next(e));
 }
 
-function update() {}
+function update(req, res, next) {
+    User.findById(req.params.userId)
+        .then((user) => {
+            if (req.user.username !== user.username && !req.user.isAdmin()) {
+                const e = new Error('User not allowed to update email');
+                e.status = httpStatus.FORBIDDEN;
+                return next(e);
+            }
+            return user.update({ email: req.body.email });
+        })
+        .then(updatedUser => res.json(updatedUser))
+        .catch(e => next(e));
+}
 
 /**
  * Update authorization scopes for a given user.

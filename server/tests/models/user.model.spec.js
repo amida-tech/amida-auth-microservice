@@ -18,6 +18,13 @@ const testUser = {
     scopes: ['test'],
 };
 
+const adminUser = {
+    username: 'KK123',
+    email: 'test@amida.com',
+    password: 'testpass',
+    scopes: ['admin'],
+};
+
 const expTime = 3600;
 
 describe('User models:', () => {
@@ -47,6 +54,16 @@ describe('User models:', () => {
             .then((users) => {
                 expect(users).to.have.lengthOf(0);
             }));
+    });
+
+    describe('isAdmin', () => {
+        it('should return true if the user instance has admin scope', () => User.create(adminUser)
+            .then(user => expect(user.isAdmin()).to.be.true)
+        );
+
+        it('should return false if the user instance does not have admin scope', () => User.create(testUser)
+            .then(user => expect(user.isAdmin()).to.be.false)
+        );
     });
 
     // describe('beforeCreate');

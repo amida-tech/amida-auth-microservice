@@ -2,6 +2,7 @@
 /* eslint no-unused-expressions: 0 */
 
 import request from 'supertest';
+import fs from 'fs';
 import httpStatus from 'http-status';
 import jwt from 'jsonwebtoken';
 import chai, { expect } from 'chai';
@@ -78,7 +79,13 @@ describe('Auth API:', () => {
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body).to.have.property('token');
-                    const decoded = jwt.verify(res.body.token, config.jwtSecret);
+                    let decoded;
+                    if (config.jwtMode === 'rsa') {
+                        const cert = fs.readFileSync(config.jwtPublicKeyPath);
+                        decoded = jwt.verify(res.body.token, cert);
+                    } else {
+                        decoded = jwt.verify(res.body.token, config.jwtSecret);
+                    }
                     expect(decoded.username).to.equal(validUserCredentials.username);
                     expect(decoded.email).to.equal(testUser.email);
                     expect(decoded.scopes).to.deep.equal(testUser.scopes);
@@ -104,7 +111,13 @@ describe('Auth API:', () => {
             .expect(httpStatus.OK)
             .then((res) => {
                 expect(res.body).to.have.property('token');
-                const decoded = jwt.verify(res.body.token, config.jwtSecret);
+                let decoded;
+                if (config.jwtMode === 'rsa') {
+                    const cert = fs.readFileSync(config.jwtPublicKeyPath);
+                    decoded = jwt.verify(res.body.token, cert);
+                } else {
+                    decoded = jwt.verify(res.body.token, config.jwtSecret);
+                }
                 expect(decoded.username).to.equal(validUserCredentials.username);
                 jwtToken = `Bearer ${res.body.token}`;
             })
@@ -184,7 +197,13 @@ describe('Auth API:', () => {
             .expect(httpStatus.OK)
             .then((res) => {
                 expect(res.body).to.have.property('token');
-                const decoded = jwt.verify(res.body.token, config.jwtSecret);
+                let decoded;
+                if (config.jwtMode === 'rsa') {
+                    const cert = fs.readFileSync(config.jwtPublicKeyPath);
+                    decoded = jwt.verify(res.body.token, cert);
+                } else {
+                    decoded = jwt.verify(res.body.token, config.jwtSecret);
+                }
                 expect(decoded.username).to.equal(validUserCredentials.username);
                 jwtToken = `Bearer ${res.body.token}`;
                 return;

@@ -2,12 +2,20 @@ import {
     Strategy as JwtStrategy,
     ExtractJwt,
 } from 'passport-jwt';
+import fs from 'fs';
 import { User } from './sequelize';
 import config from './config';
 
+var key;
+if (config.jwtMode === 'rsa') {
+    key = fs.readFileSync(config.jwtPublicKeyPath);
+} else {
+    key = config.jwtSecret;
+}
+
 const opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config.jwtSecret,
+    secretOrKey: key,
 };
 
 module.exports = (passport) => {

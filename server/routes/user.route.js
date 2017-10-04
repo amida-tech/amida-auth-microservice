@@ -10,7 +10,9 @@ const permissions = guard({ permissionsProperty: 'scopes' });
 
 router.route('/')
     /** GET /api/users - Get list of users */
-    .get(userCtrl.list)
+    .get(passport.authenticate('jwt', { session: false }),
+         permissions.check('admin'),
+         userCtrl.list)
 
     /** POST /api/users - Create new user */
     .post(validate(userValidation.createUser), userCtrl.create);
@@ -21,7 +23,8 @@ router.route('/me')
 
 router.route('/:userId')
     /** GET /api/users/:userId - Get user */
-    .get(userCtrl.get)
+    .get(passport.authenticate('jwt', { session: false }),
+         userCtrl.get)
 
     /** PUT /api/users/:userId - Update user */
     .put(validate(userValidation.updateUser),

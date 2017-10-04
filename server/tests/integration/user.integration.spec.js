@@ -73,6 +73,49 @@ describe('User API:', () => {
 
     beforeEach(() => User.destroy({ where: {} }));
 
+    describe('GET /api/user/me', () => {
+        let userId;
+        let jwtToken;
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/user`)
+            .send(user)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                userId = res.body.id;
+                return;
+            })
+        );
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/auth/login`)
+            .send(userCredentials)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('token');
+                jwtToken = `Bearer ${res.body.token}`;
+                return;
+            })
+        );
+
+        it('should get basic user info on the logged-in user', () =>
+            request(app)
+                .get(`${baseURL}/user/me`)
+                .set('Authorization', jwtToken)
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    const userInfo = res.body;
+                    expect(userInfo.id).to.equal(userId);
+                    expect(userInfo.username).to.equal(user.username);
+                    expect(userInfo.email).to.equal(user.email);
+                    expect(userInfo.scopes).to.deep.equal(['']);
+                    expect(userInfo.password).to.not.exist;
+                    expect(userInfo.salt).to.not.exist;
+                    return;
+                })
+        );
+    });
+
     describe('POST /api/user:', () => {
         it('should create a new user and return it without password info', (done) => {
             request(app)
@@ -354,6 +397,83 @@ describe('User API:', () => {
                     expect(userRes.body.scopes).to.deep.equal(['']);
                     return;
                 })
+        );
+    });
+
+    describe('DELETE /api/user/:userId', () => {
+        let userId;
+        let adminUserId;
+        let jwtToken;
+        let adminJwtToken;
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/user`)
+            .send(adminUser)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                adminUserId = res.body.id;
+                return;
+            })
+        );
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/user`)
+            .send(user)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                userId = res.body.id;
+                return;
+            })
+        );
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/auth/login`)
+            .send(userCredentials)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('token');
+                jwtToken = `Bearer ${res.body.token}`;
+                return;
+            })
+        );
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/auth/login`)
+            .send(adminUserCredentials)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('token');
+                adminJwtToken = `Bearer ${res.body.token}`;
+                return;
+            })
+        );
+
+        it('should allow admins to delete users', () =>
+            request(app)
+                .delete(`${baseURL}/user/${userId}`)
+                .set('Authorization', adminJwtToken)
+                .expect(httpStatus.NO_CONTENT)
+                .then(() => User.findById(userId))
+                .then(res => expect(res).to.be.null)
+        );
+
+        it('should not allow non-admins to delete users', () =>
+            request(app)
+                .delete(`${baseURL}/user/${adminUserId}`)
+                .set('Authorization', jwtToken)
+                .expect(httpStatus.FORBIDDEN)
+        );
+
+        it('using the JWT for a deleted user should fail', () =>
+            request(app)
+                .delete(`${baseURL}/user/${userId}`)
+                .set('Authorization', adminJwtToken)
+                .expect(httpStatus.NO_CONTENT)
+                .then(() => request(app)
+                    .get(`${baseURL}/user/me`)
+                    .set('Authorization', jwtToken)
+                    .expect(httpStatus.UNAUTHORIZED)
+                )
         );
     });
 });

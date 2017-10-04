@@ -22,8 +22,10 @@ In order to support fine-grained permissions, the User model contains a `scopes`
 By default, the auth service signs JWTs with HMAC. This relies on a shared secret between the auth service and the consuming service. Whenever possible, you should use the RSA implementation. This can be activated by setting JWT_MODE='rsa' and setting the JWT_PRIVATE_KEY_PATH to the location of a private key. The public key should be available for the consuming service in order to verify the JWTs, and the auth service should locate the public key via JWT_PUBLIC_KEY_PATH.
 
 To generate a keypair:
+```sh
 ssh-keygen -t rsa -b 4096 -f private.key
 openssl rsa -in private.key -pubout -outform PEM -out private.key.pub
+```
 
 ### API Spec
 Apiary docs can be found at http://docs.amidaauth.apiary.io/.

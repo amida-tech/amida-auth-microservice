@@ -92,9 +92,32 @@ function updateScopes(req, res, next) {
 
 function list() {}
 
-function remove() {}
+/**
+ * Deletes a user.
+ * Restricted to admin.
+ * Sends back a 204.
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function remove(req, res, next) {
+    User.findById(req.params.userId)
+        .then(user => user.destroy())
+        .then(() => res.sendStatus(204))
+        .catch(e => next(e));
+}
 
-function me() {}
+/**
+ * Assumes req.user has been loaded by the JWT middleware.
+ * Sends back JSON of the logged-in user.
+ * @param req
+ * @param res
+ * @returns {*}
+ */
+function me(req, res) {
+    return res.json(req.user.getBasicUserInfo());
+}
 
 export default {
     load,

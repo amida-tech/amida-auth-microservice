@@ -40,7 +40,7 @@ function get(req, res, next) {
     User.findById(req.params.userId)
         .then((user) => {
             if (req.user.username !== user.username && !req.user.isAdmin()) {
-                const e = new Error('Cannot get another user\s information');
+                const e = new Error('Cannot get another user\'s information');
                 e.status = httpStatus.FORBIDDEN;
                 return next(e);
             }

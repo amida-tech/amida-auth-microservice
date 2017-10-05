@@ -367,6 +367,7 @@ describe('User API:', () => {
                 .expect(httpStatus.OK)
                 .then(() => request(app)
                     .get(`${baseURL}/user/${userId}`)
+                    .set('Authorization', jwtToken)
                     .then((userRes) => {
                         expect(userRes.body.scopes).to.deep.equal(['newScope']);
                         return;

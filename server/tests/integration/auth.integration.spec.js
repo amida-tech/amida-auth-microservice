@@ -17,7 +17,7 @@ import config from '../../../config/config';
 chai.config.includeStack = true;
 
 const version = p.version.split('.').shift();
-const baseURL = (version > 0 ? `/api/v${version}` : '/api');
+const baseURL = `/api/v${version}`;
 
 const testUser = {
     username: 'KK123',

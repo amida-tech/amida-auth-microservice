@@ -22,6 +22,7 @@ RUN echo "NODE_ENV=${NODE_ENV}\n" >> .env &&\
     echo "JWT_MODE=${JWT_MODE}\n" >> .env &&\
     echo "JWT_PRIVATE_KEY_PATH=private.key\n" >> .env &&\
     echo "JWT_PUBLIC_KEY_PATH=private.key.pub\n" >> .env &&\
+    echo "JWT_SECRET=${JWT_SECRET}" >> .env &&\
     echo "PG_DB=${PG_DB}\n" >> .env &&\
     echo "PG_PORT=${PG_PORT}\n" >> .env &&\
     echo "PG_HOST=${PG_HOST}\n" >> .env &&\

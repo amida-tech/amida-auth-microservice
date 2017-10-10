@@ -10,14 +10,21 @@ const permissions = guard({ permissionsProperty: 'scopes' });
 
 router.route('/')
     /** GET /api/users - Get list of users */
-    .get(userCtrl.list)
+    .get(passport.authenticate('jwt', { session: false }),
+         permissions.check('admin'),
+         userCtrl.list)
 
     /** POST /api/users - Create new user */
     .post(validate(userValidation.createUser), userCtrl.create);
 
+router.route('/me')
+    .get(passport.authenticate('jwt', { session: false }),
+         userCtrl.me);
+
 router.route('/:userId')
     /** GET /api/users/:userId - Get user */
-    .get(userCtrl.get)
+    .get(passport.authenticate('jwt', { session: false }),
+         userCtrl.get)
 
     /** PUT /api/users/:userId - Update user */
     .put(validate(userValidation.updateUser),
@@ -25,7 +32,9 @@ router.route('/:userId')
          userCtrl.update)
 
     /** DELETE /api/users/:userId - Delete user */
-    .delete(userCtrl.remove);
+    .delete(passport.authenticate('jwt', { session: false }),
+            permissions.check('admin'),
+            userCtrl.remove);
 
 router.route('/scopes/:userId')
     /** PUT /api/user/scopes/:userId - Update user scopes */
@@ -33,9 +42,6 @@ router.route('/scopes/:userId')
          passport.authenticate('jwt', { session: false }),
          permissions.check('admin'),
          userCtrl.updateScopes);
-
-router.route('/me')
-    .get(userCtrl.me);
 
 // Load user when API with userId route parameter is hit
 // NOTE: this will be overwritten by the JWT user on protected routes

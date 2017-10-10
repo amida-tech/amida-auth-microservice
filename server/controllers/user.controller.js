@@ -28,14 +28,25 @@ function load(req, res, next, id) {
 }
 
 /**
- * Get user
- * Sends back JSON of the specified user
+ * Get info on a single user.
+ * Must be admin, or the specified user.
+ * Sends back JSON of the specified user.
  * @param req
  * @param res
+ * @param next
  * @returns {*}
  */
-function get(req, res) {
-    return res.json(req.user.getBasicUserInfo());
+function get(req, res, next) {
+    User.findById(req.params.userId)
+        .then((user) => {
+            if (req.user.username !== user.username && !req.user.isAdmin()) {
+                const e = new Error('Cannot get another user\'s information');
+                e.status = httpStatus.FORBIDDEN;
+                return next(e);
+            }
+            return res.json(user.getBasicUserInfo());
+        })
+        .catch(e => next(e));
 }
 
 /**
@@ -90,11 +101,43 @@ function updateScopes(req, res, next) {
         .catch(e => next(e));
 }
 
+/**
+ * Get a full list of users.
+ * Restricted to admin.
+ * Sends back JSON of the updated user.
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
 function list() {}
 
-function remove() {}
+/**
+ * Deletes a user.
+ * Restricted to admin.
+ * Sends back a 204.
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function remove(req, res, next) {
+    User.findById(req.params.userId)
+        .then(user => user.destroy())
+        .then(() => res.sendStatus(204))
+        .catch(e => next(e));
+}
 
-function me() {}
+/**
+ * Assumes req.user has been loaded by the JWT middleware.
+ * Sends back JSON of the logged-in user.
+ * @param req
+ * @param res
+ * @returns {*}
+ */
+function me(req, res) {
+    return res.json(req.user.getBasicUserInfo());
+}
 
 export default {
     load,

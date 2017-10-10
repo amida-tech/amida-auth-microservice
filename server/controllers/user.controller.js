@@ -104,13 +104,19 @@ function updateScopes(req, res, next) {
 /**
  * Get a full list of users.
  * Restricted to admin.
- * Sends back JSON of the updated user.
+ * Sends back ID, username, and email of all users.
  * @param req
  * @param res
  * @param next
  * @returns {*}
  */
-function list() {}
+function list(req, res, next) {
+    User.findAll({
+        attributes: ['id', 'username', 'email'],
+    })
+    .then(users => res.json(users))
+    .catch(e => next(e));
+}
 
 /**
  * Deletes a user.

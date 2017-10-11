@@ -75,6 +75,7 @@ describe('User API:', () => {
 
     describe('GET /api/user', () => {
         let jwtToken;
+        let nonAdminToken;
 
         beforeEach(() => request(app)
             .post(`${baseURL}/user`)
@@ -99,6 +100,17 @@ describe('User API:', () => {
             })
         );
 
+        beforeEach(() => request(app)
+            .post(`${baseURL}/auth/login`)
+            .send(userCredentials)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('token');
+                nonAdminToken = `Bearer ${res.body.token}`;
+                return;
+            })
+        );
+
         it('should get basic user info on all users', () =>
             request(app)
                 .get(`${baseURL}/user`)
@@ -115,6 +127,13 @@ describe('User API:', () => {
                     return;
                 })
         );
+
+        it('non-admins cannot get basic user info on all users', () =>
+            request(app)
+                .get(`${baseURL}/user`)
+                .set('Authorization', nonAdminToken)
+                .expect(httpStatus.FORBIDDEN)
+            );
     });
 
     describe('GET /api/user/me', () => {

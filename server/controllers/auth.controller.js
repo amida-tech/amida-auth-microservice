@@ -1,12 +1,9 @@
-
 import _ from 'lodash';
-import fs from 'fs';
 import util from 'util';
 import httpStatus from 'http-status';
-import jwt from 'jsonwebtoken';
 import db from '../../config/sequelize';
+import { signJWT } from '../helpers/jwt';
 import APIError from '../helpers/APIError';
-import config from '../../config/config';
 import {
     sendEmail,
     generateLink,
@@ -45,14 +42,8 @@ function login(req, res, next) {
             email: userResult.email,
             scopes: userResult.scopes,
         };
-        let token;
 
-        if (config.jwtMode === 'rsa') {
-            const cert = fs.readFileSync(config.jwtPrivateKeyPath);  // get private key
-            token = jwt.sign(userInfo, cert, { algorithm: 'RS256', expiresIn: '1h' });
-        } else {
-            token = jwt.sign(userInfo, config.jwtSecret, { expiresIn: '1h' });
-        }
+        const token = signJWT(userInfo);
 
         return res.json({
             token,

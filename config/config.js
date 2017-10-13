@@ -73,6 +73,9 @@ const envVarsSchema = Joi.object({
         'Zoho',
         'qiye.aliyun'
     ).allow(''),
+    FACEBOOK_CLIENT_ID: Joi.string(),
+    FACEBOOK_CLIENT_SECRET: Joi.string(),
+    FACEBOOK_CALLBACK_URL: Joi.string(),
 }).unknown()
     .required();
 
@@ -99,6 +102,11 @@ const config = {
         user: envVars.MAILER_EMAIL_ID,
         password: envVars.MAILER_PASSWORD,
         service: envVars.MAILER_SERVICE_PROVIDER,
+    },
+    facebook: {
+        clientId: envVars.FACEBOOK_CLIENT_ID,
+        clientSecret: envVars.FACEBOOK_CLIENT_SECRET,
+        callbackUrl: envVars.FACEBOOK_CALLBACK_URL,
     },
 };
 

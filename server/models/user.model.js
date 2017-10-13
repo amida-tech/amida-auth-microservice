@@ -79,6 +79,9 @@ module.exports = (sequelize, DataTypes) => {
             if (!user) {
                 const err = new Error('Email not found');
                 return sequelize.Promise.reject(err);
+            } else if (user.provider !== null) {
+                const err = new Error('Cannot reset password on externally managed account');
+                return sequelize.Promise.reject(err);
             }
             return user.updateResetPasswordToken(expTime);
         });

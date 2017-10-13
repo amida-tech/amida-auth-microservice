@@ -4,6 +4,7 @@ import guard from 'express-jwt-permissions';
 import passport from 'passport';
 import { userValidation } from '../../config/param-validation';
 import userCtrl from '../controllers/user.controller';
+import { checkExternalProvider } from '../helpers/jwt';
 
 const router = express.Router(); // eslint-disable-line new-cap
 const permissions = guard({ permissionsProperty: 'scopes' });
@@ -29,6 +30,7 @@ router.route('/:userId')
     /** PUT /api/user/:userId - Update user */
     .put(validate(userValidation.updateUser),
          passport.authenticate('jwt', { session: false }),
+         checkExternalProvider,
          userCtrl.update)
 
     /** DELETE /api/user/:userId - Delete user */

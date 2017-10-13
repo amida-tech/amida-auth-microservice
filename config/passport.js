@@ -2,9 +2,14 @@ import {
     Strategy as JwtStrategy,
     ExtractJwt,
 } from 'passport-jwt';
+import {
+    Strategy as FacebookStrategy,
+} from 'passport-facebook';
 import fs from 'fs';
+import httpStatus from 'http-status';
 import { User } from './sequelize';
 import config from './config';
+import APIError from '../server/helpers/APIError';
 
 let key;
 if (config.jwtMode === 'rsa') {
@@ -23,6 +28,25 @@ module.exports = (passport) => {
         User.findOne({ where: { username: jwtPayload.username } })
             .then(user => done(null, user))
             .catch(err => done(err, false));
+    }));
+
+    passport.use(new FacebookStrategy({
+        clientID: config.facebook.clientId,
+        clientSecret: config.facebook.clientSecret,
+        callbackURL: config.facebook.callbackUrl,
+        profileFields: ['email'],
+    }, (accessToken, refreshToken, profile, done) => {
+        const email = profile.emails[0].value;
+        User.findOrCreate({ where: {
+            username: email,
+            email,
+            provider: profile.provider,
+        } })
+        .spread((user) => {
+            if (user !== null) return done(null, user);
+            const err = new APIError('New facebook user not created', httpStatus.INTERNAL_SERVER_ERROR, true);
+            return done(err);
+        });
     }));
 };
 

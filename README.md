@@ -30,6 +30,16 @@ openssl rsa -in private.key -pubout -outform PEM -out private.key.pub
 ### API Spec
 Apiary docs can be found at http://docs.amidaauth.apiary.io/.
 
+### External auth
+#### Facebook
+To set up integration with Facebook, configure your domain for the auth service as a Facebook Login product with `<domain>/api/vX/auth/facebook/callback` as a redirect URL, then set the following env vars:
+```
+FACEBOOK_CLIENT_ID
+FACEBOOK_CLIENT_SECRET
+FACEBOOK_CALLBACK_URL
+```
+Clients can then get a JWT by doing a `GET` for `/api/vX/auth/facebook` and logging in to Facebook.
+
 ### Features
 
 | Feature                                | Summary                                                                                                                                                                                                                                                     |

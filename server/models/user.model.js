@@ -14,7 +14,11 @@ module.exports = (sequelize, DataTypes) => {
 
     const hooks = {
         beforeCreate(user) {
-            return user.updatePassword();
+            // used to skip passwords for external auth services
+            if (user.provider === undefined) {
+                return user.updatePassword();
+            }
+            return null;
         },
         beforeUpdate(user) {
             if (user.changed('password')) {
@@ -42,7 +46,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         password: {
             type: DataTypes.STRING(512),
-            allowNull: false,
         },
         salt: {
             type: DataTypes.STRING,
@@ -56,6 +59,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         resetExpires: {
             type: DataTypes.DATE,
+        },
+        provider: {
+            type: DataTypes.STRING,
+            allowNull: true,
         },
     }, {
         hooks,

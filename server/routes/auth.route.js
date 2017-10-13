@@ -3,7 +3,7 @@ import validate from 'express-validation';
 import passport from 'passport';
 import { authValidation } from '../../config/param-validation';
 import authCtrl from '../controllers/auth.controller';
-import { signJWT } from '../helpers/jwt';
+import { checkExternalProvider, signJWT } from '../helpers/jwt';
 
 const router = express.Router(); // eslint-disable-line new-cap
 
@@ -15,6 +15,7 @@ router.route('/logout');
 router.route('/update-password')
     .post(validate(authValidation.updatePassword),
           passport.authenticate('jwt', { session: false }),
+          checkExternalProvider,
           authCtrl.updatePassword);
 
 router.route('/reset-password')

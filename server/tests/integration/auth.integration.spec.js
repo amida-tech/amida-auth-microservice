@@ -94,6 +94,17 @@ describe('Auth API:', () => {
         );
     });
 
+    describe('GET /auth/facebook', () => {
+        it('should redirect to the facebook OAuth page', () =>
+            request(app)
+                .get(`${baseURL}/auth/facebook`)
+                .expect(httpStatus.FOUND)
+                .then((res) => {
+                    expect(res.get('Location')).to.have.string('https://www.facebook.com/dialog/oauth');
+                })
+        );
+    });
+
     describe('POST /auth/reset-password', () => {
         let resetToken;
 

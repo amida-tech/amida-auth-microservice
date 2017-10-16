@@ -10,12 +10,12 @@ const router = express.Router(); // eslint-disable-line new-cap
 const permissions = guard({ permissionsProperty: 'scopes' });
 
 router.route('/')
-    /** GET /api/users - Get list of users */
+    /** GET /api/user - Get list of users */
     .get(passport.authenticate('jwt', { session: false }),
          permissions.check('admin'),
          userCtrl.list)
 
-    /** POST /api/users - Create new user */
+    /** POST /api/user - Create new user */
     .post(validate(userValidation.createUser), userCtrl.create);
 
 router.route('/me')
@@ -23,17 +23,17 @@ router.route('/me')
          userCtrl.me);
 
 router.route('/:userId')
-    /** GET /api/users/:userId - Get user */
+    /** GET /api/user/:userId - Get user */
     .get(passport.authenticate('jwt', { session: false }),
          userCtrl.get)
 
-    /** PUT /api/users/:userId - Update user */
+    /** PUT /api/user/:userId - Update user */
     .put(validate(userValidation.updateUser),
          passport.authenticate('jwt', { session: false }),
          checkExternalProvider,
          userCtrl.update)
 
-    /** DELETE /api/users/:userId - Delete user */
+    /** DELETE /api/user/:userId - Delete user */
     .delete(passport.authenticate('jwt', { session: false }),
             permissions.check('admin'),
             userCtrl.remove);

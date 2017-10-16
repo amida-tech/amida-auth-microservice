@@ -73,6 +73,69 @@ describe('User API:', () => {
 
     beforeEach(() => User.destroy({ where: {} }));
 
+    describe('GET /api/user', () => {
+        let jwtToken;
+        let nonAdminToken;
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/user`)
+            .send(adminUser)
+            .expect(httpStatus.OK)
+        );
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/user`)
+            .send(user)
+            .expect(httpStatus.OK)
+        );
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/auth/login`)
+            .send(adminUserCredentials)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('token');
+                jwtToken = `Bearer ${res.body.token}`;
+                return;
+            })
+        );
+
+        beforeEach(() => request(app)
+            .post(`${baseURL}/auth/login`)
+            .send(userCredentials)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('token');
+                nonAdminToken = `Bearer ${res.body.token}`;
+                return;
+            })
+        );
+
+        it('should get basic user info on all users', () =>
+            request(app)
+                .get(`${baseURL}/user`)
+                .set('Authorization', jwtToken)
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body).to.be.an.array;
+                    expect(res.body).to.have.lengthOf(2);
+                    res.body.forEach((elem) => {
+                        expect(elem.id).to.exist;
+                        expect(elem.username).to.exist;
+                        expect(elem.email).to.exist;
+                    });
+                    return;
+                })
+        );
+
+        it('non-admins cannot get basic user info on all users', () =>
+            request(app)
+                .get(`${baseURL}/user`)
+                .set('Authorization', nonAdminToken)
+                .expect(httpStatus.FORBIDDEN)
+            );
+    });
+
     describe('GET /api/user/me', () => {
         let userId;
         let jwtToken;
@@ -116,7 +179,7 @@ describe('User API:', () => {
         );
     });
 
-    describe('POST /api/user:', () => {
+    describe('POST /api/user', () => {
         it('should create a new user and return it without password info', (done) => {
             request(app)
                 .post(`${baseURL}/user`)

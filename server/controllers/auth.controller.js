@@ -38,6 +38,7 @@ function login(req, res, next) {
         }
 
         const userInfo = {
+            id: userResult.id,
             username: userResult.username,
             email: userResult.email,
             scopes: userResult.scopes,

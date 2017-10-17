@@ -38,6 +38,7 @@ router.route('/facebook/callback')
         scope: ['email'],
     }), (req, res) => {
         const userInfo = {
+            id: req.user.id,
             username: req.user.username,
             email: req.user.email,
             scopes: req.user.scopes,

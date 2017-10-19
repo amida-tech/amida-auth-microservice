@@ -118,6 +118,31 @@ gulp clean
 gulp
 ```
 
+### Unit testing against auth
+To make it easier to unit test against the auth service, you can generate dummy tokens by going to jwt.io. You should enter, at minimum, the following information:
+
+Header:
+```
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+```
+
+Payload:
+```
+{
+  "id": <userId>,
+  "username": <username>,
+  "email": <email>,
+  "scopes": [""]
+}
+```
+If you need an admin token, enter `"admin"` in the scopes array.
+
+Then, in the "Verify Signature" section, enter the shared secret used by the app you are authenticating for.
+
+
 ## Deployment
 
 ### Manual deployment with `pm2`

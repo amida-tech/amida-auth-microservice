@@ -9,3 +9,7 @@ enc_domain = {
     name        = "amida-services.com"
 }
 enc_domain_int  = "amida-services.internal"
+app = {
+    name = "amida-auth-service"
+}
+build_env = "stage"

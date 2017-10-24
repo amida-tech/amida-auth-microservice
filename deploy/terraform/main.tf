@@ -1,3 +1,5 @@
+# VPC setup
+
 module "vpc" {
     source      = "./modules/vpc"
     provider    = "${var.provider}"
@@ -118,3 +120,30 @@ output "bastion_sg_id"   { value = "${module.bastion.bastion_sg_id}" }
 output "bastion_asg_id"  { value = "${module.bastion.bastion_asg_id}" }
 output "bastion_lc_id"   { value = "${module.bastion.bastion_lc_id}" }
 output "bastion_iam_arn" { value = "${module.bastion.bastion_iam_arn}" }
+
+# Application setup
+
+module "rds" {
+    source     = "./modules/rds"
+    name       = "${var.app["name"]}"
+    subnet_ids = ["${module.private-subnets-rds.subnet_ids}"]
+}
+
+module "ec2" {
+    source        = "./modules/ec2"
+    name          = "${var.app["name"]}"
+    key_name      = "${var.key_name}"
+    build_env     = "${var.build_env}"
+    vpc_id        = "${module.vpc.vpc_id}"
+    subnet_ids    = ["${module.private-subnets-ec2.subnet_ids}"]
+    instance_type = "m3.medium"
+    asg_minimum_number_of_instances = "1"
+    asg_maximum_number_of_instances = "2"
+    load_balancer_name              = "${module.elb.elb_name}"
+}
+
+module "elb" {
+    source     = "./modules/elb"
+    name       = "${var.app["name"]}"
+    subnet_ids = ["${module.private-subnets-rds.subnet_ids}"]
+}

@@ -96,3 +96,14 @@ variable "instance_type" {
 variable "key_name" {
     default = "unknown"
 }
+
+variable "app" {
+    type    = "map"
+    default = {
+        "name" = "unknown"
+    }
+}
+
+variable "build_env" {
+    default = "development"
+}

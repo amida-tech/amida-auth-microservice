@@ -4,10 +4,16 @@
     - role: repo-epel
       sudo: true
     - role: nodejs
+      sudo: true
     - role: nginx
       sudo: true
     - role: api
+      sudo: true
     - role: logging
+      sudo: true
+    - role: cloudwatch
+      sudo: true
+    - role: cron
       sudo: true
   vars:
     node_version: 6.10.0

@@ -3,8 +3,8 @@ Description=Express
 
 [Service]
 # Start the js-file starting the express server
-ExecStart={{ src_dir }}/dist/node_modules/.bin/gulp serve
-WorkingDirectory={{ src_dir }}/dist
+ExecStart=/.nvm/versions/node/v{{ node_version }}/lib/node_modules/yarn/bin/yarn start
+WorkingDirectory={{ src_dir }}/app
 Restart=always
 RestartSec=10
 StandardOutput=syslog

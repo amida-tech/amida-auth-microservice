@@ -20,7 +20,7 @@ resource "aws_launch_configuration" "launch_config" {
   instance_type   = "${var.instance_type}"
   key_name        = "${var.key_name}"
   security_groups = ["${aws_security_group.api_sg.id}"]
-  iam_instance_profile = "app-ec2-role"
+  iam_instance_profile = "${aws_iam_instance_profile.app-ec2-role.name}"
 
   root_block_device {
     delete_on_termination = true

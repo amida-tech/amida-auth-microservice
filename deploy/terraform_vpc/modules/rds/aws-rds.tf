@@ -15,6 +15,8 @@ resource "aws_db_instance" "default" {
   username             = "amida"
   password             = "bluebutton"
   db_subnet_group_name = "${aws_db_subnet_group.default.name}"
+  multi_az             = true
+  skip_final_snapshot  = true
   tags {
       Name = "${var.name}-rds"
   }
@@ -27,3 +29,8 @@ resource "aws_db_subnet_group" "default" {
     Name = "${var.name}-db-subnet-group"
   }
 }
+
+output "address"  { value = "${aws_db_instance.default.address}" }
+output "endpoint" { value = "${aws_db_instance.default.endpoint}" }
+output "id"       { value = "${aws_db_instance.default.id}" }
+output "name"     { value = "${aws_db_instance.default.name}" }

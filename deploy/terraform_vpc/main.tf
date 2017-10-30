@@ -100,6 +100,12 @@ module "bastion" {
     domain        = "${lower(var.vpc["tag"])}.${var.enc_domain_int}"
 }
 
+module "rds" {
+    source     = "./modules/rds"
+    name       = "${var.app["name"]}"
+    subnet_ids = ["${module.private-subnets-rds.subnet_ids}"]
+}
+
 output "vpc_id" { value = "${module.vpc.vpc_id}" }
 output "igw_id" { value = "${module.vpc.igw_id}" }
 output "vpc_cidr" { value = "${module.vpc.vpc_cidr}" }
@@ -121,29 +127,7 @@ output "bastion_asg_id"  { value = "${module.bastion.bastion_asg_id}" }
 output "bastion_lc_id"   { value = "${module.bastion.bastion_lc_id}" }
 output "bastion_iam_arn" { value = "${module.bastion.bastion_iam_arn}" }
 
-# Application setup
-
-module "rds" {
-    source     = "./modules/rds"
-    name       = "${var.app["name"]}"
-    subnet_ids = ["${module.private-subnets-rds.subnet_ids}"]
-}
-
-module "ec2" {
-    source        = "./modules/ec2"
-    name          = "${var.app["name"]}"
-    key_name      = "${var.key_name}"
-    build_env     = "${var.build_env}"
-    vpc_id        = "${module.vpc.vpc_id}"
-    subnet_ids    = ["${module.private-subnets-ec2.subnet_ids}"]
-    instance_type = "m3.medium"
-    asg_minimum_number_of_instances = "1"
-    asg_maximum_number_of_instances = "2"
-    load_balancer_name              = "${module.elb.elb_name}"
-}
-
-module "elb" {
-    source     = "./modules/elb"
-    name       = "${var.app["name"]}"
-    subnet_ids = ["${module.private-subnets-rds.subnet_ids}"]
-}
+output "rds_address"  { value = "${module.rds.address}" }
+output "rds_endpoint" { value = "${module.rds.endpoint}" }
+output "rds_id"       { value = "${module.rds.id}" }
+output "rds_name"     { value = "${module.rds.name}" }

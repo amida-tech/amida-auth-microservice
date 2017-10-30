@@ -37,8 +37,9 @@ resource "aws_internet_gateway" "environment" {
 
 /*=== DHCP AND DNS ===*/
 resource "aws_route53_zone" "environment" {
-  name   = "${lower(var.name)}.${var.domain_int}"
-  vpc_id = "${aws_vpc.environment.id}"
+  name          = "${lower(var.name)}.${var.domain_int}"
+  vpc_id        = "${aws_vpc.environment.id}"
+  force_destroy = true
 }
 
 resource "aws_route53_record" "environment" {

@@ -135,10 +135,24 @@ gulp
 4. pm2 start dist/index.js
 ```
 
-### Deployment to AWS with Packer and Terraform
+### Simple deployment to AWS with Packer and Terraform
 The basic steps for deploying to AWS are:
 1. Run the Packer script, `template.json`
-2. Run the Terraform script.
+2. Run the Terraform script, `main.tf`
+
+#### Terraform VPC architecture
+
+![Architecture Diagram](/deploy/Hybrid Cloud Architecture.png?raw=true "Reference Architecture")
+
+`deploy/terraform_vpc` contains additional Terraform files for creating a Virtual Private Cloud (VPC) designed for a 3-tier service.
+
+The terraform configuration included in this repository is meant as a reference architecture. It creates a VPC with appropriate subnets and ingresses to protect the auth application and the auth database. It will also provision an RDS instance to serve as the database.
+
+While this config provisions a VPC and a multi-AZ RDS instance, the service and load balancing is left up to the deployment implementation.
+The second private subnet group should hold an autoscaling group across AZs, while the public subnet should hold an Elastic Load Balancer to the EC2 service instances.
+The Bastion jumpbox can be used for debugging and maintenance inside the VPC.
+
+In a deployment with an application using other services, you would want to maintain a similar VPC configuration, while adding other service AMIs to the deployment.
 
 Further details can be found in the `deploy` directory.
 

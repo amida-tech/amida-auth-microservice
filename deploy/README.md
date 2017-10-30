@@ -49,8 +49,30 @@ On other systems, download the proper package [here](https://www.terraform.io/do
 Verify the installation:  
 `terraform -v`
 
+### Setting variables
+This directory includes `*.tfvars.example` files. Copy them to local `*.tfvars` files and set the appropriate values.
+
+### Run (VPC)
+From the `deploy/terraform_vpc` directory, first link your local modules:
+`terraform init`
+`terraform get`
+
+You will need to make sure that you have a Route53 hosted zone configured in order to plan your Terraform infrastructure.
+
+Then, plan and verify your configuration:
+`terraform plan -var-file terraform.tfvars -var-file provider-credentials.tfvars -out vpc.tfplan`
+
+Finally, run:
+`terraform apply vpc.tfplan`
+
+To remove the resources, run the following commands:
+```
+terraform plan -var-file terraform.tfvars -var-file provider-credentials.tfvars -destroy -out vpc.tfplan
+terraform apply vpc.tfplan
+```
+
 ### Run
-All of these steps should be run frmo the project root directory.
+All of these steps should be run from the project root directory.
 
 First, validate your infrastructure plan (you should run this with the variables below):  
 `terraform plan`

@@ -31,6 +31,10 @@ openssl rsa -in private.key -pubout -outform PEM -out private.key.pub
 Apiary docs can be found at http://docs.amidaauth.apiary.io/.
 
 ### External auth
+The Amida Auth service can allow external OAuth providers to manage identity. If a user is created via external auth, they will still get an entry in the Users database. However, they will not get a password, and password management functions will be disabled for that user. The `provider` column will contain an identifier for the OAuth provider managing that user.
+
+To specify the external auth used for an instance of the service, use the `*_CLIENT_ID` env vars. Allowed strategies are shown in `config/config.js`.
+
 #### Facebook
 To set up integration with Facebook, configure your domain for the auth service as a Facebook Login product with `<domain>/api/vX/auth/facebook/callback` as a redirect URL, then set the following env vars:
 ```
@@ -117,6 +121,31 @@ gulp clean
 # Default task: Wipes out dist and coverage directory. Compiles using babel.
 gulp
 ```
+
+### Unit testing against auth
+To make it easier to unit test against the auth service, you can generate dummy tokens by going to jwt.io. You should enter, at minimum, the following information:
+
+Header:
+```
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+```
+
+Payload:
+```
+{
+  "id": <userId>,
+  "username": <username>,
+  "email": <email>,
+  "scopes": [""]
+}
+```
+If you need an admin token, enter `"admin"` in the scopes array.
+
+Then, in the "Verify Signature" section, enter the shared secret used by the app you are authenticating for.
+
 
 ## Deployment
 

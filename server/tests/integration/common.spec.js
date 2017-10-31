@@ -49,6 +49,19 @@ module.exports = {
             });
     },
 
+    testEmailUpdate: function testEmailUpdate(app, token, userId) {
+        return request(app)
+            .put(`${baseURL}/user/${userId}`)
+            .set('Authorization', token)
+            .send({ email: 'newemail@email.com' })
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body.id).to.equal(userId);
+                expect(res.body.email).to.equal('newemail@email.com');
+                return;
+            });
+    },
+
     setupTestUser: function setupTestUser(app) {
         return request(app)
             .post(`${baseURL}/user`)

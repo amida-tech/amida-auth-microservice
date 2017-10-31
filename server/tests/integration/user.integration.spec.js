@@ -25,13 +25,13 @@ describe('User API:', () => {
 
     after(() => User.destroy({ where: {} }));
 
-    const user = {
+    const testUser = {
         username: 'KK123',
         email: 'test@amida.com',
         password: 'testpass',
     };
 
-    const userCredentials = {
+    const testUserCredentials = {
         username: 'KK123',
         password: 'testpass',
     };
@@ -86,7 +86,7 @@ describe('User API:', () => {
 
         beforeEach(() => request(app)
             .post(`${baseURL}/user`)
-            .send(user)
+            .send(testUser)
             .expect(httpStatus.OK)
         );
 
@@ -97,7 +97,7 @@ describe('User API:', () => {
             })
         );
 
-        beforeEach(() => common.login(app, userCredentials)
+        beforeEach(() => common.login(app, testUserCredentials)
         .then((token) => {
             nonAdminToken = token;
             return;
@@ -135,7 +135,7 @@ describe('User API:', () => {
 
         beforeEach(() => request(app)
             .post(`${baseURL}/user`)
-            .send(user)
+            .send(testUser)
             .expect(httpStatus.OK)
             .then((res) => {
                 userId = res.body.id;
@@ -143,7 +143,7 @@ describe('User API:', () => {
             })
         );
 
-        beforeEach(() => common.login(app, userCredentials)
+        beforeEach(() => common.login(app, testUserCredentials)
             .then((token) => {
                 jwtToken = token;
                 return;
@@ -158,8 +158,8 @@ describe('User API:', () => {
                 .then((res) => {
                     const userInfo = res.body;
                     expect(userInfo.id).to.equal(userId);
-                    expect(userInfo.username).to.equal(user.username);
-                    expect(userInfo.email).to.equal(user.email);
+                    expect(userInfo.username).to.equal(testUser.username);
+                    expect(userInfo.email).to.equal(testUser.email);
                     expect(userInfo.scopes).to.deep.equal(['']);
                     expect(userInfo.password).to.not.exist;
                     expect(userInfo.salt).to.not.exist;
@@ -172,12 +172,12 @@ describe('User API:', () => {
         it('should create a new user and return it without password info', (done) => {
             request(app)
                 .post(`${baseURL}/user`)
-                .send(user)
+                .send(testUser)
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body.id).to.exist;
-                    expect(res.body.username).to.equal(user.username);
-                    expect(res.body.email).to.equal(user.email);
+                    expect(res.body.username).to.equal(testUser.username);
+                    expect(res.body.email).to.equal(testUser.email);
                     done();
                 })
                 .catch(done);
@@ -210,7 +210,7 @@ describe('User API:', () => {
         it('should return 400 if username is a duplicate', (done) => {
             request(app)
                 .post(`${baseURL}/user`)
-                .send(user)
+                .send(testUser)
                 .expect(httpStatus.OK)
                 .then(() => {
                     request(app)
@@ -229,7 +229,7 @@ describe('User API:', () => {
         it('should return 400 if email is a duplicate', (done) => {
             request(app)
                 .post(`${baseURL}/user`)
-                .send(user)
+                .send(testUser)
                 .expect(httpStatus.OK)
                 .then(() => {
                     request(app)
@@ -248,7 +248,7 @@ describe('User API:', () => {
         it('should return only necessary User information', (done) => {
             request(app)
                 .post(`${baseURL}/user`)
-                .send(user)
+                .send(testUser)
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body.password).to.not.exist;
@@ -277,7 +277,7 @@ describe('User API:', () => {
 
         beforeEach(() => request(app)
             .post(`${baseURL}/user`)
-            .send(user)
+            .send(testUser)
             .expect(httpStatus.OK)
             .then((res) => {
                 userId = res.body.id;
@@ -285,7 +285,7 @@ describe('User API:', () => {
             })
         );
 
-        beforeEach(() => common.login(app, userCredentials)
+        beforeEach(() => common.login(app, testUserCredentials)
             .then((token) => {
                 jwtToken = token;
                 return;
@@ -299,31 +299,9 @@ describe('User API:', () => {
             })
         );
 
-        it('should update a user\'s email', () =>
-            request(app)
-                .put(`${baseURL}/user/${userId}`)
-                .set('Authorization', jwtToken)
-                .send({ email: 'newemail@email.com' })
-                .expect(httpStatus.OK)
-                .then((res) => {
-                    expect(res.body.username).to.equal('KK123');
-                    expect(res.body.email).to.equal('newemail@email.com');
-                    return;
-                })
-        );
+        it('should update a user\'s email', () => common.testEmailUpdate(app, jwtToken, userId));
 
-        it('should allow admins to update another user\'s email', () =>
-            request(app)
-                .put(`${baseURL}/user/${userId}`)
-                .set('Authorization', adminJwtToken)
-                .send({ email: 'newemail@email.com' })
-                .expect(httpStatus.OK)
-                .then((res) => {
-                    expect(res.body.username).to.equal('KK123');
-                    expect(res.body.email).to.equal('newemail@email.com');
-                    return;
-                })
-        );
+        it('should allow admins to update another user\'s email', () => common.testEmailUpdate(app, adminJwtToken, userId));
 
         it('should forbid users from updating another user\'s email', () => {
             request(app)
@@ -346,7 +324,7 @@ describe('User API:', () => {
 
         beforeEach(() => request(app)
             .post(`${baseURL}/user`)
-            .send(user)
+            .send(testUser)
             .expect(httpStatus.OK)
             .then((res) => {
                 userId = res.body.id;
@@ -364,7 +342,7 @@ describe('User API:', () => {
         it('should require admin permissions to use this route', () =>
             request(app)
                 .post(`${baseURL}/auth/login`)
-                .send(userCredentials)
+                .send(testUserCredentials)
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body).to.have.property('token');
@@ -459,7 +437,7 @@ describe('User API:', () => {
 
         beforeEach(() => request(app)
             .post(`${baseURL}/user`)
-            .send(user)
+            .send(testUser)
             .expect(httpStatus.OK)
             .then((res) => {
                 userId = res.body.id;
@@ -467,7 +445,7 @@ describe('User API:', () => {
             })
         );
 
-        beforeEach(() => common.login(app, userCredentials)
+        beforeEach(() => common.login(app, testUserCredentials)
             .then((token) => {
                 jwtToken = token;
                 return;

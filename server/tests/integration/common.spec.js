@@ -1,6 +1,7 @@
 import request from 'supertest';
 import fs from 'fs';
 import httpStatus from 'http-status';
+import { expect } from 'chai';
 import jwt from 'jsonwebtoken';
 import p from '../../../package';
 import config from '../../../config/config';
@@ -31,6 +32,22 @@ const validUserCredentials = {
 };
 
 module.exports = {
+
+    /**
+     * app - supertest object
+     * credentials - username/password object
+     * returns: auth header string in a promise
+     */
+    login: function login(app, credentials) {
+        return request(app)
+            .post(`${baseURL}/auth/login`)
+            .send(credentials)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('token');
+                return Promise.resolve(`Bearer ${res.body.token}`);
+            });
+    },
 
     setupTestUser: function setupTestUser(app) {
         return request(app)

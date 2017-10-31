@@ -10,6 +10,7 @@ import {
     User,
     sequelize,
 } from '../../../config/sequelize';
+import * as common from './common.spec';
 
 chai.config.includeStack = true;
 
@@ -89,26 +90,18 @@ describe('User API:', () => {
             .expect(httpStatus.OK)
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(adminUserCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                jwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, adminUserCredentials)
+            .then((token) => {
+                jwtToken = token;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(userCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                nonAdminToken = `Bearer ${res.body.token}`;
-                return;
-            })
+        beforeEach(() => common.login(app, userCredentials)
+        .then((token) => {
+            nonAdminToken = token;
+            return;
+        })
         );
 
         it('should get basic user info on all users', () =>
@@ -150,13 +143,9 @@ describe('User API:', () => {
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(userCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                jwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, userCredentials)
+            .then((token) => {
+                jwtToken = token;
                 return;
             })
         );
@@ -296,24 +285,16 @@ describe('User API:', () => {
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(userCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                jwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, userCredentials)
+            .then((token) => {
+                jwtToken = token;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(adminUserCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                adminJwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, adminUserCredentials)
+            .then((token) => {
+                adminJwtToken = token;
                 return;
             })
         );
@@ -373,13 +354,9 @@ describe('User API:', () => {
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(adminUserCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                jwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, adminUserCredentials)
+            .then((token) => {
+                jwtToken = token;
                 return;
             })
         );
@@ -490,24 +467,16 @@ describe('User API:', () => {
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(userCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                jwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, userCredentials)
+            .then((token) => {
+                jwtToken = token;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(adminUserCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                adminJwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, adminUserCredentials)
+            .then((token) => {
+                adminJwtToken = token;
                 return;
             })
         );

@@ -98,10 +98,10 @@ describe('User API:', () => {
         );
 
         beforeEach(() => common.login(app, testUserCredentials)
-        .then((token) => {
-            nonAdminToken = token;
-            return;
-        })
+            .then((token) => {
+                nonAdminToken = token;
+                return;
+            })
         );
 
         it('should get basic user info on all users', () =>
@@ -133,12 +133,9 @@ describe('User API:', () => {
         let userId;
         let jwtToken;
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(testUser)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                userId = res.body.id;
+        beforeEach(() => common.createUser(app, testUser)
+            .then((id) => {
+                userId = id;
                 return;
             })
         );
@@ -265,22 +262,16 @@ describe('User API:', () => {
         let jwtToken;
         let adminJwtToken;
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(adminUser)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                adminUserId = res.body.id;
+        beforeEach(() => common.createUser(app, adminUser)
+            .then((id) => {
+                adminUserId = id;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(testUser)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                userId = res.body.id;
+        beforeEach(() => common.createUser(app, testUser)
+            .then((id) => {
+                userId = id;
                 return;
             })
         );
@@ -316,18 +307,11 @@ describe('User API:', () => {
         let userId;
         let jwtToken;
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(adminUser)
-            .expect(httpStatus.OK)
-        );
+        beforeEach(() => common.createUser(app, adminUser));
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(testUser)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                userId = res.body.id;
+        beforeEach(() => common.createUser(app, testUser)
+            .then((id) => {
+                userId = id;
                 return;
             })
         );
@@ -425,22 +409,16 @@ describe('User API:', () => {
         let jwtToken;
         let adminJwtToken;
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(adminUser)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                adminUserId = res.body.id;
+        beforeEach(() => common.createUser(app, adminUser)
+            .then((id) => {
+                adminUserId = id;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(testUser)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                userId = res.body.id;
+        beforeEach(() => common.createUser(app, testUser)
+            .then((id) => {
+                userId = id;
                 return;
             })
         );

@@ -49,6 +49,17 @@ module.exports = {
             });
     },
 
+    createUser: function createUser(app, userData) {
+        return request(app)
+            .post(`${baseURL}/user`)
+            .send(userData)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                const userId = res.body.id;
+                return Promise.resolve(userId);
+            });
+    },
+
     testEmailUpdate: function testEmailUpdate(app, token, userId) {
         return request(app)
             .put(`${baseURL}/user/${userId}`)

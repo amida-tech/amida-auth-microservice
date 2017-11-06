@@ -86,6 +86,13 @@ describe('Auth API:', () => {
             })
         );
 
+        it('should require an email in the request body', () =>
+            request(app)
+                .post(`${common.baseURL}/auth/reset-password`)
+                .expect(httpStatus.BAD_REQUEST)
+                .then(res => expect(JSON.parse(res.text).message).to.equal('"email" is required'))
+        );
+
         it('should set the password to a random string', () =>
             User.find({ where: { username: common.testUser.username } })
                 .then(oldUser => request(app)

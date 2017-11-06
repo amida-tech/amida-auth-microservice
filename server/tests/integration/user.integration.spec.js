@@ -290,6 +290,14 @@ describe('User API:', () => {
             })
         );
 
+        it('should return a 404 if the specified userId does not exist', () =>
+            request(app)
+                .put(`${baseURL}/user/999999`)
+                .set('Authorization', adminJwtToken)
+                .send({ email: 'newemail' })
+                .expect(httpStatus.NOT_FOUND)
+        );
+
         it('should update a user\'s email', () => common.testEmailUpdate(app, jwtToken, userId));
 
         it('should allow admins to update another user\'s email', () => common.testEmailUpdate(app, adminJwtToken, userId));

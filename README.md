@@ -1,6 +1,7 @@
 # Amida Auth Microservice
 
-// TODO add badges!
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5c42966514c943a1bf0d03cbb0b924d1)](https://www.codacy.com/app/jacob.s.sachs/amida-auth-microservice?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=amida-tech/amida-auth-microservice&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/5c42966514c943a1bf0d03cbb0b924d1)](https://www.codacy.com/app/jacob.s.sachs/amida-auth-microservice?utm_source=github.com&utm_medium=referral&utm_content=amida-tech/amida-auth-microservice&utm_campaign=Badge_Coverage)
 
 ## Design
 

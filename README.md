@@ -1,6 +1,7 @@
 # Amida Auth Microservice
 
-// TODO add badges!
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5c42966514c943a1bf0d03cbb0b924d1)](https://www.codacy.com/app/jacob.s.sachs/amida-auth-microservice?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=amida-tech/amida-auth-microservice&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/5c42966514c943a1bf0d03cbb0b924d1)](https://www.codacy.com/app/jacob.s.sachs/amida-auth-microservice?utm_source=github.com&utm_medium=referral&utm_content=amida-tech/amida-auth-microservice&utm_campaign=Badge_Coverage)
 
 ## Design
 
@@ -31,6 +32,10 @@ openssl rsa -in private.key -pubout -outform PEM -out private.key.pub
 Apiary docs can be found at http://docs.amidaauth.apiary.io/.
 
 ### External auth
+The Amida Auth service can allow external OAuth providers to manage identity. If a user is created via external auth, they will still get an entry in the Users database. However, they will not get a password, and password management functions will be disabled for that user. The `provider` column will contain an identifier for the OAuth provider managing that user.
+
+To specify the external auth used for an instance of the service, use the `*_CLIENT_ID` env vars. Allowed strategies are shown in `config/config.js`.
+
 #### Facebook
 To set up integration with Facebook, configure your domain for the auth service as a Facebook Login product with `<domain>/api/vX/auth/facebook/callback` as a redirect URL, then set the following env vars:
 ```
@@ -118,6 +123,31 @@ gulp clean
 gulp
 ```
 
+### Unit testing against auth
+To make it easier to unit test against the auth service, you can generate dummy tokens by going to jwt.io. You should enter, at minimum, the following information:
+
+Header:
+```
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+```
+
+Payload:
+```
+{
+  "id": <userId>,
+  "username": <username>,
+  "email": <email>,
+  "scopes": [""]
+}
+```
+If you need an admin token, enter `"admin"` in the scopes array.
+
+Then, in the "Verify Signature" section, enter the shared secret used by the app you are authenticating for.
+
+
 ## Deployment
 
 ### Manual deployment with `pm2`
@@ -155,6 +185,20 @@ Be sure to have your postgres host running and replace the `pg_host` value in th
 5. run `terraform plan` to validate config
 6. run `terraform apply` to deploy
 7. To get SNS Alarm notifications be sure that you are subscribed to SNS topic arn:aws:sns:us-west-2:844297601570:ops_team_alerts and you have confirmed subscription
+
+#### Terraform VPC architecture
+
+![Architecture Diagram](/deploy/Hybrid Cloud Architecture.png?raw=true "Reference Architecture")
+
+`deploy/terraform_vpc` contains additional Terraform files for creating a Virtual Private Cloud (VPC) designed for a 3-tier service.
+
+This configuration is meant as a reference architecture. It creates a VPC with appropriate subnets and ingresses to protect the auth application and the auth database. It will also provision an RDS instance to serve as the database.
+
+While this config provisions a VPC and a multi-AZ RDS instance, the service and load balancing is left up to the deployment implementation.
+The second private subnet group should hold an autoscaling group across AZs, while the public subnet should hold an Elastic Load Balancer to the EC2 service instances.
+The Bastion jumpbox can be used for debugging and maintenance inside the VPC.
+
+In a deployment with an application using other services, you would want to maintain a similar VPC configuration, while adding other service AMIs to the deployment.
 
 Further details can be found in the `deploy` directory.
 

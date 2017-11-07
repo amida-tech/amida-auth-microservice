@@ -30,23 +30,25 @@ module.exports = (passport) => {
             .catch(err => done(err, false));
     }));
 
-    passport.use(new FacebookStrategy({
-        clientID: config.facebook.clientId,
-        clientSecret: config.facebook.clientSecret,
-        callbackURL: config.facebook.callbackUrl,
-        profileFields: ['email'],
-    }, (accessToken, refreshToken, profile, done) => {
-        const email = profile.emails[0].value;
-        User.findOrCreate({ where: {
-            username: email,
-            email,
-            provider: profile.provider,
-        } })
-        .spread((user) => {
-            if (user !== null) return done(null, user);
-            const err = new APIError('New facebook user not created', httpStatus.INTERNAL_SERVER_ERROR, true);
-            return done(err);
-        });
-    }));
+    if (config.facebook.clientId) {
+        passport.use(new FacebookStrategy({
+            clientID: config.facebook.clientId,
+            clientSecret: config.facebook.clientSecret,
+            callbackURL: config.facebook.callbackUrl,
+            profileFields: ['email'],
+        }, (accessToken, refreshToken, profile, done) => {
+            const email = profile.emails[0].value;
+            User.findOrCreate({ where: {
+                username: email,
+                email,
+                provider: profile.provider,
+            } })
+            .spread((user) => {
+                if (user !== null) return done(null, user);
+                const err = new APIError('New facebook user not created', httpStatus.INTERNAL_SERVER_ERROR, true);
+                return done(err);
+            });
+        }));
+    }
 };
 

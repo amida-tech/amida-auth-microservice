@@ -10,6 +10,7 @@ import {
     User,
     sequelize,
 } from '../../../config/sequelize';
+import * as common from './common.spec';
 
 chai.config.includeStack = true;
 
@@ -24,13 +25,13 @@ describe('User API:', () => {
 
     after(() => User.destroy({ where: {} }));
 
-    const user = {
+    const testUser = {
         username: 'KK123',
         email: 'test@amida.com',
         password: 'testpass',
     };
 
-    const userCredentials = {
+    const testUserCredentials = {
         username: 'KK123',
         password: 'testpass',
     };
@@ -85,28 +86,20 @@ describe('User API:', () => {
 
         beforeEach(() => request(app)
             .post(`${baseURL}/user`)
-            .send(user)
+            .send(testUser)
             .expect(httpStatus.OK)
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(adminUserCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                jwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, adminUserCredentials)
+            .then((token) => {
+                jwtToken = token;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(userCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                nonAdminToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, testUserCredentials)
+            .then((token) => {
+                nonAdminToken = token;
                 return;
             })
         );
@@ -140,23 +133,16 @@ describe('User API:', () => {
         let userId;
         let jwtToken;
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(user)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                userId = res.body.id;
+        beforeEach(() => common.createUser(app, testUser)
+            .then((id) => {
+                userId = id;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(userCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                jwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, testUserCredentials)
+            .then((token) => {
+                jwtToken = token;
                 return;
             })
         );
@@ -169,8 +155,8 @@ describe('User API:', () => {
                 .then((res) => {
                     const userInfo = res.body;
                     expect(userInfo.id).to.equal(userId);
-                    expect(userInfo.username).to.equal(user.username);
-                    expect(userInfo.email).to.equal(user.email);
+                    expect(userInfo.username).to.equal(testUser.username);
+                    expect(userInfo.email).to.equal(testUser.email);
                     expect(userInfo.scopes).to.deep.equal(['']);
                     expect(userInfo.password).to.not.exist;
                     expect(userInfo.salt).to.not.exist;
@@ -183,12 +169,12 @@ describe('User API:', () => {
         it('should create a new user and return it without password info', (done) => {
             request(app)
                 .post(`${baseURL}/user`)
-                .send(user)
+                .send(testUser)
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body.id).to.exist;
-                    expect(res.body.username).to.equal(user.username);
-                    expect(res.body.email).to.equal(user.email);
+                    expect(res.body.username).to.equal(testUser.username);
+                    expect(res.body.email).to.equal(testUser.email);
                     done();
                 })
                 .catch(done);
@@ -221,7 +207,7 @@ describe('User API:', () => {
         it('should return 400 if username is a duplicate', (done) => {
             request(app)
                 .post(`${baseURL}/user`)
-                .send(user)
+                .send(testUser)
                 .expect(httpStatus.OK)
                 .then(() => {
                     request(app)
@@ -240,7 +226,7 @@ describe('User API:', () => {
         it('should return 400 if email is a duplicate', (done) => {
             request(app)
                 .post(`${baseURL}/user`)
-                .send(user)
+                .send(testUser)
                 .expect(httpStatus.OK)
                 .then(() => {
                     request(app)
@@ -259,7 +245,7 @@ describe('User API:', () => {
         it('should return only necessary User information', (done) => {
             request(app)
                 .post(`${baseURL}/user`)
-                .send(user)
+                .send(testUser)
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body.password).to.not.exist;
@@ -276,73 +262,45 @@ describe('User API:', () => {
         let jwtToken;
         let adminJwtToken;
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(adminUser)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                adminUserId = res.body.id;
+        beforeEach(() => common.createUser(app, adminUser)
+            .then((id) => {
+                adminUserId = id;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(user)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                userId = res.body.id;
+        beforeEach(() => common.createUser(app, testUser)
+            .then((id) => {
+                userId = id;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(userCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                jwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, testUserCredentials)
+            .then((token) => {
+                jwtToken = token;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(adminUserCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                adminJwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, adminUserCredentials)
+            .then((token) => {
+                adminJwtToken = token;
                 return;
             })
         );
 
-        it('should update a user\'s email', () =>
+        it('should return a 404 if the specified userId does not exist', () =>
             request(app)
-                .put(`${baseURL}/user/${userId}`)
-                .set('Authorization', jwtToken)
-                .send({ email: 'newemail@email.com' })
-                .expect(httpStatus.OK)
-                .then((res) => {
-                    expect(res.body.username).to.equal('KK123');
-                    expect(res.body.email).to.equal('newemail@email.com');
-                    return;
-                })
-        );
-
-        it('should allow admins to update another user\'s email', () =>
-            request(app)
-                .put(`${baseURL}/user/${userId}`)
+                .put(`${baseURL}/user/999999`)
                 .set('Authorization', adminJwtToken)
-                .send({ email: 'newemail@email.com' })
-                .expect(httpStatus.OK)
-                .then((res) => {
-                    expect(res.body.username).to.equal('KK123');
-                    expect(res.body.email).to.equal('newemail@email.com');
-                    return;
-                })
+                .send({ email: 'newemail' })
+                .expect(httpStatus.NOT_FOUND)
         );
+
+        it('should update a user\'s email', () => common.testEmailUpdate(app, jwtToken, userId));
+
+        it('should allow admins to update another user\'s email', () => common.testEmailUpdate(app, adminJwtToken, userId));
 
         it('should forbid users from updating another user\'s email', () => {
             request(app)
@@ -357,29 +315,18 @@ describe('User API:', () => {
         let userId;
         let jwtToken;
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(adminUser)
-            .expect(httpStatus.OK)
-        );
+        beforeEach(() => common.createUser(app, adminUser));
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(user)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                userId = res.body.id;
+        beforeEach(() => common.createUser(app, testUser)
+            .then((id) => {
+                userId = id;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(adminUserCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                jwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, adminUserCredentials)
+            .then((token) => {
+                jwtToken = token;
                 return;
             })
         );
@@ -387,7 +334,7 @@ describe('User API:', () => {
         it('should require admin permissions to use this route', () =>
             request(app)
                 .post(`${baseURL}/auth/login`)
-                .send(userCredentials)
+                .send(testUserCredentials)
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body).to.have.property('token');
@@ -470,44 +417,30 @@ describe('User API:', () => {
         let jwtToken;
         let adminJwtToken;
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(adminUser)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                adminUserId = res.body.id;
+        beforeEach(() => common.createUser(app, adminUser)
+            .then((id) => {
+                adminUserId = id;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
-            .send(user)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                userId = res.body.id;
+        beforeEach(() => common.createUser(app, testUser)
+            .then((id) => {
+                userId = id;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(userCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                jwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, testUserCredentials)
+            .then((token) => {
+                jwtToken = token;
                 return;
             })
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/auth/login`)
-            .send(adminUserCredentials)
-            .expect(httpStatus.OK)
-            .then((res) => {
-                expect(res.body).to.have.property('token');
-                adminJwtToken = `Bearer ${res.body.token}`;
+        beforeEach(() => common.login(app, adminUserCredentials)
+            .then((token) => {
+                adminJwtToken = token;
                 return;
             })
         );

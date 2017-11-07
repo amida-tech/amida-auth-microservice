@@ -92,7 +92,7 @@ DEBUG=amida-auth-microservice:* yarn start
 
 Tests:
 ```sh
-# Run tests written in ES6 
+# Run tests written in ES6
 yarn test
 
 # Run test along with code coverage
@@ -165,10 +165,26 @@ Then, in the "Verify Signature" section, enter the shared secret used by the app
 4. pm2 start dist/index.js
 ```
 
-### Simple deployment to AWS with Packer and Terraform
-The basic steps for deploying to AWS are:
-1. Run the Packer script, `template.json`
-2. Run the Terraform script, `main.tf`
+### Deployment to AWS with Packer and Terraform
+You will need to install [pakcer](https://www.packer.io/) and [terraform](https://www.terraform.io/) installed on your local machine.
+Be sure to have your postgres host running and replace the `pg_host` value in the command below with the postgres host address. The command in `1.` below will allow you to build the AMI with default settings. You may also need to include additional environment variables in `./deploy/roles/api/templates/env.service.j2` before build.
+1. First validate the AMI with a command similar to ```packer validate -var 'aws_access_key=myAWSAcessKey'
+-var 'aws_secret_key=DmAI2PRWkefeBaCQg38qULUYiMH4GtYr3ogjYF4k' \
+-var 'build_env=development' \
+-var 'ami_name=api-auth-service-boilerplate' \
+-var 'node_env=development' \
+-var 'jwt_secret=0a6b944d-d2fb-46fc-a85e-0295c986cd9f' \
+-var 'jwt_mode=hmac' \
+-var 'pg_host=amid-messages-packer-test.czgzedfwgy7z.us-west-2.rds.amazonaws.com' \
+-var 'pg_db=amida_messages' \
+-var 'pg_user=amida_messages' \
+-var 'pg_passwd=amida-messages' template.json```
+2. If the validation from `1.` above succeeds, build the image by running the same command but replacing `validate` with `build`
+3. In the AWS console you can test the build before deployment. To do this, launch an EC2 instance with the built image and visit the health-check endpoint at <host_address>:4000/api/health-check. Be sure to launch the instance with security groups that allow http access on the app port (currently 4000) and access from Postgres port of the data base. You should see an "OK" response.
+4. Enter `aws_access_key` and `aws_secret_key` values in the vars.tf file
+5. run `terraform plan` to validate config
+6. run `terraform apply` to deploy
+7. To get SNS Alarm notifications be sure that you are subscribed to SNS topic arn:aws:sns:us-west-2:844297601570:ops_team_alerts and you have confirmed subscription
 
 #### Terraform VPC architecture
 
@@ -176,7 +192,7 @@ The basic steps for deploying to AWS are:
 
 `deploy/terraform_vpc` contains additional Terraform files for creating a Virtual Private Cloud (VPC) designed for a 3-tier service.
 
-The terraform configuration included in this repository is meant as a reference architecture. It creates a VPC with appropriate subnets and ingresses to protect the auth application and the auth database. It will also provision an RDS instance to serve as the database.
+This configuration is meant as a reference architecture. It creates a VPC with appropriate subnets and ingresses to protect the auth application and the auth database. It will also provision an RDS instance to serve as the database.
 
 While this config provisions a VPC and a multi-AZ RDS instance, the service and load balancing is left up to the deployment implementation.
 The second private subnet group should hold an autoscaling group across AZs, while the public subnet should hold an Elastic Load Balancer to the EC2 service instances.

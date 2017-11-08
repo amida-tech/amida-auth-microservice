@@ -18,6 +18,8 @@ const envVarsSchema = Joi.object({
         .description('Absolute or relative path to RSA private key'),
     JWT_PUBLIC_KEY_PATH: Joi.string()
         .description('Absolute or relative path to RSA public key'),
+    JWT_TTL: Joi.number()
+        .default(3600),
     PG_DB: Joi.string().required()
         .description('Postgres database name'),
     PG_PORT: Joi.number()
@@ -91,6 +93,7 @@ const config = {
     jwtSecret: envVars.JWT_SECRET,
     jwtPrivateKeyPath: envVars.JWT_PRIVATE_KEY_PATH,
     jwtPublicKeyPath: envVars.JWT_PUBLIC_KEY_PATH,
+    jwtExpiresIn: envVars.JWT_TTL,
     postgres: {
         db: envVars.PG_DB,
         port: envVars.PG_PORT,

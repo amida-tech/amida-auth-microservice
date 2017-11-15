@@ -14,9 +14,9 @@ import * as common from './common.spec';
 chai.config.includeStack = true;
 
 describe('Auth API:', () => {
-    before(() => sequelize.sync({
-        force: true,
-    }));
+    // before(() => sequelize.sync({
+    //     force: true,
+    // }));
 
     after(() => User.destroy({ where: {} }));
 

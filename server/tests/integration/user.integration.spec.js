@@ -19,9 +19,9 @@ const baseURL = `/api/v${version}`;
 
 
 describe('User API:', () => {
-    before(() => sequelize.sync({
-        force: true,
-    }));
+    // before(() => sequelize.sync({
+    //     force: true,
+    // }));
 
     after(() => User.destroy({ where: {} }));
 

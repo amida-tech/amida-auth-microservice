@@ -28,7 +28,8 @@ const authValidation = {
     },
     resetToken: {
         body: {
-            email: Joi.string().email().required(),
+            email: Joi.string().email(),
+            phone: Joi.number().min(1000000000).max(9999999999),
         },
     },
     resetPassword: {

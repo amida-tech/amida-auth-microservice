@@ -14,6 +14,7 @@ chai.config.includeStack = true;
 const testUser = {
     username: 'KK123',
     email: 'test@amida.com',
+    phone: '2025550152',
     password: 'testpass',
     scopes: ['test'],
 };
@@ -21,6 +22,7 @@ const testUser = {
 const adminUser = {
     username: 'KK123',
     email: 'test@amida.com',
+    phone: '2025550152',
     password: 'testpass',
     scopes: ['admin'],
 };
@@ -42,6 +44,7 @@ describe('User models:', () => {
                     expect(user.id).to.exist;
                     expect(user.username).to.equal(testUser.username);
                     expect(user.email).to.equal(testUser.email);
+                    expect(user.phone).to.equal(testUser.phone);
                     expect(user.password).to.have.lengthOf(256);
                     expect(user.salt).to.have.lengthOf(36);
                 }));
@@ -146,22 +149,45 @@ describe('User models:', () => {
 
     describe('Password reset:', () => {
         describe('resetPasswordToken', () => {
-            it('should error if the supplied email does not match a user', (done) => {
+            it('should error if the supplied email does not match a user (email)', (done) => {
                 User.create(testUser)
                     .then(() => {
-                        User.resetPasswordToken('bad@email.com', expTime)
+                        User.resetPasswordToken('bad@email.com', undefined, expTime)
                             .catch((err) => {
                                 expect(err).to.be.an.error;
-                                expect(err.message).to.contain('Email not found');
+                                expect(err.message).to.contain('Email or phone not found');
+                                done();
+                            });
+                    })
+                    .catch(done);
+            });
+            it('should error if the supplied phone does not match a user (phone)', (done) => {
+                User.create(testUser)
+                    .then(() => {
+                        User.resetPasswordToken(undefined, '9998887777', expTime)
+                            .catch((err) => {
+                                expect(err).to.be.an.error;
+                                expect(err.message).to.contain('Email or phone not found');
                                 done();
                             });
                     })
                     .catch(done);
             });
 
-            it('should return a token if successful', (done) => {
+            it('should return a token if successful (email)', (done) => {
                 User.create(testUser)
-                    .then(() => User.resetPasswordToken(testUser.email, expTime))
+                    .then(() => User.resetPasswordToken(testUser.email, undefined, expTime))
+                    .then((token) => {
+                        expect(token).to.exist;
+                        expect(token).to.have.lengthOf(40);
+                        done();
+                    })
+                    .catch(done);
+            });
+
+            it('should return a token if successful (phone)', (done) => {
+                User.create(testUser)
+                    .then(() => User.resetPasswordToken(undefined, '2025550152', expTime))
                     .then((token) => {
                         expect(token).to.exist;
                         expect(token).to.have.lengthOf(40);
@@ -173,7 +199,7 @@ describe('User models:', () => {
             it('should set the password reset token and expiration time if successful', (done) => {
                 User.create(testUser)
                     .then((user) => {
-                        User.resetPasswordToken(testUser.email, expTime)
+                        User.resetPasswordToken(testUser.email, undefined, expTime)
                             .then((token) => {
                                 user.reload()
                                     .then(() => {
@@ -190,7 +216,7 @@ describe('User models:', () => {
         describe('resetPassword', () => {
             it('should error if the supplied token is not found', (done) => {
                 User.create(testUser)
-                    .then(() => User.resetPasswordToken(testUser.email, expTime))
+                    .then(() => User.resetPasswordToken(testUser.email, undefined, expTime))
                     .then(() => User.resetPassword('badtoken', 'newerpass'))
                     .catch((err) => {
                         expect(err).to.be.an.error;
@@ -202,7 +228,7 @@ describe('User models:', () => {
 
             it('should error if the current time is after the expiration time', (done) => {
                 User.create(testUser)
-                    .then(() => User.resetPasswordToken(testUser.email, 0))
+                    .then(() => User.resetPasswordToken(testUser.email, undefined, 0))
                     .then(token => User.resetPassword(token, 'newerpass'))
                     .catch((err) => {
                         expect(err).to.be.an.error;
@@ -214,7 +240,7 @@ describe('User models:', () => {
 
             it('should update the password if the supplied token is valid', (done) => {
                 User.create(testUser)
-                    .then(() => User.resetPasswordToken(testUser.email, expTime))
+                    .then(() => User.resetPasswordToken(testUser.email, undefined, expTime))
                     .then(token => User.resetPassword(token, 'newerpass'))
                     .then(() => {
                         User.find({

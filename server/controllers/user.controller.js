@@ -62,6 +62,7 @@ function create(req, res, next) {
     const user = User.build({
         username: req.body.username,
         email: req.body.email,
+        phone: req.body.phone,
         password: req.body.password,
         scopes: req.body.scopes,
     });
@@ -75,11 +76,18 @@ function update(req, res, next) {
     User.findById(req.params.userId)
         .then((user) => {
             if (req.user.username !== user.username && !req.user.isAdmin()) {
-                const e = new Error('User not allowed to update email');
+                const e = new Error('User not allowed to update email or phone number');
                 e.status = httpStatus.FORBIDDEN;
                 return next(e);
             }
-            return user.update({ email: req.body.email });
+            if (req.body.email) {
+                return user.update({ email: req.body.email });
+            } else if (req.body.phone) {
+                return user.update({ phone: req.body.phone });
+            }
+            const e = new Error('No email or phone number supplied');
+            e.status = httpStatus.BAD_REQUEST;
+            return next(e);
         })
         .then(updatedUser => res.json(updatedUser))
         .catch(e => next(e));
@@ -112,7 +120,7 @@ function updateScopes(req, res, next) {
  */
 function list(req, res, next) {
     User.findAll({
-        attributes: ['id', 'username', 'email'],
+        attributes: ['id', 'username', 'email', 'phone'],
     })
     .then(users => res.json(users))
     .catch(e => next(e));

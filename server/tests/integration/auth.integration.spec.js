@@ -5,10 +5,7 @@ import request from 'supertest';
 import httpStatus from 'http-status';
 import chai, { expect } from 'chai';
 import app from '../../../index';
-import {
-    User,
-    sequelize,
-} from '../../../config/sequelize';
+import { User } from '../../../config/sequelize';
 import * as common from './common.spec';
 
 chai.config.includeStack = true;
@@ -86,11 +83,11 @@ describe('Auth API:', () => {
             })
         );
 
-        it('should require an email in the request body', () =>
+        it('should require an email or phone in the request body', () =>
             request(app)
                 .post(`${common.baseURL}/auth/reset-password`)
                 .expect(httpStatus.BAD_REQUEST)
-                .then(res => expect(JSON.parse(res.text).message).to.equal('"email" is required'))
+                .then(res => expect(JSON.parse(res.text).message).to.equal('"value" must contain at least one of [email, phone]'))
         );
 
         it('should set the password to a random string', () =>

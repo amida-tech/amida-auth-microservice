@@ -86,21 +86,22 @@ function resetToken(req, res, next) {
     const clickLine = 'Please click on the following link, or paste into your browser:';
     const ifNotLine = 'If you or your admin did not request a reset, please ignore this email.';
 
+    const userLinePhone = 'You have requested a password reset, please click the link';
+
     const email = _.get(req, 'body.email');
     const phone = _.get(req, 'body.phone');
     if (!email && !phone) {
         const err = new APIError('Invalid email', httpStatus.BAD_REQUEST, true);
         return next(err);
     }
-    let address = email;
-    if (phone) { address = String(phone); }
-    return User.resetPasswordToken(address, 3600)
+    return User.resetPasswordToken(email, phone, 3600)
         .then((token) => {
             const link = generateLink(req, token);
-            const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);
             if (email) {
+                const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);
                 sendEmail(res, email, text, token, next);
             } else if (phone) {
+                const text = util.format('%s\n%s', userLinePhone, link);
                 sendSms(res, phone, text, token, next);
             }
         })

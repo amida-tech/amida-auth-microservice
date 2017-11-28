@@ -2,11 +2,12 @@ import Joi from 'joi';
 
 const userValidation = {
     createUser: {
-        body: {
+        body: Joi.object().keys({
+            email: Joi.string().email(),
+            phone: Joi.string().regex(/^[0-9]{10}$/),
             username: Joi.string().required(),
-            email: Joi.string().email().required(),
             password: Joi.string().min(8).max(64).required(),
-        },
+        }).or('email', 'phone'),
     },
     updateUser: {
         body: {
@@ -27,9 +28,10 @@ const authValidation = {
         },
     },
     resetToken: {
-        body: {
-            email: Joi.string().email().required(),
-        },
+        body: Joi.object().keys({
+            email: Joi.string().email(),
+            phone: Joi.string().regex(/^[0-9]{10}$/),
+        }).or('email', 'phone'),
     },
     resetPassword: {
         body: {

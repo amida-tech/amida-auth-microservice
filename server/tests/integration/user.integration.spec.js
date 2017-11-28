@@ -6,10 +6,7 @@ import httpStatus from 'http-status';
 import chai, { expect } from 'chai';
 import app from '../../../index';
 import p from '../../../package';
-import {
-    User,
-    sequelize,
-} from '../../../config/sequelize';
+import { User } from '../../../config/sequelize';
 import * as common from './common.spec';
 
 chai.config.includeStack = true;
@@ -28,6 +25,7 @@ describe('User API:', () => {
     const testUser = {
         username: 'KK123',
         email: 'test@amida.com',
+        phone: '2025550152',
         password: 'testpass',
     };
 
@@ -48,6 +46,12 @@ describe('User API:', () => {
         password: 'goodpass',
     };
 
+    const userBadPhone = {
+        username: 'KK123',
+        phone: '202555015222',
+        password: 'goodpass',
+    };
+
     const userDuplicateUsername = {
         username: 'KK123',
         email: 'test2@amida.com',
@@ -57,6 +61,12 @@ describe('User API:', () => {
     const userDuplicateEmail = {
         username: 'KK1234',
         email: 'test@amida.com',
+        password: 'testpass',
+    };
+
+    const userDuplicatePhone = {
+        username: 'KK1234',
+        phone: '2025550152',
         password: 'testpass',
     };
 
@@ -204,6 +214,19 @@ describe('User API:', () => {
                 .catch(done);
         });
 
+        it('should return 400 if phone is invalid', (done) => {
+            request(app)
+                .post(`${baseURL}/user`)
+                .send(userBadPhone)
+                .expect(httpStatus.BAD_REQUEST)
+                .then((res) => {
+                    expect(res.text).to.contain('\\"phone\\" with value');
+                    done();
+                })
+                .catch(done);
+        });
+
+
         it('should return 400 if username is a duplicate', (done) => {
             request(app)
                 .post(`${baseURL}/user`)
@@ -235,6 +258,25 @@ describe('User API:', () => {
                         .expect(httpStatus.BAD_REQUEST)
                         .then((res) => {
                             expect(res.text).to.contain('email must be unique');
+                            done();
+                        })
+                        .catch(done);
+                })
+                .catch(done);
+        });
+
+        it('should return 400 if phone is a duplicate', (done) => {
+            request(app)
+                .post(`${baseURL}/user`)
+                .send(testUser)
+                .expect(httpStatus.OK)
+                .then(() => {
+                    request(app)
+                        .post(`${baseURL}/user`)
+                        .send(userDuplicatePhone)
+                        .expect(httpStatus.BAD_REQUEST)
+                        .then((res) => {
+                            expect(res.text).to.contain('phone must be unique');
                             done();
                         })
                         .catch(done);

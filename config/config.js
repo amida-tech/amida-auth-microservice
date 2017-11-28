@@ -106,6 +106,11 @@ const config = {
         password: envVars.MAILER_PASSWORD,
         service: envVars.MAILER_SERVICE_PROVIDER,
     },
+    twilio: {
+        accountSid: envVars.TWILIO_ACCOUNT_SID,
+        authToken: envVars.TWILIO_AUTH_TOKEN,
+        fromPhoneNumber: envVars.TWILIO_FROM_PHONE_NUMBER,
+    },
     facebook: {
         clientId: envVars.FACEBOOK_CLIENT_ID,
         clientSecret: envVars.FACEBOOK_CLIENT_SECRET,

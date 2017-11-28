@@ -8,6 +8,7 @@ import {
     sendEmail,
     generateLink,
 } from '../helpers/mailer';
+import { sendSms } from '../helpers/sms';
 
 const User = db.User;
 
@@ -85,16 +86,24 @@ function resetToken(req, res, next) {
     const clickLine = 'Please click on the following link, or paste into your browser:';
     const ifNotLine = 'If you or your admin did not request a reset, please ignore this email.';
 
+    const userLinePhone = 'You have requested a password reset, please click the link';
+
     const email = _.get(req, 'body.email');
-    if (!email) {
+    const phone = _.get(req, 'body.phone');
+    if (!email && !phone) {
         const err = new APIError('Invalid email', httpStatus.BAD_REQUEST, true);
         return next(err);
     }
-    return User.resetPasswordToken(email, 3600)
+    return User.resetPasswordToken(email, phone, 3600)
         .then((token) => {
             const link = generateLink(req, token);
-            const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);
-            sendEmail(res, email, text, token, next);
+            if (email) {
+                const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);
+                sendEmail(res, email, text, token, next);
+            } else if (phone) {
+                const text = util.format('%s\n%s', userLinePhone, link);
+                sendSms(res, phone, text, token, next);
+            }
         })
         .catch(error => next(error));
 }

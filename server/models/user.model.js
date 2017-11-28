@@ -42,7 +42,12 @@ module.exports = (sequelize, DataTypes) => {
         email: {
             type: DataTypes.STRING,
             unique: true,
-            allowNull: false,
+            allowNull: true,
+        },
+        phone: {
+            type: DataTypes.STRING,
+            unique: true,
+            allowNull: true,
         },
         password: {
             type: DataTypes.STRING(512),
@@ -69,15 +74,24 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     // Class methods
-    User.resetPasswordToken = function resetPasswordToken(email, expTime) {
-        return this.find({
-            where: {
-                email,
-            },
-        })
-        .then((user) => {
+    User.resetPasswordToken = function resetPasswordToken(email, phone, expTime) {
+        let findPromise;
+        if (email) {
+            findPromise = this.find({
+                where: {
+                    email,
+                },
+            });
+        } else if (phone) {
+            findPromise = this.find({
+                where: {
+                    phone,
+                },
+            });
+        }
+        return findPromise.then((user) => {
             if (!user) {
-                const err = new Error('Email not found');
+                const err = new Error('Email or phone not found');
                 return sequelize.Promise.reject(err);
             } else if (user.provider !== null) {
                 const err = new Error('Cannot reset password on externally managed account');

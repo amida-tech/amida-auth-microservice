@@ -6,6 +6,10 @@ const logger = new (winston.Logger)({
             json: true,
             colorize: true,
         }),
+        new winston.transports.File({
+          filename: 'combined.log',
+          level: 'info'
+        }),
     ],
 });
 

@@ -16,7 +16,10 @@ router.route('/')
          userCtrl.list)
 
     /** POST /api/user - Create new user */
-    .post(validate(userValidation.createUser), userCtrl.create);
+    .post(validate(userValidation.createUser),
+          passport.authenticate('jwt', { session: false }),
+          permissions.check('admin'),
+          userCtrl.create);
 
 router.route('/me')
     .get(passport.authenticate('jwt', { session: false }),

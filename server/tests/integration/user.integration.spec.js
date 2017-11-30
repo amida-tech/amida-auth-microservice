@@ -5,7 +5,6 @@ import request from 'supertest';
 import httpStatus from 'http-status';
 import chai, { expect } from 'chai';
 import app from '../../../index';
-import p from '../../../package';
 import {
     User,
     sequelize,
@@ -14,14 +13,10 @@ import * as common from './common.spec';
 
 chai.config.includeStack = true;
 
-const version = p.version.split('.').shift();
-const baseURL = `/api/v${version}`;
-
-
 describe('User API:', () => {
-    // before(() => sequelize.sync({
-    //     force: true,
-    // }));
+    before(() => sequelize.sync({
+        force: true,
+    }));
 
     after(() => User.destroy({ where: {} }));
 
@@ -72,32 +67,49 @@ describe('User API:', () => {
         password: 'adminpass',
     };
 
-    beforeEach(() => User.destroy({ where: {} }));
+    let adminToken;
+    beforeEach(() => common.seedAdminAndLogin(app)
+        .then((token) => {
+            adminToken = token;
+            return;
+        })
+    );
+
+    afterEach(() => User.destroy({ where: {} }));
 
     describe('GET /api/user', () => {
         let jwtToken;
         let nonAdminToken;
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
+        before(() => common.seedAdminAndLogin(app)
+            .then((token) => {
+                adminToken = token;
+                return;
+            })
+        );
+
+        before(() => request(app)
+            .post(`${common.baseURL}/user`)
+            .set('Authorization', `Bearer ${adminToken}`)
             .send(adminUser)
             .expect(httpStatus.OK)
         );
 
-        beforeEach(() => request(app)
-            .post(`${baseURL}/user`)
+        before(() => request(app)
+            .post(`${common.baseURL}/user`)
+            .set('Authorization', `Bearer ${adminToken}`)
             .send(testUser)
             .expect(httpStatus.OK)
         );
 
-        beforeEach(() => common.login(app, adminUserCredentials)
+        before(() => common.login(app, adminUserCredentials)
             .then((token) => {
                 jwtToken = token;
                 return;
             })
         );
 
-        beforeEach(() => common.login(app, testUserCredentials)
+        before(() => common.login(app, testUserCredentials)
             .then((token) => {
                 nonAdminToken = token;
                 return;
@@ -106,12 +118,12 @@ describe('User API:', () => {
 
         it('should get basic user info on all users', () =>
             request(app)
-                .get(`${baseURL}/user`)
+                .get(`${common.baseURL}/user`)
                 .set('Authorization', jwtToken)
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body).to.be.an.array;
-                    expect(res.body).to.have.lengthOf(2);
+                    expect(res.body).to.have.lengthOf(3);
                     res.body.forEach((elem) => {
                         expect(elem.id).to.exist;
                         expect(elem.username).to.exist;
@@ -123,9 +135,9 @@ describe('User API:', () => {
 
         it('non-admins cannot get basic user info on all users', () =>
             request(app)
-                .get(`${baseURL}/user`)
+                .get(`${common.baseURL}/user`)
                 .set('Authorization', nonAdminToken)
-                .expect(httpStatus.FORBIDDEN)
+                .expect(httpStatus.UNAUTHORIZED)
             );
     });
 
@@ -133,7 +145,7 @@ describe('User API:', () => {
         let userId;
         let jwtToken;
 
-        beforeEach(() => common.createUser(app, testUser)
+        beforeEach(() => common.createUser(app, testUser, adminToken)
             .then((id) => {
                 userId = id;
                 return;
@@ -149,7 +161,7 @@ describe('User API:', () => {
 
         it('should get basic user info on the logged-in user', () =>
             request(app)
-                .get(`${baseURL}/user/me`)
+                .get(`${common.baseURL}/user/me`)
                 .set('Authorization', jwtToken)
                 .expect(httpStatus.OK)
                 .then((res) => {
@@ -168,7 +180,8 @@ describe('User API:', () => {
     describe('POST /api/user', () => {
         it('should create a new user and return it without password info', (done) => {
             request(app)
-                .post(`${baseURL}/user`)
+                .post(`${common.baseURL}/user`)
+                .set('Authorization', `Bearer ${adminToken}`)
                 .send(testUser)
                 .expect(httpStatus.OK)
                 .then((res) => {
@@ -182,7 +195,8 @@ describe('User API:', () => {
 
         it('should return 400 if password is invalid', (done) => {
             request(app)
-                .post(`${baseURL}/user`)
+                .post(`${common.baseURL}/user`)
+                .set('Authorization', `Bearer ${adminToken}`)
                 .send(userBadPassword)
                 .expect(httpStatus.BAD_REQUEST)
                 .then((res) => {
@@ -194,7 +208,8 @@ describe('User API:', () => {
 
         it('should return 400 if email is invalid', (done) => {
             request(app)
-                .post(`${baseURL}/user`)
+                .post(`${common.baseURL}/user`)
+                .set('Authorization', `Bearer ${adminToken}`)
                 .send(userBadEmail)
                 .expect(httpStatus.BAD_REQUEST)
                 .then((res) => {
@@ -206,12 +221,14 @@ describe('User API:', () => {
 
         it('should return 400 if username is a duplicate', (done) => {
             request(app)
-                .post(`${baseURL}/user`)
+                .post(`${common.baseURL}/user`)
+                .set('Authorization', `Bearer ${adminToken}`)
                 .send(testUser)
                 .expect(httpStatus.OK)
                 .then(() => {
                     request(app)
-                        .post(`${baseURL}/user`)
+                        .post(`${common.baseURL}/user`)
+                        .set('Authorization', `Bearer ${adminToken}`)
                         .send(userDuplicateUsername)
                         .expect(httpStatus.BAD_REQUEST)
                         .then((res) => {
@@ -225,12 +242,14 @@ describe('User API:', () => {
 
         it('should return 400 if email is a duplicate', (done) => {
             request(app)
-                .post(`${baseURL}/user`)
+                .post(`${common.baseURL}/user`)
+                .set('Authorization', `Bearer ${adminToken}`)
                 .send(testUser)
                 .expect(httpStatus.OK)
                 .then(() => {
                     request(app)
-                        .post(`${baseURL}/user`)
+                        .post(`${common.baseURL}/user`)
+                        .set('Authorization', `Bearer ${adminToken}`)
                         .send(userDuplicateEmail)
                         .expect(httpStatus.BAD_REQUEST)
                         .then((res) => {
@@ -244,7 +263,8 @@ describe('User API:', () => {
 
         it('should return only necessary User information', (done) => {
             request(app)
-                .post(`${baseURL}/user`)
+                .post(`${common.baseURL}/user`)
+                .set('Authorization', `Bearer ${adminToken}`)
                 .send(testUser)
                 .expect(httpStatus.OK)
                 .then((res) => {
@@ -262,14 +282,14 @@ describe('User API:', () => {
         let jwtToken;
         let adminJwtToken;
 
-        beforeEach(() => common.createUser(app, adminUser)
+        beforeEach(() => common.createUser(app, adminUser, adminToken)
             .then((id) => {
                 adminUserId = id;
                 return;
             })
         );
 
-        beforeEach(() => common.createUser(app, testUser)
+        beforeEach(() => common.createUser(app, testUser, adminToken)
             .then((id) => {
                 userId = id;
                 return;
@@ -292,7 +312,7 @@ describe('User API:', () => {
 
         it('should return a 404 if the specified userId does not exist', () =>
             request(app)
-                .put(`${baseURL}/user/999999`)
+                .put(`${common.baseURL}/user/999999`)
                 .set('Authorization', adminJwtToken)
                 .send({ email: 'newemail' })
                 .expect(httpStatus.NOT_FOUND)
@@ -304,7 +324,7 @@ describe('User API:', () => {
 
         it('should forbid users from updating another user\'s email', () => {
             request(app)
-                .put(`${baseURL}/user/${adminUserId}`)
+                .put(`${common.baseURL}/user/${adminUserId}`)
                 .set('Authorization', jwtToken)
                 .send({ email: 'newemail' })
                 .expect(httpStatus.FORBIDDEN);
@@ -315,9 +335,9 @@ describe('User API:', () => {
         let userId;
         let jwtToken;
 
-        beforeEach(() => common.createUser(app, adminUser));
+        beforeEach(() => common.createUser(app, adminUser, adminToken));
 
-        beforeEach(() => common.createUser(app, testUser)
+        beforeEach(() => common.createUser(app, testUser, adminToken)
             .then((id) => {
                 userId = id;
                 return;
@@ -333,14 +353,14 @@ describe('User API:', () => {
 
         it('should require admin permissions to use this route', () =>
             request(app)
-                .post(`${baseURL}/auth/login`)
+                .post(`${common.baseURL}/auth/login`)
                 .send(testUserCredentials)
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body).to.have.property('token');
                     jwtToken = `Bearer ${res.body.token}`;
                     return request(app)
-                        .put(`${baseURL}/user/scopes/${userId}`)
+                        .put(`${common.baseURL}/user/scopes/${userId}`)
                         .set('Authorization', jwtToken)
                         .send({
                             scopes: ['newScope'],
@@ -351,7 +371,7 @@ describe('User API:', () => {
 
         it('should reject updates to scopes not using an array', () =>
             request(app)
-                .put(`${baseURL}/user/scopes/${userId}`)
+                .put(`${common.baseURL}/user/scopes/${userId}`)
                 .set('Authorization', jwtToken)
                 .send({
                     scopes: 'badscope',
@@ -361,7 +381,7 @@ describe('User API:', () => {
 
         it('should reject updates with duplicate values', () =>
             request(app)
-                .put(`${baseURL}/user/scopes/${userId}`)
+                .put(`${common.baseURL}/user/scopes/${userId}`)
                 .set('Authorization', jwtToken)
                 .send({
                     scopes: ['notUnique', 'notUnique'],
@@ -371,12 +391,12 @@ describe('User API:', () => {
 
         it('should overwrite the old array', () =>
             request(app)
-                .put(`${baseURL}/user/scopes/${userId}`)
+                .put(`${common.baseURL}/user/scopes/${userId}`)
                 .set('Authorization', jwtToken)
                 .send({ scopes: ['newScope'] })
                 .expect(httpStatus.OK)
                 .then(() => request(app)
-                    .get(`${baseURL}/user/${userId}`)
+                    .get(`${common.baseURL}/user/${userId}`)
                     .set('Authorization', jwtToken)
                     .then((userRes) => {
                         expect(userRes.body.scopes).to.deep.equal(['newScope']);
@@ -386,7 +406,7 @@ describe('User API:', () => {
 
         it('should return the new information of the changed user', () =>
             request(app)
-                .put(`${baseURL}/user/scopes/${userId}`)
+                .put(`${common.baseURL}/user/scopes/${userId}`)
                 .set('Authorization', jwtToken)
                 .send({ scopes: ['newScope'] })
                 .expect(httpStatus.OK)
@@ -398,7 +418,7 @@ describe('User API:', () => {
 
         it('should work with an empty array update', () =>
             request(app)
-                .put(`${baseURL}/user/scopes/${userId}`)
+                .put(`${common.baseURL}/user/scopes/${userId}`)
                 .set('Authorization', jwtToken)
                 .send({
                     scopes: [''],
@@ -417,14 +437,14 @@ describe('User API:', () => {
         let jwtToken;
         let adminJwtToken;
 
-        beforeEach(() => common.createUser(app, adminUser)
+        beforeEach(() => common.createUser(app, adminUser, adminToken)
             .then((id) => {
                 adminUserId = id;
                 return;
             })
         );
 
-        beforeEach(() => common.createUser(app, testUser)
+        beforeEach(() => common.createUser(app, testUser, adminToken)
             .then((id) => {
                 userId = id;
                 return;
@@ -447,7 +467,7 @@ describe('User API:', () => {
 
         it('should allow admins to delete users', () =>
             request(app)
-                .delete(`${baseURL}/user/${userId}`)
+                .delete(`${common.baseURL}/user/${userId}`)
                 .set('Authorization', adminJwtToken)
                 .expect(httpStatus.NO_CONTENT)
                 .then(() => User.findById(userId))
@@ -456,18 +476,18 @@ describe('User API:', () => {
 
         it('should not allow non-admins to delete users', () =>
             request(app)
-                .delete(`${baseURL}/user/${adminUserId}`)
+                .delete(`${common.baseURL}/user/${adminUserId}`)
                 .set('Authorization', jwtToken)
                 .expect(httpStatus.FORBIDDEN)
         );
 
         it('using the JWT for a deleted user should fail', () =>
             request(app)
-                .delete(`${baseURL}/user/${userId}`)
+                .delete(`${common.baseURL}/user/${userId}`)
                 .set('Authorization', adminJwtToken)
                 .expect(httpStatus.NO_CONTENT)
                 .then(() => request(app)
-                    .get(`${baseURL}/user/me`)
+                    .get(`${common.baseURL}/user/me`)
                     .set('Authorization', jwtToken)
                     .expect(httpStatus.UNAUTHORIZED)
                 )

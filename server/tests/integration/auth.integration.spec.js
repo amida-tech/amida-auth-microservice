@@ -14,16 +14,24 @@ import * as common from './common.spec';
 chai.config.includeStack = true;
 
 describe('Auth API:', () => {
-    // before(() => sequelize.sync({
-    //     force: true,
-    // }));
+    before(() => sequelize.sync({
+        force: true,
+    }));
 
     after(() => User.destroy({ where: {} }));
 
+    let adminToken;
     let jwtToken;
 
     describe('POST /auth/login', () => {
-        before(() => common.setupTestUser(app));
+        before(() => common.seedAdminAndLogin(app)
+            .then((token) => {
+                adminToken = token;
+                return;
+            })
+        );
+
+        before(() => common.setupTestUser(app, adminToken));
 
         after(() => User.destroy({ where: {} }));
 
@@ -70,7 +78,14 @@ describe('Auth API:', () => {
     describe('POST /auth/reset-password', () => {
         let resetToken;
 
-        before(() => common.setupTestUser(app));
+        before(() => common.seedAdminAndLogin(app)
+            .then((token) => {
+                adminToken = token;
+                return;
+            })
+        );
+
+        before(() => common.setupTestUser(app, adminToken));
 
         after(() => User.destroy({ where: {} }));
 
@@ -153,7 +168,14 @@ describe('Auth API:', () => {
     });
 
     describe('POST /auth/update-password', () => {
-        before(() => common.setupTestUser(app));
+        before(() => common.seedAdminAndLogin(app)
+            .then((token) => {
+                adminToken = token;
+                return;
+            })
+        );
+
+        before(() => common.setupTestUser(app, adminToken));
 
         after(() => User.destroy({ where: {} }));
 

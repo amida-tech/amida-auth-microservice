@@ -5,9 +5,17 @@ import { expect } from 'chai';
 import jwt from 'jsonwebtoken';
 import p from '../../../package';
 import config from '../../../config/config';
+import { User } from '../../../config/sequelize';
 
 const version = p.version.split('.').shift();
 const baseURL = `/api/v${version}`;
+
+const adminUser = {
+    username: 'amidaadmin',
+    email: 'superadmin@amida.com',
+    password: 'adminpass',
+    scopes: ['admin'],
+};
 
 const testUser = {
     username: 'KK123',
@@ -49,9 +57,30 @@ module.exports = {
             });
     },
 
-    createUser: function createUser(app, userData) {
+    seedAdminAndLogin: function seedAdminAndLogin(app) {
+        return User
+            .create(adminUser)
+            .then(() => request(app)
+                .post(`${baseURL}/auth/login`)
+                .send({
+                    username: adminUser.username,
+                    password: adminUser.password,
+                })
+                .then(res => Promise.resolve(res.body.token)))
+            .catch(() => request(app)
+                .post(`${baseURL}/auth/login`)
+                .send({
+                    username: adminUser.username,
+                    password: adminUser.password,
+                })
+                .then(res => Promise.resolve(res.body.token))
+            );
+    },
+
+    createUser: function createUser(app, userData, adminToken) {
         return request(app)
             .post(`${baseURL}/user`)
+            .set('Authorization', `Bearer ${adminToken}`)
             .send(userData)
             .expect(httpStatus.OK)
             .then((res) => {
@@ -73,9 +102,10 @@ module.exports = {
             });
     },
 
-    setupTestUser: function setupTestUser(app) {
+    setupTestUser: function setupTestUser(app, adminToken) {
         return request(app)
             .post(`${baseURL}/user`)
+            .set('Authorization', `Bearer ${adminToken}`)
             .send(testUser)
             .expect(httpStatus.OK);
     },

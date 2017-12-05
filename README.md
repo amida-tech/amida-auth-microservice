@@ -28,6 +28,10 @@ ssh-keygen -t rsa -b 4096 -f private.key
 openssl rsa -in private.key -pubout -outform PEM -out private.key.pub
 ```
 
+### Seeding
+Since many operations require an admin user, you may find it easiest to begin using the service with a default admin user, to be removed later.
+To create this user, simply run `yarn seed`.
+
 ### API Spec
 Apiary docs can be found at http://docs.amidaauth.apiary.io/.
 

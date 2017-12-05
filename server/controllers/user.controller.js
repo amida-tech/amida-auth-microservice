@@ -81,7 +81,7 @@ function update(req, res, next) {
             }
             return user.update({ email: req.body.email });
         })
-        .then(updatedUser => res.json(updatedUser))
+        .then(updatedUser => res.json(updatedUser.getBasicUserInfo()))
         .catch(e => next(e));
 }
 

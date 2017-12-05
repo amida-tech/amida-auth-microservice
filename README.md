@@ -29,7 +29,11 @@ openssl rsa -in private.key -pubout -outform PEM -out private.key.pub
 ```
 
 ### API Spec
-Apiary docs can be found at http://docs.amidaauth.apiary.io/.
+Interactive Apiary docs can be found at http://docs.amidaauth.apiary.io/.
+
+The spec can be viewed at https://amida-tech.github.io/amida-auth-microservice/.
+
+To update the spec, first edit the files in the docs directory. Then run `aglio -i apiary.apib --theme flatly -o index.html`.
 
 ### External auth
 The Amida Auth service can allow external OAuth providers to manage identity. If a user is created via external auth, they will still get an entry in the Users database. However, they will not get a password, and password management functions will be disabled for that user. The `provider` column will contain an identifier for the OAuth provider managing that user.

@@ -5,9 +5,18 @@ import passport from 'passport';
 import { userValidation } from '../../config/param-validation';
 import userCtrl from '../controllers/user.controller';
 import { checkExternalProvider } from '../helpers/jwt';
+import config from '../../config/config';
 
 const router = express.Router(); // eslint-disable-line new-cap
 const permissions = guard({ permissionsProperty: 'scopes' });
+
+let userAdminFunctions = [];
+if (config.createUserAdmin) {
+    userAdminFunctions = [
+        passport.authenticate('jwt', { session: false }),
+        permissions.check('admin'),
+    ];
+}
 
 router.route('/')
     /** GET /api/user - Get list of users */
@@ -17,8 +26,7 @@ router.route('/')
 
     /** POST /api/user - Create new user */
     .post(validate(userValidation.createUser),
-          passport.authenticate('jwt', { session: false }),
-          permissions.check('admin'),
+          ...userAdminFunctions,
           userCtrl.create);
 
 router.route('/me')

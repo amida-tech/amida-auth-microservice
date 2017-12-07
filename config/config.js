@@ -10,6 +10,8 @@ const envVarsSchema = Joi.object({
         .default('development'),
     PORT: Joi.number()
         .default(4000),
+    CREATE_USER_ADMIN: Joi.bool()
+        .default(true),
     JWT_MODE: Joi.string().allow(['rsa', 'hmac']).default('hmac')
         .description('Signing algorithm for JWT'),
     JWT_SECRET: Joi.string()
@@ -89,6 +91,7 @@ if (error) {
 const config = {
     env: envVars.NODE_ENV,
     port: envVars.PORT,
+    createUserAdmin: envVars.CREATE_USER_ADMIN,
     jwtMode: envVars.JWT_MODE,
     jwtSecret: envVars.JWT_SECRET,
     jwtPrivateKeyPath: envVars.JWT_PRIVATE_KEY_PATH,

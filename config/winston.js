@@ -7,8 +7,8 @@ const logger = new (winston.Logger)({
             colorize: true,
         }),
         new winston.transports.File({
-          filename: 'combined.log',
-          level: 'info'
+            filename: 'combined.log',
+            level: 'info',
         }),
     ],
 });

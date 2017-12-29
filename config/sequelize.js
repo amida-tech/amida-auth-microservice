@@ -2,7 +2,12 @@ import Sequelize from 'sequelize';
 import _ from 'lodash';
 import config from './config';
 
-const dbLogging = config.env !== 'test';
+let dbLogging;
+if (config.env === 'test') {
+    dbLogging = false;
+} else {
+    dbLogging = console.log;
+}
 
 const db = {};
 

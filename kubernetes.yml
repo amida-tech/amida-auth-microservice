@@ -1,0 +1,56 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: amida-auth-microservice-deployment
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: amida-auth-microservice
+    spec:
+      imagePullSecrets:
+      - name: regsecret
+      containers:
+      - name: amida-auth-microservice
+        image: amidatech/auth-service
+        env:
+        - name: PG_DB
+          value: amida_auth
+        - name: PG_PORT
+          value: '5432'
+        - name: PG_HOST
+          value: kubernetes-auth-microservice.czgzedfwgy7z.us-west-2.rds.amazonaws.com
+        - name: PG_USER
+          value: amida_auth_microservcie
+        - name: PG_PASSWD
+          value: amida-auth
+        - name: JWT_SECRET
+          value: 0a6b944d-d2fb-46fc-a85e-0295c986cd9f
+        - name: NODE_ENV
+          value: development
+        - name: CREATE_USER_ADMIN
+          value: 'false'
+        - name: JWT_MODE
+          value: hmac
+        - name: JWT_PRIVATE_KEY_PATH
+          value: private.key
+        - name: JWT_PUBLIC_KEY_PATH
+          value: private.key.pub
+        - name: JWT_TTL
+          value: '3600'
+        - name: MAILER_EMAIL_ID
+          value: ''
+        - name: MAILER_PASSWORD
+          value: ''
+        - name: MAILER_SERVICE_PROVIDER
+          value: '126'
+        - name: FACEBOOK_CLIENT_ID
+          value: '12345'
+        - name: FACEBOOK_CLIENT_SECRET
+          value: 6789A
+        - name: FACEBOOK_CALLBACK_URL
+          value: http://localhost:4000/api/v0/auth/facebook/callback
+        ports:
+        - name: nodejs-port
+          containerPort: 4000

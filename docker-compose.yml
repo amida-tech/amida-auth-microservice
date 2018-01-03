@@ -12,7 +12,7 @@ services:
       # Data present in the base image at the specified mount point will be copied
       # over to the new volume upon volume initialization.
       # node_modules from this new volume will be used and not from your local dev env.
-      - /app/node_modules/
+      # - /app/node_modules/
 
     # Expose ports [HOST:CONTAINER}
     ports:

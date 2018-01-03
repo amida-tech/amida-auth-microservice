@@ -66,6 +66,11 @@ module.exports = (sequelize, DataTypes) => {
         },
     }, {
         hooks,
+        indexes: [
+          {
+            fields: ['username']
+          }
+        ]
     });
 
     // Class methods

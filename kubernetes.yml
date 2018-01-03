@@ -20,7 +20,7 @@ spec:
         - name: PG_PORT
           value: '5432'
         - name: PG_HOST
-          value: kubernetes-auth-microservice.czgzedfwgy7z.us-west-2.rds.amazonaws.com
+          value: kubernetes-auth-microservice.a_database_url.us-west-2.rds.amazonaws.com
         - name: PG_USER
           value: amida_auth_microservcie
         - name: PG_PASSWD

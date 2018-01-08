@@ -13,6 +13,14 @@ chai.config.includeStack = true;
 describe('Auth API:', () => {
     let jwtToken;
 
+    // run health check to ensure sync runs
+    before((done) => {
+        request(app)
+            .get('/api/health-check')
+            .expect(httpStatus.OK)
+            .then(setTimeout(done, 1000));
+    });
+
     describe('POST /auth/login', () => {
         before(() => common
             .seedAdminAndLogin(app)

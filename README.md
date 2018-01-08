@@ -3,6 +3,11 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5c42966514c943a1bf0d03cbb0b924d1)](https://www.codacy.com/app/jacob.s.sachs/amida-auth-microservice?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=amida-tech/amida-auth-microservice&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/5c42966514c943a1bf0d03cbb0b924d1)](https://www.codacy.com/app/jacob.s.sachs/amida-auth-microservice?utm_source=github.com&utm_medium=referral&utm_content=amida-tech/amida-auth-microservice&utm_campaign=Badge_Coverage)
 
+## Table of Contents
+  - [Design](#design)
+  - [Development](#development)
+  - [Deployment](#deployment)
+
 ## Design
 
 ### Integration with other services
@@ -72,7 +77,7 @@ Clients can then get a JWT by doing a `GET` for `/api/vX/auth/facebook` and logg
 - Uses [http-status](https://www.npmjs.com/package/http-status) to set http status code. It is recommended to use `httpStatus.INTERNAL_SERVER_ERROR` instead of directly using `500` when setting status code.
 - Has `.editorconfig` which helps developers define and maintain consistent coding styles between different editors and IDEs.
 
-## Developing locally
+## Development
 
 Install yarn:
 ```js
@@ -221,6 +226,6 @@ docker-compose up
 ### Kubernetes Deployment
 See the [paper](https://paper.dropbox.com/doc/Amida-Microservices-Kubernetes-Deployment-Xsz32zX8nwT9qctitGNVc) write-up for instructions on how to deploy with Kubernetes. The `kubernetes.yml` file contains the deployment definition for the project.
 
-## Logging
+### Logging
 
 Universal logging library [winston](https://www.npmjs.com/package/winston) is used for logging. It has support for multiple transports. A transport is essentially a storage device for your logs. Each instance of a winston logger can have multiple transports configured at different levels. For example, one may want error logs to be stored in a persistent remote location (like a database), but all logs output to the console or a local file. We just log to the console for simplicity, but you can configure more transports as per your requirement.

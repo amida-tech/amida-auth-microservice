@@ -5,21 +5,12 @@ import request from 'supertest';
 import httpStatus from 'http-status';
 import chai, { expect } from 'chai';
 import app from '../../../index';
-import {
-    User,
-    sequelize,
-} from '../../../config/sequelize';
+import { User } from '../../../config/sequelize';
 import * as common from './common.spec';
 
 chai.config.includeStack = true;
 
 describe('Auth API:', () => {
-    before(() => sequelize.sync({
-        force: true,
-    }));
-
-    after(() => User.destroy({ where: {} }));
-
     let adminToken;
     let jwtToken;
 

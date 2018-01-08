@@ -4,10 +4,7 @@
 /* eslint new-cap: 0 */
 
 import chai, { expect } from 'chai';
-import {
-    User,
-    sequelize,
-} from '../../../config/sequelize';
+import { User } from '../../../config/sequelize';
 
 chai.config.includeStack = true;
 
@@ -28,12 +25,6 @@ const adminUser = {
 const expTime = 3600;
 
 describe('User models:', () => {
-    before(() => sequelize.sync({
-        force: true,
-    }));
-
-    after(() => User.destroy({ where: {} }));
-
     afterEach(() => User.destroy({ where: {} }));
 
     describe('create', () => {

@@ -67,10 +67,10 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         hooks,
         indexes: [
-          {
-            fields: ['username']
-          }
-        ]
+            {
+                fields: ['username'],
+            },
+        ],
     });
 
     // Class methods

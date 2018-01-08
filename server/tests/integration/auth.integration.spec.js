@@ -11,18 +11,13 @@ import * as common from './common.spec';
 chai.config.includeStack = true;
 
 describe('Auth API:', () => {
-    let adminToken;
     let jwtToken;
 
     describe('POST /auth/login', () => {
-        before(() => common.seedAdminAndLogin(app)
-            .then((token) => {
-                adminToken = token;
-                return;
-            })
+        before(() => common
+            .seedAdminAndLogin(app)
+            .then(token => common.setupTestUser(app, token))
         );
-
-        before(() => common.setupTestUser(app, adminToken));
 
         after(() => User.destroy({ where: {} }));
 
@@ -69,14 +64,10 @@ describe('Auth API:', () => {
     describe('POST /auth/reset-password', () => {
         let resetToken;
 
-        before(() => common.seedAdminAndLogin(app)
-            .then((token) => {
-                adminToken = token;
-                return;
-            })
+        before(() => common
+            .seedAdminAndLogin(app)
+            .then(token => common.setupTestUser(app, token))
         );
-
-        before(() => common.setupTestUser(app, adminToken));
 
         after(() => User.destroy({ where: {} }));
 
@@ -159,14 +150,10 @@ describe('Auth API:', () => {
     });
 
     describe('POST /auth/update-password', () => {
-        before(() => common.seedAdminAndLogin(app)
-            .then((token) => {
-                adminToken = token;
-                return;
-            })
+        before(() => common
+            .seedAdminAndLogin(app)
+            .then(token => common.setupTestUser(app, token))
         );
-
-        before(() => common.setupTestUser(app, adminToken));
 
         after(() => User.destroy({ where: {} }));
 

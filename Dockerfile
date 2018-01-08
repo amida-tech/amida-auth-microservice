@@ -10,7 +10,7 @@ WORKDIR /app
 
 # only copy package.json initially so that `RUN yarn` layer is recreated only
 # if there are changes in package.json
-ADD . /app/
+COPY . /app/
 RUN yarn
 
 # compile to ES5

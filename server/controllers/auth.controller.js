@@ -69,8 +69,6 @@ function updatePassword(req, res, next) {
     user.save()
         .then(() => res.sendStatus(httpStatus.OK))
         .catch(error => next(error));
-        // TODO should we produce a new token? A user could change the password
-        // and change it again without re-authenticating
 }
 
 /**

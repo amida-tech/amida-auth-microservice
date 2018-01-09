@@ -52,7 +52,6 @@ function get(req, res, next) {
 /**
  * Create and save a new user
  * Sends back JSON of the saved user
- * TODO: this should return a virtual, omitting sensitive info
  * @param req
  * @param res
  * @param next

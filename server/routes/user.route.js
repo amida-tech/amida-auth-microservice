@@ -49,6 +49,11 @@ router.route('/:userId')
             permissions.check('admin'),
             userCtrl.remove);
 
+router.route('/byEmail/:userEmail')
+    /** GET /api/user/:userId - Get user */
+    .get(passport.authenticate('jwt', { session: false }),
+            userCtrl.getByEmail);
+
 router.route('/scopes/:userId')
     /** PUT /api/user/scopes/:userId - Update user scopes */
     .put(validate(userValidation.updateUserScopes),

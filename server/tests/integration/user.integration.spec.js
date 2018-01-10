@@ -132,6 +132,42 @@ describe('User API:', () => {
             );
     });
 
+    describe('GET /api/user/byEmail/:userEmail', () => {
+        let userId;
+        let jwtToken;
+
+        beforeEach(() => common.createUser(app, testUser, adminToken)
+            .then((id) => {
+                userId = id;
+                return;
+            })
+        );
+
+        beforeEach(() => common.login(app, testUserCredentials)
+            .then((token) => {
+                jwtToken = token;
+                return;
+            })
+        );
+
+        it('should get basic user info on the logged-in user', () =>
+            request(app)
+                .get(`${common.baseURL}/user/byEmail/${testUser.email}`)
+                .set('Authorization', jwtToken)
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    const userInfo = res.body;
+                    expect(userInfo.id).to.equal(userId);
+                    expect(userInfo.username).to.equal(testUser.username);
+                    expect(userInfo.email).to.equal(testUser.email);
+                    expect(userInfo.scopes).to.deep.equal(['']);
+                    expect(userInfo.password).to.not.exist;
+                    expect(userInfo.salt).to.not.exist;
+                    return;
+                })
+        );
+    });
+
     describe('GET /api/user/me', () => {
         let userId;
         let jwtToken;

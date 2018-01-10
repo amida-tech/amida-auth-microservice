@@ -50,6 +50,28 @@ function get(req, res, next) {
 }
 
 /**
+ * Get info on a single user.
+ * Must be admin, or the specified user.
+ * Sends back JSON of the specified user.
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function getByEmail(req, res, next) {
+    User.findOne({ where: { email: req.params.userEmail } })
+        .then((user) => {
+            if (req.user.username !== user.username && !req.user.isAdmin()) {
+                const e = new Error('Cannot get another user\'s information');
+                e.status = httpStatus.FORBIDDEN;
+                return next(e);
+            }
+            return res.json(user.getBasicUserInfo());
+        })
+        .catch(e => next(e));
+}
+
+/**
  * Create and save a new user
  * Sends back JSON of the saved user
  * @param req
@@ -147,6 +169,7 @@ function me(req, res) {
 export default {
     load,
     get,
+    getByEmail,
     create,
     update,
     updateScopes,

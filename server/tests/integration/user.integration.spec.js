@@ -166,6 +166,13 @@ describe('User API:', () => {
                     return;
                 })
         );
+
+        it('should return a 404 if the specified userEmail does not exist', () =>
+            request(app)
+                .get(`${common.baseURL}/user/byEmail/fake@email.com`)
+                .set('Authorization', jwtToken)
+                .expect(httpStatus.NOT_FOUND)
+        );
     });
 
     describe('GET /api/user/me', () => {

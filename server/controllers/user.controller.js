@@ -61,6 +61,11 @@ function get(req, res, next) {
 function getByEmail(req, res, next) {
     User.findOne({ where: { email: req.params.userEmail } })
         .then((user) => {
+            if (!user) {
+                const e = new Error('User does not exist');
+                e.status = httpStatus.NOT_FOUND;
+                return next(e);
+            }
             if (req.user.username !== user.username && !req.user.isAdmin()) {
                 const e = new Error('Cannot get another user\'s information');
                 e.status = httpStatus.FORBIDDEN;

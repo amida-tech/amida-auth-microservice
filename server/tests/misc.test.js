@@ -30,7 +30,7 @@ describe('## Misc', () => {
             .expect(httpStatus.OK)
             .then(res => expect(res.body.build).to.exist)
         );
-        
+
         it('/metrics should return app metrics', () => request(app)
             .get('/actuator/metrics')
             .expect(httpStatus.OK)

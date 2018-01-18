@@ -23,4 +23,18 @@ describe('## Misc', () => {
             .then(res => expect(res.body.message).to.equal('Not Found'))
         );
     });
+
+    describe('# GET /actuator', () => {
+        it('/info should return app information', () => request(app)
+            .get('/actuator/info')
+            .expect(httpStatus.OK)
+            .then(res => expect(res.body.build).to.exist)
+        );
+        
+        it('/metrics should return app metrics', () => request(app)
+            .get('/actuator/metrics')
+            .expect(httpStatus.OK)
+            .then(res => expect(res.body.mem).to.exist)
+        );
+    });
 });

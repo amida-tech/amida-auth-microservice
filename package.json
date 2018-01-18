@@ -38,6 +38,7 @@
     "del": "^2.2.0",
     "dotenv": "^4.0.0",
     "express": "4.16.0",
+    "express-actuator": "false1.1.0",
     "express-jwt": "5.3.0",
     "express-jwt-permissions": "1.0.0",
     "express-validation": "1.0.1",

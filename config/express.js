@@ -11,6 +11,7 @@ import expressValidation from 'express-validation';
 import helmet from 'helmet';
 import passport from 'passport';
 import Sequelize from 'sequelize';
+import actuator from 'express-actuator';
 import winstonInstance from './winston';
 import routes from '../server/routes/index.route';
 import config from './config';
@@ -53,6 +54,8 @@ if (config.env === 'development') {
 passportConfig(passport);
 app.use(passport.initialize());
 
+// set up express actuator
+app.use(actuator('/actuator'));
 
 // mount all routes on /api path
 app.use('/api', routes);

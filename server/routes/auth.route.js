@@ -4,6 +4,7 @@ import passport from 'passport';
 import { authValidation } from '../../config/param-validation';
 import authCtrl from '../controllers/auth.controller';
 import { checkExternalProvider, signJWT } from '../helpers/jwt';
+import { checkPassword } from '../helpers/owasp';
 
 const router = express.Router(); // eslint-disable-line new-cap
 
@@ -13,7 +14,7 @@ router.route('/login')
 router.route('/logout');
 
 router.route('/update-password')
-    .post(validate(authValidation.updatePassword),
+    .post(validate(authValidation.updatePassword), checkPassword,
           passport.authenticate('jwt', { session: false }),
           checkExternalProvider,
           authCtrl.updatePassword);
@@ -23,7 +24,7 @@ router.route('/reset-password')
           authCtrl.resetToken);
 
 router.route('/reset-password/:token')
-    .post(validate(authValidation.resetPassword),
+    .post(validate(authValidation.resetPassword), checkPassword,
           authCtrl.resetPassword);
 
 router.route('/facebook')

@@ -5,6 +5,7 @@ import passport from 'passport';
 import { userValidation } from '../../config/param-validation';
 import userCtrl from '../controllers/user.controller';
 import { checkExternalProvider } from '../helpers/jwt';
+import { checkPassword } from '../helpers/owasp';
 import config from '../../config/config';
 
 const router = express.Router(); // eslint-disable-line new-cap
@@ -27,7 +28,7 @@ router.route('/')
          userCtrl.list)
 
     /** POST /api/user - Create new user */
-    .post(validate(userValidation.createUser),
+    .post(validate(userValidation.createUser), checkPassword,
           ...userAdminFunctions,
           userCtrl.create);
 

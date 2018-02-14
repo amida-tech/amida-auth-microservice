@@ -13,14 +13,14 @@ const baseURL = `/api/v${version}`;
 const adminUser = {
     username: 'amidaadmin',
     email: 'superadmin@amida.com',
-    password: 'adminpass',
+    password: 'Adminpass123',
     scopes: ['admin'],
 };
 
 const testUser = {
     username: 'KK123',
     email: 'test@amida.com',
-    password: 'testpass',
+    password: 'Testpass123',
     scopes: ['admin'],
 };
 
@@ -31,12 +31,12 @@ const badPassword = {
 
 const missingUsername = {
     username: 'missing',
-    password: 'testpass',
+    password: 'Testpass123',
 };
 
 const validUserCredentials = {
     username: 'KK123',
-    password: 'testpass',
+    password: 'Testpass123',
 };
 
 module.exports = {

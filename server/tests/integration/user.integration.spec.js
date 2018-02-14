@@ -19,12 +19,12 @@ describe('User API:', () => {
     const testUser = {
         username: 'KK123',
         email: 'test@amida.com',
-        password: 'testpass',
+        password: 'Testpass123',
     };
 
     const testUserCredentials = {
         username: 'KK123',
-        password: 'testpass',
+        password: 'Testpass123',
     };
 
     const userBadPassword = {
@@ -42,25 +42,25 @@ describe('User API:', () => {
     const userDuplicateUsername = {
         username: 'KK123',
         email: 'test2@amida.com',
-        password: 'testpass',
+        password: 'Testpass123',
     };
 
     const userDuplicateEmail = {
         username: 'KK1234',
         email: 'test@amida.com',
-        password: 'testpass',
+        password: 'Testpass123',
     };
 
     const adminUser = {
         username: 'admin',
         email: 'admin@amida.com',
-        password: 'adminpass',
+        password: 'Adminpass123',
         scopes: ['admin'],
     };
 
     const adminUserCredentials = {
         username: 'admin',
-        password: 'adminpass',
+        password: 'Adminpass123',
     };
 
     let adminToken;
@@ -217,6 +217,23 @@ describe('User API:', () => {
     });
 
     describe('POST /api/user', () => {
+        it('should reject a bad password and return error info', () => request(app)
+            .post(`${common.baseURL}/user`)
+            .set('Authorization', `Bearer ${adminToken}`)
+            .send({
+                username: 'KK123',
+                email: 'test@amida.com',
+                password: 'badpassword',
+            })
+            .expect(httpStatus.BAD_REQUEST)
+            .then((res) => {
+                expect(res.text).to.contain('must contain at least one uppercase letter');
+                expect(res.text).to.contain('must contain at least one number');
+                expect(res.text).to.contain('must contain at least one special character');
+                return;
+            })
+        );
+
         it('should create a new user and return it without password info', (done) => {
             request(app)
                 .post(`${common.baseURL}/user`)

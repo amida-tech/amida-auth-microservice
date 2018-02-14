@@ -129,7 +129,7 @@ describe('Auth API:', () => {
                 .then((res1) => {
                     resetToken = res1.body.token;
                     return request(app).post(`${common.baseURL}/auth/reset-password/${resetToken}`)
-                        .send({ password: 'newerpass' })
+                        .send({ password: 'Newerpass123' })
                         .expect(httpStatus.OK)
                         .then(res2 => expect(res2.text).to.equal('OK'));
                 })
@@ -144,13 +144,13 @@ describe('Auth API:', () => {
                     resetToken = res1.body.token;
                     return request(app)
                         .post(`${common.baseURL}/auth/reset-password/${resetToken}`)
-                        .send({ password: 'newerpass' })
+                        .send({ password: 'Newerpass123' })
                         .expect(httpStatus.OK)
                         .then(() => request(app)
                                 .post(`${common.baseURL}/auth/login`)
                                 .send({
                                     username: 'KK123',
-                                    password: 'newerpass',
+                                    password: 'Newerpass123',
                                 })
                                 .expect(httpStatus.OK));
                 })
@@ -182,14 +182,14 @@ describe('Auth API:', () => {
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
                 .set('Authorization', jwtToken)
-                .send({ password: 'newerpass' })
+                .send({ password: 'Newerpass123' })
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.text).to.equal('OK');
                     return request(app).post(`${common.baseURL}/auth/login`)
                         .send({
                             username: 'KK123',
-                            password: 'newerpass',
+                            password: 'Newerpass123',
                         })
                         .expect(httpStatus.OK);
                 })
@@ -198,7 +198,7 @@ describe('Auth API:', () => {
         it('should return 401 when user is not authenticated', () =>
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
-                .send({ password: 'newerpass' })
+                .send({ password: 'Newerpass123' })
                 .expect(httpStatus.UNAUTHORIZED)
                 .then(res => expect(res.text).to.equal('Unauthorized'))
         );
@@ -207,7 +207,7 @@ describe('Auth API:', () => {
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
                 .set('Authorization', 'Bearer BadJWT')
-                .send({ password: 'newerpass' })
+                .send({ password: 'Newerpass123' })
                 .expect(httpStatus.UNAUTHORIZED)
                 .then(res => expect(res.text).to.equal('Unauthorized'))
         );

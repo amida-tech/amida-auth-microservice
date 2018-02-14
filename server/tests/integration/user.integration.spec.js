@@ -1,6 +1,11 @@
 /* eslint-env mocha */
 /* eslint no-unused-expressions: 0 */
 
+/** TODO: negative tests
+ * - non-admins should not be able to create users
+ * - confirm that return objects do not have sensitive information
+ */
+
 import request from 'supertest';
 import httpStatus from 'http-status';
 import chai, { expect } from 'chai';

@@ -17,6 +17,17 @@ const adminUser = {
     scopes: ['admin'],
 };
 
+/** FIXME: allow three options
+ * - reseed everything (nuke)
+ * - if there is any User data, seed, but don't overwrite the existing user(s)
+ * - do nothing
+ */
+
+/** FIXME
+ * Instead of admin/admin, create an arbitrary login at seed time,
+ * print it to the log, and force the admin to re-auth
+ */
+
 User.sync({ pool: false })
     .then(() => sequelize.query('DELETE FROM "Users"', {
         type: sequelize.QueryTypes.DELETE,

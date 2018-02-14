@@ -10,6 +10,8 @@ import config from '../../config/config';
 const router = express.Router(); // eslint-disable-line new-cap
 const permissions = guard({ permissionsProperty: 'scopes' });
 
+// This array will remain empty if admin user is not required
+// TODO: a more granular registrar role, rather than admin
 let userAdminFunctions = [];
 if (config.createUserAdmin) {
     userAdminFunctions = [

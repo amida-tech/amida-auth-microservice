@@ -256,7 +256,7 @@ describe('User API:', () => {
                 .send(userBadPassword)
                 .expect(httpStatus.BAD_REQUEST)
                 .then((res) => {
-                    expect(res.text).to.contain('length must be at least 8 characters long');
+                    expect(res.text).to.contain('must be at least 8 characters long');
                     done();
                 })
                 .catch(done);

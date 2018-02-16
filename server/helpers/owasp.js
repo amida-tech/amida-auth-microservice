@@ -13,7 +13,7 @@ module.exports = {
     checkPassword(req, res, next) {
         const result = owasp.test(req.body.password);
         if (!result.strong) {
-            const err = new APIError(result.errors.join(), httpStatus.BAD_REQUEST, true);
+            const err = new APIError(result.errors.join('\r\n'), httpStatus.BAD_REQUEST, true);
             return next(err);
         }
         return next();

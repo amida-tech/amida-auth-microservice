@@ -11,8 +11,8 @@ pipeline:
       - JWT_TTL=3600
       - PG_DB=auth
       - PG_PORT=5432
-      - PG_HOST=database
-      - PG_USER=postgres
+      - PG_HOST=127.0.0.1
+      - PG_USER=auth
       - PG_PASSWD=postgres
       - MAILER_EMAIL_ID=''
       - MAILER_PASSWORD=testpass
@@ -37,6 +37,6 @@ services:
   postgres:
     image: postgres:9.6
     environment:
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=auth
       - POSTGRES_DB=auth
       - POSTGRES_PASSWORD=postgres

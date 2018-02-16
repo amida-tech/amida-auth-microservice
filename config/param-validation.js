@@ -5,7 +5,7 @@ const userValidation = {
         body: {
             username: Joi.string().required(),
             email: Joi.string().email().required(),
-            password: Joi.string().min(8).max(64).required(),
+            password: Joi.string().required(),
         },
     },
     updateUser: {
@@ -23,7 +23,7 @@ const userValidation = {
 const authValidation = {
     updatePassword: {
         body: {
-            password: Joi.string().min(8).max(64).required(),
+            password: Joi.string().required(),
         },
     },
     resetToken: {
@@ -33,7 +33,7 @@ const authValidation = {
     },
     resetPassword: {
         body: {
-            password: Joi.string().min(8).max(64).required(),
+            password: Joi.string().required(),
         },
     },
     login: {

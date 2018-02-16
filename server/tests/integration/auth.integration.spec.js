@@ -218,7 +218,7 @@ describe('Auth API:', () => {
                 .set('Authorization', jwtToken)
                 .send({ password: 'badpass' })
                 .expect(httpStatus.BAD_REQUEST)
-                .then(res => expect(res.text).to.contain('length must be at least 8 characters long'))
+                .then(res => expect(res.text).to.contain('must be at least 8 characters long'))
         );
     });
 });

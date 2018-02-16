@@ -5,13 +5,13 @@ pipeline:
       - NODE_ENV=development
       - PORT=4000
       - JWT_MODE=hmac
-      - JWT_SECRET=0a6b944d-d2fb-46fc-a85e-0295c986cd9f
+      - JWT_SECRET=dumb-secret
       - JWT_PRIVATE_KEY_PATH=private.key
       - JWT_PUBLIC_KEY_PATH=private.key.pub
       - JWT_TTL=3600
       - PG_DB=auth
       - PG_PORT=5432
-      - PG_HOST=localhost
+      - PG_HOST=database
       - PG_USER=postgres
       - PG_PASSWD=postgres
       - MAILER_EMAIL_ID=''

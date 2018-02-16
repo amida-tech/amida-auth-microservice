@@ -18,6 +18,7 @@ pipeline:
       - MAILER_PASSWORD=testpass
       - MAILER_SERVICE_PROVIDER=Gmail
     commands:
+      - sleep 20
       - yarn
       - yarn test:coverage
   publish-dev:

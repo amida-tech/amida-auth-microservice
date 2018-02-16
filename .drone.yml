@@ -10,7 +10,7 @@ pipeline:
       - JWT_PUBLIC_KEY_PATH=private.key.pub
       - JWT_TTL=3600
       - PG_DB=auth
-      - PG_PORT=54321
+      - PG_PORT=5432
       - PG_HOST=127.0.0.1
       - PG_USER=auth
       - PG_PASSWD=postgres
@@ -40,5 +40,3 @@ services:
       - POSTGRES_USER=auth
       - POSTGRES_DB=auth
       - POSTGRES_PASSWORD=postgres
-    port:
-      - "54321:5432"

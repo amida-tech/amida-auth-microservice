@@ -16,10 +16,7 @@ pipeline:
       - PG_PASSWD=postgres
       - MAILER_EMAIL_ID=''
       - MAILER_PASSWORD=testpass
-      - MAILER_SERVICE_PROVIDER=''
-      - FACEBOOK_CLIENT_ID=157907704798705
-      - FACEBOOK_CLIENT_SECRET=479ccabca00736bb863f548d5d591b27
-      - FACEBOOK_CALLBACK_URL=http://localhost:4000/api/v0/auth/facebook/callback
+      - MAILER_SERVICE_PROVIDER=Gmail
     commands:
       - yarn
       - yarn test:coverage

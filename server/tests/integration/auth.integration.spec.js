@@ -7,6 +7,7 @@ import chai, { expect } from 'chai';
 import app from '../../../index';
 import { User } from '../../../config/sequelize';
 import * as common from './common.spec';
+import config from '../../../config/config';
 
 chai.config.includeStack = true;
 
@@ -59,14 +60,16 @@ describe('Auth API:', () => {
     });
 
     describe('GET /auth/facebook', () => {
-        it('should redirect to the facebook OAuth page', () =>
-            request(app)
-                .get(`${common.baseURL}/auth/facebook`)
-                .expect(httpStatus.FOUND)
-                .then((res) => {
-                    expect(res.get('Location')).to.have.string('https://www.facebook.com/dialog/oauth');
-                })
-        );
+        if (config.facebook.clientId) {
+            it('should redirect to the facebook OAuth page', () =>
+                request(app)
+                    .get(`${common.baseURL}/auth/facebook`)
+                    .expect(httpStatus.FOUND)
+                    .then((res) => {
+                        expect(res.get('Location')).to.have.string('https://www.facebook.com/dialog/oauth');
+                    })
+            );
+        }
     });
 
     describe('POST /auth/reset-password', () => {

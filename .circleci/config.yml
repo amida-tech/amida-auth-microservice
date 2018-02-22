@@ -66,12 +66,12 @@ workflows:
   test-publish:
     jobs:
       - test
-      - publish
-        requires:
-          - test
-        filters:
-          branches:
-            - develop
-            - master
+      - publish:
+          requires:
+            - test
+          filters:
+            branches:
+              - develop
+              - master
 
 

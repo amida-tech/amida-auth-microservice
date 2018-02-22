@@ -71,7 +71,8 @@ workflows:
             - test
           filters:
             branches:
-              - develop
-              - master
+              only:
+                - develop
+                - master
 
 

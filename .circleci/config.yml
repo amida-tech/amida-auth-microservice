@@ -51,15 +51,15 @@ jobs:
     - "coverage"
 
   publish:
-    hub:
-      branch: develop
-      commands:
-        - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-        - docker push amidatech/auth-service:dev
-      branch: master
-      commands:
-        - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-        - docker push circleci/auth-service:release
+    machine: true
+    steps:
+      - checkout
+
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+      - run: docker build -t amidatech/auth-service:$CIRCLE_BRANCH .
+
+      - run: docker push amidatech/auth-service:$CIRCLE_BRANCH
 
 workflows:
   version: 2

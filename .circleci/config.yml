@@ -46,9 +46,9 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       - run: yarn test:coverage
-    
-    artifacts:
-    - "coverage"
+      - store_artifacts:
+          path: coverage
+          prefix: coverage
 
   publish:
     machine: true
@@ -67,6 +67,7 @@ workflows:
     jobs:
       - test
       - publish:
+          context: docker
           requires:
             - test
           filters:

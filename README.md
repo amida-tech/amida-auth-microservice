@@ -189,6 +189,7 @@ Be sure to have your postgres host running and replace the `pg_host` value in th
 -var 'ami_name=api-auth-service-boilerplate' \
 -var 'node_env=development' \
 -var 'jwt_secret=0a6b944d-d2fb-46fc-a85e-0295c986cd9f' \
+-var 'create_user_admin=false' \
 -var 'jwt_mode=hmac' \
 -var 'pg_host=amid-messages-packer-test.czgzedfwgy7z.us-west-2.rds.amazonaws.com' \
 -var 'pg_db=amida_messages' \

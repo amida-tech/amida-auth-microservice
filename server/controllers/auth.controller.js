@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import util from 'util';
 import httpStatus from 'http-status';
+import randtoken from 'rand-token';
 import db from '../../config/sequelize';
 import { signJWT } from '../helpers/jwt';
 import APIError from '../helpers/APIError';
@@ -44,17 +45,86 @@ function login(req, res, next) {
             scopes: userResult.scopes,
         };
 
-        const token = signJWT(userInfo);
+        const jwtToken = signJWT(userInfo);
+        const refreshToken = randtoken.uid(128);
+
+        // save the refresh token
+        userResult.update({ refreshToken });
 
         return res.json({
-            token,
+            token: jwtToken,
             username: user.username,
+            refreshToken,
         });
     })
     .catch(error => next(error));
 }
 
-function logout() {}
+/**
+ * Sends back jwt token if valid username and password is provided
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function submitRefreshToken(req, res, next) {
+    const params = _.pick(req.body, 'username', 'refreshToken');
+    User.findOne({ where: {
+        username: params.username,
+        refreshToken: params.refreshToken,
+    } })
+    .then((userResult) => {
+        if (_.isNull(userResult)) {
+            const err = new APIError('Refresh token not found', httpStatus.NOT_FOUND, true);
+            return next(err);
+        }
+        const userInfo = {
+            id: userResult.id,
+            username: userResult.username,
+            email: userResult.email,
+            scopes: userResult.scopes,
+        };
+
+        const jwtToken = signJWT(userInfo);
+        const refreshToken = randtoken.uid(128);
+
+        // save the refresh token
+        userResult.update({ refreshToken });
+
+        return res.json({
+            token: jwtToken,
+            username: userResult.username,
+            refreshToken,
+        });
+    })
+    .catch(error => next(error));
+}
+
+/**
+ * Sends back jwt token if valid username and password is provided
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function rejectRefreshToken(req, res, next) {
+    const params = _.pick(req.body, 'username', 'refreshToken');
+    User.findOne({ where: {
+        username: params.username,
+        refreshToken: params.refreshToken,
+    } })
+    .then((userResult) => {
+        if (_.isNull(userResult)) {
+            const err = new APIError('Refresh not found', httpStatus.NOT_FOUND, true);
+            return next(err);
+        }
+        // save the refresh token
+        userResult.update({ refreshToken: null });
+
+        return res.sendStatus(httpStatus.NO_CONTENT);
+    })
+    .catch(error => next(error));
+}
 
 /**
  * Sends back 200 OK if password was updated successfully
@@ -114,4 +184,11 @@ function resetPassword(req, res, next) {
         .catch(error => next(error));
 }
 
-export default { login, logout, updatePassword, resetToken, resetPassword };
+export default {
+    login,
+    submitRefreshToken,
+    rejectRefreshToken,
+    updatePassword,
+    resetToken,
+    resetPassword,
+};

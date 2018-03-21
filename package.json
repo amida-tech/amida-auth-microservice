@@ -60,6 +60,7 @@
     "passport-jwt": "3.0.0",
     "pg": "6.1.6",
     "pg-hstore": "2.3.2",
+    "rand-token": "false0.4.0",
     "run-sequence": "^1.1.5",
     "sequelize": "^4.28.0",
     "snyk": "^1.40.0",

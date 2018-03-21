@@ -72,6 +72,71 @@ describe('Auth API:', () => {
         }
     });
 
+    describe('POST /auth/token', () => {
+        let refreshToken;
+
+        before(() => common
+            .seedAdminAndLogin(app)
+            .then(token => common.setupTestUser(app, token))
+        );
+
+        after(() => User.destroy({ where: {} }));
+
+        before(() => request(app)
+            .post(`${common.baseURL}/auth/login`)
+            .send(common.validUserCredentials)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('refreshToken');
+                refreshToken = res.body.refreshToken;
+            })
+        );
+
+        it('should get a new auth token using a valid refresh token', () => request(app)
+            .post(`${common.baseURL}/auth/token`)
+            .send({
+                username: 'KK123',
+                refreshToken,
+            })
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body).to.have.property('token');
+                const decoded = common.decodeToken(res.body.token);
+                expect(decoded.username).to.equal(common.validUserCredentials.username);
+                expect(decoded.email).to.equal(common.testUser.email);
+                expect(decoded.scopes).to.deep.equal(common.testUser.scopes);
+                refreshToken = res.body.refreshToken;
+                return;
+            })
+        );
+
+        it('should reject an invalid refresh token', () => request(app)
+            .post(`${common.baseURL}/auth/token`)
+            .send({
+                username: 'KK123',
+                refreshToken: 'BadRefreshToken',
+            })
+            .expect(httpStatus.NOT_FOUND)
+        );
+
+        it('should be able to expire refresh tokens', () => request(app)
+            .post(`${common.baseURL}/auth/token/reject`)
+            .send({
+                username: 'KK123',
+                refreshToken,
+            })
+            .expect(httpStatus.NO_CONTENT)
+            .then(() => request(app)
+                .post(`${common.baseURL}/auth/token`)
+                .send({
+                    username: 'KK123',
+                    refreshToken,
+                })
+                .expect(httpStatus.NOT_FOUND)
+            )
+        );
+    });
+
     describe('POST /auth/reset-password', () => {
         let resetToken;
 

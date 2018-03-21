@@ -24,31 +24,35 @@ const opts = {
 };
 
 module.exports = (passport) => {
-    passport.use(new JwtStrategy(opts, (jwtPayload, done) => {
+    const jwtStrategy = new JwtStrategy(opts, (jwtPayload, done) => {
         User.findOne({ where: { username: jwtPayload.username } })
             .then(user => done(null, user))
             .catch(err => done(err, false));
-    }));
+    });
+
+    const fbStrategy = new FacebookStrategy({
+        clientID: config.facebook.clientId,
+        clientSecret: config.facebook.clientSecret,
+        callbackURL: config.facebook.callbackUrl,
+        profileFields: ['email'],
+    }, (accessToken, refreshToken, profile, done) => {
+        const email = profile.emails[0].value;
+        User.findOrCreate({ where: {
+            username: email,
+            email,
+            provider: profile.provider,
+        } })
+        .spread((user) => {
+            if (user !== null) return done(null, user);
+            const err = new APIError('New facebook user not created', httpStatus.INTERNAL_SERVER_ERROR, true);
+            return done(err);
+        });
+    });
+
+    passport.use(jwtStrategy);
 
     if (config.facebook.clientId) {
-        passport.use(new FacebookStrategy({
-            clientID: config.facebook.clientId,
-            clientSecret: config.facebook.clientSecret,
-            callbackURL: config.facebook.callbackUrl,
-            profileFields: ['email'],
-        }, (accessToken, refreshToken, profile, done) => {
-            const email = profile.emails[0].value;
-            User.findOrCreate({ where: {
-                username: email,
-                email,
-                provider: profile.provider,
-            } })
-            .spread((user) => {
-                if (user !== null) return done(null, user);
-                const err = new APIError('New facebook user not created', httpStatus.INTERNAL_SERVER_ERROR, true);
-                return done(err);
-            });
-        }));
+        passport.use(fbStrategy);
     }
 };
 

@@ -7,6 +7,7 @@ import chai, { expect } from 'chai';
 import app from '../../../index';
 import { User } from '../../../config/sequelize';
 import * as common from './common.spec';
+import config from '../../../config/config';
 
 chai.config.includeStack = true;
 
@@ -59,14 +60,16 @@ describe('Auth API:', () => {
     });
 
     describe('GET /auth/facebook', () => {
-        it('should redirect to the facebook OAuth page', () =>
-            request(app)
-                .get(`${common.baseURL}/auth/facebook`)
-                .expect(httpStatus.FOUND)
-                .then((res) => {
-                    expect(res.get('Location')).to.have.string('https://www.facebook.com/dialog/oauth');
-                })
-        );
+        if (config.facebook.clientId) {
+            it('should redirect to the facebook OAuth page', () =>
+                request(app)
+                    .get(`${common.baseURL}/auth/facebook`)
+                    .expect(httpStatus.FOUND)
+                    .then((res) => {
+                        expect(res.get('Location')).to.have.string('https://www.facebook.com/dialog/oauth');
+                    })
+            );
+        }
     });
 
     describe('POST /auth/reset-password', () => {
@@ -129,7 +132,7 @@ describe('Auth API:', () => {
                 .then((res1) => {
                     resetToken = res1.body.token;
                     return request(app).post(`${common.baseURL}/auth/reset-password/${resetToken}`)
-                        .send({ password: 'newerpass' })
+                        .send({ password: 'Newerpass123' })
                         .expect(httpStatus.OK)
                         .then(res2 => expect(res2.text).to.equal('OK'));
                 })
@@ -144,13 +147,13 @@ describe('Auth API:', () => {
                     resetToken = res1.body.token;
                     return request(app)
                         .post(`${common.baseURL}/auth/reset-password/${resetToken}`)
-                        .send({ password: 'newerpass' })
+                        .send({ password: 'Newerpass123' })
                         .expect(httpStatus.OK)
                         .then(() => request(app)
                                 .post(`${common.baseURL}/auth/login`)
                                 .send({
                                     username: 'KK123',
-                                    password: 'newerpass',
+                                    password: 'Newerpass123',
                                 })
                                 .expect(httpStatus.OK));
                 })
@@ -182,14 +185,14 @@ describe('Auth API:', () => {
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
                 .set('Authorization', jwtToken)
-                .send({ password: 'newerpass' })
+                .send({ password: 'Newerpass123' })
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.text).to.equal('OK');
                     return request(app).post(`${common.baseURL}/auth/login`)
                         .send({
                             username: 'KK123',
-                            password: 'newerpass',
+                            password: 'Newerpass123',
                         })
                         .expect(httpStatus.OK);
                 })
@@ -198,7 +201,7 @@ describe('Auth API:', () => {
         it('should return 401 when user is not authenticated', () =>
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
-                .send({ password: 'newerpass' })
+                .send({ password: 'Newerpass123' })
                 .expect(httpStatus.UNAUTHORIZED)
                 .then(res => expect(res.text).to.equal('Unauthorized'))
         );
@@ -207,7 +210,7 @@ describe('Auth API:', () => {
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
                 .set('Authorization', 'Bearer BadJWT')
-                .send({ password: 'newerpass' })
+                .send({ password: 'Newerpass123' })
                 .expect(httpStatus.UNAUTHORIZED)
                 .then(res => expect(res.text).to.equal('Unauthorized'))
         );
@@ -218,7 +221,7 @@ describe('Auth API:', () => {
                 .set('Authorization', jwtToken)
                 .send({ password: 'badpass' })
                 .expect(httpStatus.BAD_REQUEST)
-                .then(res => expect(res.text).to.contain('length must be at least 8 characters long'))
+                .then(res => expect(res.text).to.contain('must be at least 8 characters long'))
         );
     });
 });

@@ -4,6 +4,8 @@ import db from '../../config/sequelize';
 
 const User = db.User;
 
+// TODO: refactor out the ID/email check into helper function
+
 /**
  * Load user and append to req.
  * Used for populating requests with a userID param.

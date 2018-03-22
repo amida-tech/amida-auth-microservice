@@ -1,6 +1,11 @@
 /* eslint-env mocha */
 /* eslint no-unused-expressions: 0 */
 
+/** TODO: negative tests
+ * - non-admins should not be able to create users
+ * - confirm that return objects do not have sensitive information
+ */
+
 import request from 'supertest';
 import httpStatus from 'http-status';
 import chai, { expect } from 'chai';
@@ -14,12 +19,12 @@ describe('User API:', () => {
     const testUser = {
         username: 'KK123',
         email: 'test@amida.com',
-        password: 'testpass',
+        password: 'Testpass123',
     };
 
     const testUserCredentials = {
         username: 'KK123',
-        password: 'testpass',
+        password: 'Testpass123',
     };
 
     const userBadPassword = {
@@ -37,25 +42,25 @@ describe('User API:', () => {
     const userDuplicateUsername = {
         username: 'KK123',
         email: 'test2@amida.com',
-        password: 'testpass',
+        password: 'Testpass123',
     };
 
     const userDuplicateEmail = {
         username: 'KK1234',
         email: 'test@amida.com',
-        password: 'testpass',
+        password: 'Testpass123',
     };
 
     const adminUser = {
         username: 'admin',
         email: 'admin@amida.com',
-        password: 'adminpass',
+        password: 'Adminpass123',
         scopes: ['admin'],
     };
 
     const adminUserCredentials = {
         username: 'admin',
-        password: 'adminpass',
+        password: 'Adminpass123',
     };
 
     let adminToken;
@@ -212,6 +217,23 @@ describe('User API:', () => {
     });
 
     describe('POST /api/user', () => {
+        it('should reject a bad password and return error info', () => request(app)
+            .post(`${common.baseURL}/user`)
+            .set('Authorization', `Bearer ${adminToken}`)
+            .send({
+                username: 'KK123',
+                email: 'test@amida.com',
+                password: 'badpassword',
+            })
+            .expect(httpStatus.BAD_REQUEST)
+            .then((res) => {
+                expect(res.text).to.contain('must contain at least one uppercase letter');
+                expect(res.text).to.contain('must contain at least one number');
+                expect(res.text).to.contain('must contain at least one special character');
+                return;
+            })
+        );
+
         it('should create a new user and return it without password info', (done) => {
             request(app)
                 .post(`${common.baseURL}/user`)
@@ -234,7 +256,7 @@ describe('User API:', () => {
                 .send(userBadPassword)
                 .expect(httpStatus.BAD_REQUEST)
                 .then((res) => {
-                    expect(res.text).to.contain('length must be at least 8 characters long');
+                    expect(res.text).to.contain('must be at least 8 characters long');
                     done();
                 })
                 .catch(done);

@@ -28,6 +28,9 @@ module.exports = (sequelize, DataTypes) => {
         },
     };
 
+    // TODO: change the paradigm to link to an external provider
+    // TODO: consider creating an audit trail,
+    // or at least making it easy through elasticsearch
     const User = sequelize.define('User', {
         id: {
             type: DataTypes.INTEGER,

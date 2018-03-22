@@ -1,5 +1,5 @@
 # take default image of node boron i.e  node 6.x
-FROM node:6.9.1
+FROM node:8.9
 RUN npm i -g yarn
 
 # create app directory in container

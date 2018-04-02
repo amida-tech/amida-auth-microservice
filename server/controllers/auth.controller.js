@@ -86,15 +86,10 @@ function submitRefreshToken(req, res, next) {
         };
 
         const jwtToken = signJWT(userInfo);
-        const refreshToken = randtoken.uid(128);
-
-        // save the refresh token
-        userResult.update({ refreshToken });
 
         return res.json({
             token: jwtToken,
             username: userResult.username,
-            refreshToken,
         });
     })
     .catch(error => next(error));

@@ -105,7 +105,6 @@ describe('Auth API:', () => {
                 expect(decoded.username).to.equal(common.validUserCredentials.username);
                 expect(decoded.email).to.equal(common.testUser.email);
                 expect(decoded.scopes).to.deep.equal(common.testUser.scopes);
-                refreshToken = res.body.refreshToken;
                 return;
             })
         );

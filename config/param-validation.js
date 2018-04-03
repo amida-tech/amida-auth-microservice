@@ -32,6 +32,11 @@ const authValidation = {
             refreshToken: Joi.string().required(),
         },
     },
+    refreshTokenReject: {
+        body: {
+            refreshToken: Joi.string().required(),
+        },
+    },
     resetToken: {
         body: {
             email: Joi.string().email().required(),

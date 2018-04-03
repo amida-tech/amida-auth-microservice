@@ -14,7 +14,7 @@ router.route('/login')
 router.route('/logout');
 
 router.route('/token/reject')
-    .post(validate(authValidation.refreshToken), authCtrl.rejectRefreshToken);
+    .post(validate(authValidation.refreshTokenReject), authCtrl.rejectRefreshToken);
 
 router.route('/token')
     .post(validate(authValidation.refreshToken), authCtrl.submitRefreshToken);

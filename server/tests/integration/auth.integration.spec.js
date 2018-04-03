@@ -122,7 +122,6 @@ describe('Auth API:', () => {
         it('should be able to expire refresh tokens', () => request(app)
             .post(`${common.baseURL}/auth/token/reject`)
             .send({
-                username: 'KK123',
                 refreshToken,
             })
             .expect(httpStatus.NO_CONTENT)

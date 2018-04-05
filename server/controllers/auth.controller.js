@@ -105,7 +105,6 @@ function rejectRefreshToken(req, res, next) {
     const params = _.pick(req.body, 'refreshToken');
     RefreshToken.findOne({ where: { token: params.refreshToken } })
     .then((tokenResult) => {
-        console.log(tokenResult);
         if (_.isNull(tokenResult)) {
             const err = new APIError('Refresh token not found', httpStatus.NOT_FOUND, true);
             return next(err);
@@ -115,10 +114,7 @@ function rejectRefreshToken(req, res, next) {
 
         return res.sendStatus(httpStatus.NO_CONTENT);
     })
-    .catch((error) => {
-        console.log(error);
-        return next(error);
-    });
+    .catch(error => next(error));
 }
 
 /**

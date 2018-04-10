@@ -65,7 +65,7 @@ jobs:
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run: docker build -t amidatech/auth-service:latest -t amidatech/auth-service:$CIRCLE_TAG .
       - run: docker push amidatech/auth-service:latest
-      - run: docker push amidatech/auth-service: $CIRCLE_TAG
+      - run: docker push amidatech/auth-service:$CIRCLE_TAG
 
 workflows:
   version: 2

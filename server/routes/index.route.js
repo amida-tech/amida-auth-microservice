@@ -5,7 +5,7 @@ import p from '../../package';
 
 const router = express.Router(); // eslint-disable-line new-cap
 const version = p.version.split('.').shift();
-const baseURL = (version > 0 ? `/v${version}` : '');
+const baseURL = `/v${version}`;
 
 /** GET /health-check - Check service health */
 router.get('/health-check', (req, res) =>

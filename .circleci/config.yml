@@ -54,12 +54,18 @@ jobs:
     machine: true
     steps:
       - checkout
-
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
-
       - run: docker build -t amidatech/auth-service:$CIRCLE_BRANCH .
-
       - run: docker push amidatech/auth-service:$CIRCLE_BRANCH
+
+  publish-release:
+    machine: true
+    steps:
+      - checkout
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run: docker build -t amidatech/auth-service:latest -t amidatech/auth-service:$CIRCLE_TAG .
+      - run: docker push amidatech/auth-service:latest
+      - run: docker push amidatech/auth-service: $CIRCLE_TAG
 
 workflows:
   version: 2
@@ -74,6 +80,13 @@ workflows:
             branches:
               only:
                 - develop
-                - master
-
+      - publish-release:
+          context: docker
+          requires:
+            - test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
 

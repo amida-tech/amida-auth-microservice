@@ -82,8 +82,6 @@ workflows:
                 - develop
       - publish-release:
           context: docker
-          requires:
-            - test
           filters:
             branches:
               ignore: /.*/

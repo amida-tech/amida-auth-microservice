@@ -60,7 +60,8 @@ function login(req, res, next) {
         return res.json({
             token: jwtToken,
             username: user.username,
-        });
+            refreshToken: token.token,
+        }));
     })
     .catch(error => next(error));
 }

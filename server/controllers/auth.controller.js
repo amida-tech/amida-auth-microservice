@@ -9,6 +9,7 @@ import {
     sendEmail,
     generateLink,
 } from '../helpers/mailer';
+import config from '../../config/config';
 
 const User = db.User;
 const RefreshToken = db.RefreshToken;
@@ -47,8 +48,16 @@ function login(req, res, next) {
         };
 
         const jwtToken = signJWT(userInfo);
-        return RefreshToken.createNewToken(userResult.id)
-        .then(token => res.json({
+
+        if (config.refreshToken.enabled) {
+            return RefreshToken.createNewToken(userResult.id)
+            .then(token => res.json({
+                token: jwtToken,
+                username: user.username,
+                refreshToken: token.token,
+            }));
+        }
+        return res.json({
             token: jwtToken,
             username: user.username,
             refreshToken: token.token,
@@ -65,8 +74,12 @@ function login(req, res, next) {
  * @returns {*}
  */
 function submitRefreshToken(req, res, next) {
+    if (!config.refreshToken.enabled) {
+        return res.sendStatus(httpStatus.NOT_IMPLEMENTED);
+    }
+
     const params = _.pick(req.body, 'username', 'refreshToken');
-    User
+    return User
     .findOne({ where: { username: params.username } })
     .then(userResult =>
         RefreshToken
@@ -102,8 +115,12 @@ function submitRefreshToken(req, res, next) {
  * @returns {*}
  */
 function rejectRefreshToken(req, res, next) {
+    if (!config.refreshToken.enabled) {
+        return res.sendStatus(httpStatus.NOT_IMPLEMENTED);
+    }
+
     const params = _.pick(req.body, 'refreshToken');
-    RefreshToken.findOne({ where: { token: params.refreshToken } })
+    return RefreshToken.findOne({ where: { token: params.refreshToken } })
     .then((tokenResult) => {
         if (_.isNull(tokenResult)) {
             const err = new APIError('Refresh token not found', httpStatus.NOT_FOUND, true);

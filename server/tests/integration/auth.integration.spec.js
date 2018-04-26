@@ -133,6 +133,26 @@ describe('Auth API:', () => {
                 .expect(httpStatus.NOT_FOUND)
             )
         );
+
+        it('should allow multiple refresh tokens for multiple devices', () => request(app)
+            .post(`${common.baseURL}/auth/login`)
+            .send(common.validUserCredentials)
+            .expect(httpStatus.OK)
+            .then((res1) => {
+                expect(res1.body).to.have.property('refreshToken');
+                const token1 = res1.body.refreshToken;
+                return request(app)
+                    .post(`${common.baseURL}/auth/login`)
+                    .send(common.validUserCredentials)
+                    .expect(httpStatus.OK)
+                    .then((res2) => {
+                        expect(res2.body).to.have.property('refreshToken');
+                        const token2 = res2.body.refreshToken;
+                        expect(token1).to.not.equal(token2);
+                        return;
+                    });
+            })
+        );
     });
 
     describe('POST /auth/reset-password', () => {

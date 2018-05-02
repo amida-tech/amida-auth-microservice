@@ -87,6 +87,7 @@ describe('Auth API:', () => {
             .send(common.validUserCredentials)
             .expect(httpStatus.OK)
             .then((res) => {
+                console.log(res.body);
                 expect(res.body).to.have.property('refreshToken');
                 refreshToken = res.body.refreshToken;
                 return;

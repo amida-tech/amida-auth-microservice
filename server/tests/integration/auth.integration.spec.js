@@ -89,6 +89,7 @@ describe('Auth API:', () => {
             .then((res) => {
                 expect(res.body).to.have.property('refreshToken');
                 refreshToken = res.body.refreshToken;
+                return;
             })
         );
 

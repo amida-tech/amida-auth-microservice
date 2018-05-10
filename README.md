@@ -4,6 +4,8 @@
   - [Design](#design)
   - [Development](#development)
   - [Deployment](#deployment)
+  - [Changelog](#changelog)
+
 
 ## Design
 
@@ -226,3 +228,9 @@ See the [paper](https://paper.dropbox.com/doc/Amida-Microservices-Kubernetes-Dep
 ### Logging
 
 Universal logging library [winston](https://www.npmjs.com/package/winston) is used for logging. It has support for multiple transports. A transport is essentially a storage device for your logs. Each instance of a winston logger can have multiple transports configured at different levels. For example, one may want error logs to be stored in a persistent remote location (like a database), but all logs output to the console or a local file. We just log to the console for simplicity, but you can configure more transports as per your requirement.
+
+
+### Changelog
+
+  - v1.0.0 - Changing the format of error codes (Please remember to bump version number of the api)
+  - v0.2.0 - Beta

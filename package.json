@@ -1,6 +1,6 @@
 {
   "name": "amida-auth-microservice",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Microservice for a lightweight auth application using JWT",
   "author": "Jacob Sachs <jacob@amida.com>",
   "main": "index.js",

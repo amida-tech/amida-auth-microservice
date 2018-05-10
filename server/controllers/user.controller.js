@@ -1,6 +1,7 @@
 
 import httpStatus from 'http-status';
 import db from '../../config/sequelize';
+import APIError from '../helpers/APIError';
 
 const User = db.User;
 
@@ -19,8 +20,7 @@ function load(req, res, next, id) {
     User.findById(id)
         .then((user) => {
             if (!user) {
-                const e = new Error('User does not exist');
-                e.status = httpStatus.NOT_FOUND;
+                const e = new APIError('User does not exist', 'UNKNOWN_USERNAME', httpStatus.NOT_FOUND, true);
                 return next(e);
             }
             req.user = user; // eslint-disable-line no-param-reassign
@@ -42,8 +42,7 @@ function get(req, res, next) {
     User.findById(req.params.userId)
         .then((user) => {
             if (req.user.username !== user.username && !req.user.isAdmin()) {
-                const e = new Error('Cannot get another user\'s information');
-                e.status = httpStatus.FORBIDDEN;
+                const e = new APIError('Cannot get another user\'s information', 'UNAUTHORIZED_REQUEST', httpStatus.FORBIDDEN, true);
                 return next(e);
             }
             return res.json(user.getBasicUserInfo());
@@ -69,8 +68,7 @@ function getByEmail(req, res, next) {
                 return next(e);
             }
             if (req.user.username !== user.username && !req.user.isAdmin()) {
-                const e = new Error('Cannot get another user\'s information');
-                e.status = httpStatus.FORBIDDEN;
+                const e = new APIError('Cannot get another user\'s information', 'UNAUTHORIZED_REQUEST', httpStatus.FORBIDDEN, true);
                 return next(e);
             }
             return res.json(user.getBasicUserInfo());
@@ -103,8 +101,7 @@ function update(req, res, next) {
     User.findById(req.params.userId)
         .then((user) => {
             if (req.user.username !== user.username && !req.user.isAdmin()) {
-                const e = new Error('User not allowed to update email');
-                e.status = httpStatus.FORBIDDEN;
+                const e = new APIError('User not allowed to update email', 'CANNOT_UPDATE_EMAIL', httpStatus.FORBIDDEN, true);
                 return next(e);
             }
             return user.update({ email: req.body.email });

@@ -34,14 +34,22 @@ describe('Auth API:', () => {
             request(app).post(`${common.baseURL}/auth/login`)
                 .send(common.badPassword)
                 .expect(httpStatus.UNAUTHORIZED)
-                .then(res => expect(res.body.message).to.equal('Incorrect password'))
+                .then((res) => {
+                    expect(res.body.message).to.equal('Incorrect password');
+                    expect(res.body.code).to.equal('INCORRECT_PASSWORD');
+                    expect(res.body.status).to.equal('ERROR');
+                })
         );
 
         it('should return 404 when there is no username found', () =>
             request(app).post(`${common.baseURL}/auth/login`)
                 .send(common.missingUsername)
                 .expect(httpStatus.NOT_FOUND)
-                .then(res => expect(res.body.message).to.equal('Username not found'))
+                .then((res) => {
+                    expect(res.body.message).to.equal('Username not found');
+                    expect(res.body.code).to.equal('UNKNOWN_USERNAME');
+                    expect(res.body.status).to.equal('ERROR');
+                })
         );
 
         it('should get valid JWT token', () =>

@@ -63,8 +63,9 @@ app.use('/api', routes);
 // if error is not an instanceOf APIError, convert it.
 app.use((err, req, res, next) => {
     if (err instanceof Sequelize.ValidationError) {
+        const status = err.errors[0].type === 'unique violation' ? httpStatus.CONFLICT : httpStatus.BAD_REQUEST;
         const unifiedErrors = JSON.stringify(err.errors);
-        const error = new APIError(unifiedErrors, 'GENERIC_ERROR', httpStatus.BAD_REQUEST, true);
+        const error = new APIError(unifiedErrors, 'GENERIC_ERROR', status, true);
         return next(error);
     } else if (err instanceof expressValidation.ValidationError) {
         // validation error contains errors which is an array of error each containing message[]

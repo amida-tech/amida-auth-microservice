@@ -15,8 +15,8 @@ Before using the auth-microservice, you will require a Postgres database of 9.4 
 If you do not have a Postgres database setup, the fastest way to ready it (complete with immediate user and database) is to run the following command in Docker:
 
 Production Example: `docker run --name auth-micro-db -e POSTGRES_DB=auth_api -e POSTGRES_PASSWORD=alacrity -e POSTGRES_USER=amida --network micro-net -d postgres:9.6`
-Development Example: `docker run --name auth-micro-db -e POSTGRES_DB=auth_api -e POSTGRES_PASSWORD=alacrity -e POSTGRES_USER=amida -p 5432:5432 -d postgres:9.6`
 
+Development Example: `docker run --name auth-micro-db -e POSTGRES_DB=auth_api -e POSTGRES_PASSWORD=alacrity -e POSTGRES_USER=amida -p 5432:5432 -d postgres:9.6`
 
 Environmental variables for this include the following (if you modify these, you will have to update your auth microservice .env file or runtime variables as well):
 
@@ -30,7 +30,7 @@ The password for the POSTGRES_USER with which the user will connect to. Note, if
 The user in the POSTGRES_DB who manages the data.
 
 ### -p 5432:5432
-If you want to directly connect to the database for any reason (such as using pgAdmin), you will have to expose the port to connect to. Useful for development or triaging.
+If you want to directly connect to the database for any reason (such as using pgAdmin), you will have to expose the port to connect to. 5432 is the default setting for PostgreSQL databases. Useful for development or triaging.
 
 ### --network micro-net
 Makes the database part of the `micro-net` network on your Docker instance. Ideal for production. If you opt to create a network, run this before: `docker network create micro-net`. You can use whatever name you prefer, just remember to be consistent across your other microservice deployments.
@@ -40,8 +40,11 @@ For further variables, please check the PostgreSQL documentation on their docker
 ## Docker
 
 This section covers a quick and dirty deployment for those who don't want to dive into the details below.
+
 Don't forget to run a build: `docker build -t auth-micro .`
+
 Production Example: `docker run -e PG_DB=auth_api -e PG_PASSWD=alacrity -e PG_USER=amida --name auth-micro3 -e PG_HOST=auth-micro-db -p 4000:4000 --network micro-net -e JWT_SECRET=locationOfTheJadeMonkey auth-micro`
+
 Development Example: `docker run -e PG_DB=auth_api -e PG_PASSWD=alacrity -e PG_USER=amida --name auth-micro3 -e PG_HOST=auth-micro-db --link auth-micro-db:auth-micro-db -p 4000:4000 -e JWT_SECRET=myLittlePoniesAreEatingMyBrain auth-micro`
 
 Environmental variables for this include the following:
@@ -58,7 +61,7 @@ The associated password for `PG_USER`.
 ### JWT_SECRET
 The auth service secret that is shared with other services, allowing for cross-service authentication. Important.
 
-### --link <database name:database name>
+### --link auth-micro-db:auto-micro-db
 If you are not using a Docker network (`--network <net>`) or exposing the auth database port (`-p 5432:5432`), you can use this command to permit communication between the auth service and the database.
 
 ### --network micro-net

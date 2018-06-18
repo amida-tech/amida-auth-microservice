@@ -24,10 +24,10 @@ Environmental variables for this include the following (if you modify these, you
 The name of the database that the auth service will connect to.
 
 ### POSTGRES_PASSWORD
-The password for the POSTGRES_USER with which the user will connect to. Note, if you are using pgAdmin, don't forget to click "Properties" and change the user you use to login.
+The password for the `POSTGRES_USER` with which the user will connect to. Note, if you are using pgAdmin, don't forget to click "Properties" and change the user you use to login.
 
 ### POSTGRES_USER
-The user in the POSTGRES_DB who manages the data.
+The user in the `POSTGRES_DB` who manages the data.
 
 ### -p 5432:5432
 If you want to directly connect to the database for any reason (such as using pgAdmin), you will have to expose the port to connect to. 5432 is the default setting for PostgreSQL databases. Useful for development or triaging.

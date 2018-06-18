@@ -23,16 +23,16 @@ Environmental variables for this include the following (if you modify these, you
 ### POSTGRES_DB
 The name of the database that the auth service will connect to.
 
-#### POSTGRES_PASSWORD
+### POSTGRES_PASSWORD
 The password for the POSTGRES_USER with which the user will connect to. Note, if you are using pgAdmin, don't forget to click "Properties" and change the user you use to login.
 
-#### POSTGRES_USER
+### POSTGRES_USER
 The user in the POSTGRES_DB who manages the data.
 
-#### -p 5432:5432
+### -p 5432:5432
 If you want to directly connect to the database for any reason (such as using pgAdmin), you will have to expose the port to connect to. Useful for development or triaging.
 
-#### --network micro-net
+### --network micro-net
 Makes the database part of the `micro-net` network on your Docker instance. Ideal for production. If you opt to create a network, run this before: `docker network create micro-net`. You can use whatever name you prefer, just remember to be consistent across your other microservice deployments.
 
 For further variables, please check the PostgreSQL documentation on their docker hub. (https://hub.docker.com/_/postgres/)
@@ -46,27 +46,27 @@ Development Example: `docker run -e PG_DB=auth_api -e PG_PASSWD=alacrity -e PG_U
 
 Environmental variables for this include the following:
 
-#### PG_DB
+### PG_DB
 The auth database, mentioned under #prerequisites. This will house all the users and tokens.
 
-#### PG_USER
+### PG_USER
 The username with access to the `PG_DB`.
 
-#### PG_PASSWD
+### PG_PASSWD
 The associated password for `PG_USER`.
 
-#### JWT_SECRET
+### JWT_SECRET
 The auth service secret that is shared with other services, allowing for cross-service authentication. Important.
 
-#### --link <database name:database name>
+### --link <database name:database name>
 If you are not using a Docker network (`--network <net>`) or exposing the auth database port (`-p 5432:5432`), you can use this command to permit communication between the auth service and the database.
 
-#### --network micro-net
+### --network micro-net
 Associates the auth service with the `micro-net` service. If you followed the instructions above, the auth database will be part of this same network, and thus you would neither have to expose the port nor use `--link`.
 
-#### -p 4000:4000
+### -p 4000:4000
 Exposes port 4000 for use by other services and applications.
-###
+
 ## Design
 
 ### Integration with other services

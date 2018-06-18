@@ -1,10 +1,30 @@
 # Amida Auth Microservice
 
 ## Table of Contents
+  - [Prerequistes](#prerequistes)
   - [Design](#design)
   - [Development](#development)
   - [Deployment](#deployment)
   - [Changelog](#changelog)
+
+## Prerequistes
+
+### PostgreSQL
+
+Before using the auth-microservice, you will require a Postgres database of 9.4 through 9.6. It maybe possible to use a higher database, but it is untested.
+
+If you do not have a Postgres database setup, the fastest way to ready it (complete with ready user and table) is to run the following command in Docker:
+FOR PRODUCTION: `docker run --name auth-micro-db -e POSTGRES_DB=auth_api -e POSTGRES_PASSWORD=alacrity -e POSTGRES_USER=amida --network micro-net -d postgres:9.6`
+FOR DEVELOPMENT: `docker run --name auth-micro-db -e POSTGRES_DB=auth_api -e POSTGRES_PASSWORD=alacrity -e POSTGRES_USER=amida -p 5432:5432 -d postgres:9.6`
+
+Alternate Environmental Variables for this include (If you modify these, you will have to update your auth microservice .env or runtime variables as well):
+`POSTGRES_DB` - the name of the database that the auth service will connect to.
+`POSTGRES_PASSWORD` - the password for the POSTGRES_USER with which the user will connect to. Note, if you are using pgAdmin, don't forget to click "Properties" and change the user you use to login.
+`POSTGRES_USER` - the user in the POSTGRES_DB to manage the data.
+`-p 5432:5432` - if you want to directly connect to the database for any reason (such as using pgAdmin), you will have to expose the port to connect to.
+`--network micro-net` - makes the database part of the `micro-net` network on your Docker instance. Useful for production. 
+
+For further variables, please check the PostgreSQL documentation on their docker hub. (https://hub.docker.com/_/postgres/)
 
 
 ## Design

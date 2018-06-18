@@ -66,7 +66,7 @@ Associates the auth service with the `micro-net` service. If you followed the in
 
 #### -p 4000:4000
 Exposes port 4000 for use by other services and applications.
-
+###
 ## Design
 
 ### Integration with other services

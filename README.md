@@ -81,7 +81,6 @@ Primarily for development purposes, permits calls that create new user to also d
 ### JWT_MODE
 Permits changes to access methods. The default and easier of the two main choices is `HMAC` which makes use of the `JWT_SECRET` which is shared among trusted sources. The alternative is `RSA`, which then requires the `JWT_PRIVATE_KEY_PATH` and `JWT_PUBLIC_KEY_PATH`.
 
-
 ### JWT_PRIVATE_KEY_PATH
 If `JWT_MODE` is set to `RSA`, this is the directory to the private key needed to unlock incoming messages meant for the auth service.
 

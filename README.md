@@ -85,7 +85,7 @@ Permits changes to access methods. The default and easier of the two main choice
 If `JWT_MODE` is set to `RSA`, this is the directory to the private key needed to unlock incoming messages meant for the auth service.
 
 ### JWT_PUBLIC_KEY_PATH
-If `JWT_MODE` is set to `RSA`, this is the directory to the public key needed to match the `JWT_PRIVATE_KEY_PATH`. (More study needed to understand this.)
+If `JWT_MODE` is set to `RSA`, this is the directory to the public key needed to match the `JWT_PRIVATE_KEY_PATH`. Other consuming services will need access to this public key as well.
 
 ### JWT_TTL
 Sets the lifespan of a granted JWT.

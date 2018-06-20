@@ -93,6 +93,10 @@ Set environment vars:
 cp .env.example .env
 ```
 
+Setup the database:
+
+When the `yarn start` command is run (see next step), it runs a script that automatically sets up the DB schema for the DB specified by the `.env` file's `PG_DB` value.  In order for this script to work, you must create a DB in your postgres instance that has a name matching your `PG_DB` value and that the Postgres user specified by your `.env` file's `PG_USER` has permissions to modify.
+
 Start server:
 ```sh
 # Start server

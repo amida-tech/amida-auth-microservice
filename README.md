@@ -178,9 +178,12 @@ Then, in the "Verify Signature" section, enter the shared secret used by the app
 ```
 
 ### Deployment to AWS with Packer and Terraform
-You will need to install [pakcer](https://www.packer.io/) and [terraform](https://www.terraform.io/) installed on your local machine.
+You will need to install [packer](https://www.packer.io/) and [terraform](https://www.terraform.io/) installed on your local machine.
 Be sure to have your postgres host running and replace the `pg_host` value in the command below with the postgres host address. The command in `1.` below will allow you to build the AMI with default settings. You may also need to include additional environment variables in `./deploy/roles/api/templates/env.service.j2` before build.
-1. First validate the AMI with a command similar to ```packer validate -var 'aws_access_key=myAWSAcessKey'
+1. First validate the AMI with a command similar to
+
+```
+packer validate -var 'aws_access_key=myAWSAcessKey' \
 -var 'aws_secret_key=DmAI2PRWkefeBaCQg38qULUYiMH4GtYr3ogjYF4k' \
 -var 'build_env=development' \
 -var 'logstash_host=logstash.amida.com' \
@@ -190,9 +193,11 @@ Be sure to have your postgres host running and replace the `pg_host` value in th
 -var 'jwt_secret=0a6b944d-d2fb-46fc-a85e-0295c986cd9f' \
 -var 'jwt_mode=hmac' \
 -var 'pg_host=amid-messages-packer-test.czgzedfwgy7z.us-west-2.rds.amazonaws.com' \
--var 'pg_db=amida_messages' \
--var 'pg_user=amida_messages' \
--var 'pg_passwd=amida-messages' template.json```
+-var 'pg_db=amida_auth_microservice' \
+-var 'pg_user=amida_auth_microservice' \
+-var 'pg_passwd=somepassword' template.json
+```
+
 2. If the validation from `1.` above succeeds, build the image by running the same command but replacing `validate` with `build`
 3. In the AWS console you can test the build before deployment. To do this, launch an EC2 instance with the built image and visit the health-check endpoint at <host_address>:4000/api/health-check. Be sure to launch the instance with security groups that allow http access on the app port (currently 4000) and access from Postgres port of the data base. You should see an "OK" response.
 4. Enter `aws_access_key` and `aws_secret_key` values in the vars.tf file

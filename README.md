@@ -1,10 +1,112 @@
 # Amida Auth Microservice
 
 ## Table of Contents
+  - [Prerequisites](#prerequisites)
+  - [Docker](#docker)
   - [Design](#design)
   - [Development](#development)
   - [Deployment](#deployment)
   - [Changelog](#changelog)
+
+## Prerequisites
+
+Before using the auth-microservice, you will require a Postgres database of 9.4 through 9.6. It maybe possible to use a higher database, but it is untested.
+
+If you do not have a Postgres database setup, the fastest way to ready it (complete with immediate user and database) is to run the following command in Docker:
+
+Production Example: `docker run --name auth-micro-db -e POSTGRES_DB=auth_api -e POSTGRES_PASSWORD=alacrity -e POSTGRES_USER=amida --network micro-net -d postgres:9.6`
+
+Development Example: `docker run --name auth-micro-db -e POSTGRES_DB=auth_api -e POSTGRES_PASSWORD=alacrity -e POSTGRES_USER=amida -p 5432:5432 -d postgres:9.6`
+
+Environmental variables for this include the following (if you modify these, you will have to update your auth microservice .env file or runtime variables as well):
+
+### POSTGRES_DB
+The name of the database that the auth service will connect to.
+
+### POSTGRES_PASSWORD
+The password for the `POSTGRES_USER` with which the user will connect to. Note, if you are using pgAdmin, don't forget to click "Properties" and change the user you use to login.
+
+### POSTGRES_USER
+The user in the `POSTGRES_DB` who manages the data.
+
+### -p 5432:5432
+If you want to directly connect to the database for any reason (such as using pgAdmin), you will have to expose the port to connect to. 5432 is the default setting for PostgreSQL databases. Useful for development or triaging.
+
+### --network micro-net
+Makes the database part of the `micro-net` network on your Docker instance. Ideal for production. If you opt to create a network, run this before: `docker network create micro-net`. You can use whatever name you prefer, just remember to be consistent across your other microservice deployments.
+
+For further variables, please check the PostgreSQL documentation on their docker hub. (https://hub.docker.com/_/postgres/)
+
+## Docker
+
+This section covers a quick and dirty deployment for those who don't want to dive into the details below.
+
+Don't forget to run a build: `docker build -t auth-micro .`
+
+Production Example: `docker run -e PG_DB=auth_api -e PG_PASSWD=alacrity -e PG_USER=amida --name auth-micro3 -e PG_HOST=auth-micro-db -p 4000:4000 --network micro-net -e JWT_SECRET=locationOfTheJadeMonkey auth-micro`
+
+Development Example: `docker run -e PG_DB=auth_api -e PG_PASSWD=alacrity -e PG_USER=amida --name auth-micro3 -e PG_HOST=auth-micro-db --link auth-micro-db:auth-micro-db -p 4000:4000 -e JWT_SECRET=myLittlePoniesAreEatingMyBrain auth-micro`
+
+Environmental variables for this include the following:
+
+### PG_DB
+The auth database, mentioned under #prerequisites. This will house all the users and tokens.
+
+### PG_USER
+The username with access to the `PG_DB`.
+
+### PG_PASSWD
+The associated password for `PG_USER`.
+
+### JWT_SECRET
+The auth service secret that is shared with other services, allowing for cross-service authentication. Important.
+
+### --link auth-micro-db:auto-micro-db
+If you are not using a Docker network (`--network <net>`) or exposing the auth database port (`-p 5432:5432`), you can use this command to permit communication between the auth service and the database.
+
+### --network micro-net
+Associates the auth service with the `micro-net` service. If you followed the instructions above, the auth database will be part of this same network, and thus you would neither have to expose the port nor use `--link`.
+
+### -p 4000:4000
+Exposes port 4000 for use by other services and applications.
+
+The following are additional variables you may want to use, but are less necessary for development purposes:
+
+### NODE_ENV
+Declares the NodeJS' environmental value. Can be development, production, test, or provision. The default is development, and `production` is recommended for just that. These set a number of settings that can be different between development and production environments.
+
+### CREATE_USER_ADMIN
+Primarily for development purposes, permits calls that create new user to also declare them an admin. Set to `true` or `false`.
+
+### JWT_MODE
+Permits changes to access methods. The default and easier of the two main choices is `HMAC` which makes use of the `JWT_SECRET` which is shared among trusted sources. The alternative is `RSA`, which then requires the `JWT_PRIVATE_KEY_PATH` and `JWT_PUBLIC_KEY_PATH`.
+
+### JWT_PRIVATE_KEY_PATH
+If `JWT_MODE` is set to `RSA`, this is the directory to the private key needed to unlock incoming messages meant for the auth service.
+
+### JWT_PUBLIC_KEY_PATH
+If `JWT_MODE` is set to `RSA`, this is the directory to the public key needed to match the `JWT_PRIVATE_KEY_PATH`. Other consuming services will need access to this public key as well.
+
+### JWT_TTL
+Sets the lifespan of a granted JWT.
+
+### MAILER_EMAIL_ID
+An email address with which the auth service can send emails.
+
+### MAILER_PASSWORD
+The password to access `MAILER_EMAIL_ID` on the `MAILER_SERVICE_PROVIDER`.
+
+### MAILER_SERVICE_PROVIDER
+The service provider that hosts the `MAILER_EMAIL_ID`.
+
+### FACEBOOK_CLIENT_ID
+An alternate strategy that allows for validation against Facebook. By providing a `FACEBOOK_CLIENT_ID`, you will validate a user's existence against Facebook. The `FACEBOOK_CALLBACK_URL` will be called if validation is successful. For our purposes, it is not currently recommended to use Facebook.
+
+### FACEBOOK_CLIENT_SECRET
+The secret that is required for Facebook validation. This should not be shared with anyone.
+
+### FACEBOOK_CALLBACK_URL
+The endpoint to be called if a user is successfully validated. There is an endpoint at `http://localhost:4000/api/v1/auth/facebook/callback`, but this is not assumed to be the default.
 
 
 ## Design

@@ -14,7 +14,7 @@
     "start": "gulp serve",
     "start:debug": "cross-env DEBUG=amida-auth-microservice:* yarn start",
     "build": "gulp",
-    "lint": "esw -c .eslintrc *.js server config --color",
+    "lint": "esw -c .eslintrc *.js server config . --color --fix",
     "lint:watch": "yarn lint -- --watch",
     "beautify": "esw -c .eslintrc *.js server config --color --fix",
     "precommit": "yarn lint && yarn test",

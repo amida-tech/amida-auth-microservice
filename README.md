@@ -1,11 +1,59 @@
 # Amida Auth Microservice
 
 ## Table of Contents
+  - [Environment Variables](#Environment-Variables-(Grouped-by-Purpose))
   - [Design](#design)
   - [Development](#development)
   - [Deployment](#deployment)
   - [Changelog](#changelog)
 
+## Environment Variables (Grouped by Purpose)
+
+Note: Default values are in parenthesis.
+
+### This Server:
+
+`NODE_ENV` (`=development`)
+- When in development, set to `development`
+
+`PORT` (`=4000`) The port this server will run on.
+- When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
+
+`CREATE_USER_ADMIN` (`=false`)
+- When `true`, only a user who has admin privileges/scope can create new users.
+- When `false`, anyone can sign up and create a new account.
+
+`JWT_MODE` (`=hmac`)
+- When set to `hmac`, json web tokens will use the shared-secret signing strategy, in which case `JWT_SECRET` needs to be specified on and match between this microservice and all other services that integrate with this microservice.
+- When set to `rsa`, json web tokens will use the public/private key pair signing strategy, in which case `JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY` need to be defined.
+
+`JWT_SECRET` (`=0a6b944d-d2fb-46fc-a85e-0295c986cd9f`) The shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.
+- In production, this should be set to a value other than the default.
+
+`JWT_PRIVATE_KEY_PATH`
+
+`JWT_PUBLIC_KEY_PATH`
+
+`JWT_TTL` (`=3600`) Time To Live, in seconds, of the json web token.
+
+`REFRESH_TOKEN_ENABLED` (`=false`) Not fully implemented yet.
+
+`REFRESH_TOKEN_MULTIPLE_DEVICES` (`=false`) Not fully implemented yet.
+
+### This Microservice's Postgres Instance:
+
+`PG_DB` (`=amida_auth_microservice`) Postgres database name.
+- Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
+
+`PG_PORT` (`=5432`) Port on the machine the postgres instance is running on.
+
+`PG_HOST` (`=localhost`) Hostname of machine the postgres instance is running on.
+- When doing docker, set to the name of the docker container running postgres. Setting to `amida_auth_microservice_db` is recommended.
+
+`PG_USER` (`=amida_auth_microservice`) Postgres user that will perform operations on behalf of this microservice. Therefore, this user must have permissions to modify the database specified by `PG_DB`.
+- Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
+
+`PG_PASSWD` (N/A) Password of postgres user `PG_USER`.
 
 ## Design
 

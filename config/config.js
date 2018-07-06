@@ -8,7 +8,7 @@ const envVarsSchema = Joi.object({
     NODE_ENV: Joi.string()
         .allow(['development', 'production', 'test', 'provision'])
         .default('development'),
-    PORT: Joi.number()
+    AUTH_SERVICE_PORT: Joi.number()
         .default(4000),
     CREATE_USER_ADMIN: Joi.bool()
         .default(true),
@@ -26,15 +26,15 @@ const envVarsSchema = Joi.object({
         .default(false),
     REFRESH_TOKEN_MULTIPLE_DEVICES: Joi.bool()
         .default(false),
-    PG_DB: Joi.string().required()
+    AUTH_SERVICE_PG_DB: Joi.string().required()
         .description('Postgres database name'),
-    PG_PORT: Joi.number()
+    AUTH_SERVICE_PG_PORT: Joi.number()
         .default(5432),
-    PG_HOST: Joi.string()
+    AUTH_SERVICE_PG_HOST: Joi.string()
         .default('localhost'),
-    PG_USER: Joi.string().required()
+    AUTH_SERVICE_PG_USER: Joi.string().required()
         .description('Postgres username'),
-    PG_PASSWD: Joi.string().allow('')
+    AUTH_SERVICE_PG_PASSWORD: Joi.string().allow('')
         .description('Postgres password'),
     MAILER_EMAIL_ID: Joi.string().allow(''),
     MAILER_PASSWORD: Joi.string().allow(''),
@@ -94,7 +94,7 @@ if (error) {
 
 const config = {
     env: envVars.NODE_ENV,
-    port: envVars.PORT,
+    port: envVars.AUTH_SERVICE_PORT,
     createUserAdmin: envVars.CREATE_USER_ADMIN,
     jwtMode: envVars.JWT_MODE,
     jwtSecret: envVars.JWT_SECRET,
@@ -106,11 +106,11 @@ const config = {
         multipleDevices: envVars.REFRESH_TOKEN_MULTIPLE_DEVICES,
     },
     postgres: {
-        db: envVars.PG_DB,
-        port: envVars.PG_PORT,
-        host: envVars.PG_HOST,
-        user: envVars.PG_USER,
-        passwd: envVars.PG_PASSWD,
+        db: envVars.AUTH_SERVICE_PG_DB,
+        port: envVars.AUTH_SERVICE_PG_PORT,
+        host: envVars.AUTH_SERVICE_PG_HOST,
+        user: envVars.AUTH_SERVICE_PG_USER,
+        passwd: envVars.AUTH_SERVICE_PG_PASSWORD,
     },
     mailer: {
         user: envVars.MAILER_EMAIL_ID,

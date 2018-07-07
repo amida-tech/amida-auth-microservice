@@ -9,51 +9,111 @@
 
 ## Environment Variables (Grouped by Purpose)
 
-Note: Default values are in parenthesis.
+Note: Values from .env.example and default values (the values the app sets for itself if no environment variable is specified) are listed in the format "(`default`, `example`)"
 
 ### This Server:
 
-`NODE_ENV` (`=development`)
-- When in development, set to `development`
+`NODE_ENV` (`development`, `development`)
+- Valid values are `development`, `production`, and `test`.
 
-`PORT` (`=4000`) The port this server will run on.
+`PORT` (`4000`, `4000`) The port this server will run on.
 - When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
 
-`CREATE_USER_ADMIN` (`=false`)
+`CREATE_USER_ADMIN` (`true`, `false`)
 - When `true`, only a user who has admin privileges/scope can create new users.
 - When `false`, anyone can sign up and create a new account.
 
-`JWT_MODE` (`=hmac`)
+`JWT_MODE` (`hmac`, `hmac`)
 - When set to `hmac`, json web tokens will use the shared-secret signing strategy, in which case `JWT_SECRET` needs to be specified on and match between this microservice and all other services that integrate with this microservice.
 - When set to `rsa`, json web tokens will use the public/private key pair signing strategy, in which case `JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY` need to be defined.
 
-`JWT_SECRET` (`=0a6b944d-d2fb-46fc-a85e-0295c986cd9f`) The shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.
-- In production, this should be set to a value other than the default.
+`JWT_SECRET` (None, `0a6b944d-d2fb-46fc-a85e-0295c986cd9f`) First, see `JWT_MODE`. When `JWT_MODE=hmac`, this is the shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.
+- In production, this should be set to a value other than the example.
 
-`JWT_PRIVATE_KEY_PATH`
+`JWT_PRIVATE_KEY_PATH` (None, `private.key`)
 
-`JWT_PUBLIC_KEY_PATH`
+`JWT_PUBLIC_KEY_PATH` (None, `private.key.pub`)
 
-`JWT_TTL` (`=3600`) Time To Live, in seconds, of the json web token.
+`JWT_TTL` (`3600`, `3600`) Time To Live, in seconds, of the json web token.
 
-`REFRESH_TOKEN_ENABLED` (`=false`) Not fully implemented yet.
+`REFRESH_TOKEN_ENABLED` (`false`, `false`) Not fully implemented yet.
 
-`REFRESH_TOKEN_MULTIPLE_DEVICES` (`=false`) Not fully implemented yet.
+`REFRESH_TOKEN_MULTIPLE_DEVICES` (`false`, `false`) Not fully implemented yet.
 
 ### This Microservice's Postgres Instance:
 
-`PG_DB` (`=amida_auth_microservice`) Postgres database name.
+`PG_DB` (None, `amida_auth_microservice`) Postgres database name.
 - Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
 
-`PG_PORT` (`=5432`) Port on the machine the postgres instance is running on.
+`PG_PORT` (`5432`, `5432`) Port on the machine the postgres instance is running on.
 
-`PG_HOST` (`=localhost`) Hostname of machine the postgres instance is running on.
+`PG_HOST` (`localhost`, `localhost`) Hostname of machine the postgres instance is running on.
 - When doing docker, set to the name of the docker container running postgres. Setting to `amida_auth_microservice_db` is recommended.
 
-`PG_USER` (`=amida_auth_microservice`) Postgres user that will perform operations on behalf of this microservice. Therefore, this user must have permissions to modify the database specified by `PG_DB`.
+`PG_USER` (None, `amida_auth_microservice`) Postgres user that will perform operations on behalf of this microservice. Therefore, this user must have permissions to modify the database specified by `PG_DB`.
 - Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
 
-`PG_PASSWD` (N/A) Password of postgres user `PG_USER`.
+`PG_PASSWD` (None, None) Password of postgres user `PG_USER`.
+
+### Integration With Mail Service Provider
+
+The mail service provider sends password reset emails when the user clicks the "Forgot your password?" button. Each mail service provider (Gmail, SendGrid, Mailgun, etc.) treats the environment variables slighly differently, therefore examples are provided at the end of this section.
+
+`MAILER_EMAIL_ID` (None, None) The username/email address used to login to the email service provider and send SMTP email.
+
+`MAILER_PASSWORD` (None, None) The password to account specified by `MAILER_EMAIL_ID`.
+
+`MAILER_FROM_EMAIL_ADDRESS` (None, None) The email address the password reset emails will come from.
+
+`MAILER_SERVICE_PROVIDER` (None, None) One of the service providers that is supported by nodemailer.
+- Recommended values are `Gmail`, `SendGrid`, or `Mailgun`.
+- Valid values are
+ `126`, `163`, `1und1`, `AOL`, `DebugMail`, `DynectEmail`, `FastMail`, `GandiMail`, `Gmail`, `Godaddy`, `GodaddyAsia`, `GodaddyEurope`, `hot.ee`, `Hotmail`, `iCloud`, `mail.ee`, `Mail.ru`, `Maildev`, `Mailgun`, `Mailjet`, `Mailosaur`, `Mandrill`, `Naver`, `OpenMailBox`, `Outlook365`, `Postmark`, `QQ`, `QQex`, `SendCloud`, `SendGrid`, `SendinBlue`, `SendPulse`, `SES`, `SES-US-EAST-1`, `SES-US-WEST-2`, `SES-EU-WEST-1`, `Sparkpost`, `Yahoo`, `Yandex`, `Zoho`, and `qiye.aliyun`.
+
+#### Email Service Provider Config Examples
+
+Gmail:
+
+```
+MAILER_EMAIL_ID=someone@gmail.com
+# Note: Any + appended to the email address will be dropped. That is, Gmail will handle someone+else@gmail.com like someone@gmail.com
+
+MAILER_PASSWORD=the_Gmail_password_for_someone@amida.com
+
+# Gmail ignores this, so comment out or set to empty string ''. The email will always come from the address specified by `MAILER_EMAIL_ID`.
+# MAILER_FROM_EMAIL_ADDRESS
+
+MAILER_SERVICE_PROVIDER=Gmail
+```
+
+SendGrid:
+
+```
+MAILER_EMAIL_ID=your_SendGrid_user_id_not_email_address
+MAILER_PASSWORD=your_SendGrid_password
+MAILER_FROM_EMAIL_ADDRESS=anything_will_work
+MAILER_SERVICE_PROVIDER=SendGrid
+```
+
+Mailgun:
+
+Mailgun does not allow SMTP login/send with your Mailgun account username/email and password. Instead, in Mailgun, a send/recieve domain must be set up, and with each such domain, Mailgun associates an SMTP email address and password. Therefore, to use Mailgun, you must, with a domain you own, setup that domain to work with mailgun, which includes setting DNS records for that domain in your DNS service provider, and then use the associated SMTP email address and password in this config.
+
+```
+# Mailgun sets postmaster@yourdomain.com as the default when you setup your domain in Mailgun. In Mailgun, you can change this to something else if you want.
+MAILER_EMAIL_ID=postmaster@yourdomain.com
+MAILER_PASSWORD=SMTP_password_for_your_domain_as_configured_in_Mailgun
+MAILER_FROM_EMAIL_ADDRESS=anything_will_work
+MAILER_SERVICE_PROVIDER=Mailgun
+```
+
+### Integration With Facebook for Login
+
+`FACEBOOK_CLIENT_ID` (None, `example`) The ID of the Facebook App through which login will occur.
+
+`FACEBOOK_CLIENT_SECRET` (None, `example`) The secret of the Facebook App through which login will occur.
+
+`FACEBOOK_CALLBACK_URL` (None, `http://localhost:4000/api/v0/auth/facebook/callback`) The `amida-auth-microservice` url that handles Facebook auth callback.
 
 ## Design
 
@@ -213,6 +273,34 @@ Then, in the "Verify Signature" section, enter the shared secret used by the app
 
 
 ## Deployment
+
+### Docker
+
+Docker deployment requires two docker containers:
+- An instance of the official Postgres docker image (see: https://hub.docker.com/_/postgres/).
+- An instance of this service's docker image (see: https://hub.docker.com/r/amidatech/auth-service).
+
+The Postgres container must be running _before_ the auth-service container is started because, upon initial run, the auth-service container defines the schema within the Postgres database.
+
+Also, the containers communicate via a docker network. Therefore,
+
+1. First, create the Docker network:
+
+```
+docker network create THE_DOCKER_NETWORK_NAME
+```
+
+2. Start the postgres container:
+
+```
+docker run -d --name amida-auth-microservice-db --network THE_DOCKER_NETWORK_NAME -e POSTGRES_DB=amida_auth_microservice -e POSTGRES_USER=amida_auth_microservice -e POSTGRES_PASSWORD=THE_PASSWORD postgres:9.6
+```
+
+3. Start the auth-service container:
+
+```
+docker run -d --name amida-auth-microservice --network THE_DOCKER_NETWORK_NAME -p 4000:4000 -e NODE_ENV=production -e PG_HOST=amida-auth-microservice-db -e PG_DB=amida_auth_microservice -e PG_USER=amida_auth_microservice -e PG_PASSWD=THE_PASSWORD -e JWT_SECRET=THE_JWT_SECRET amidatech/auth-service
+```
 
 ### Manual deployment with `pm2`
 ```sh

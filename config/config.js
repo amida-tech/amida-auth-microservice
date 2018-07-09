@@ -36,6 +36,11 @@ const envVarsSchema = Joi.object({
         .description('Postgres username'),
     AUTH_SERVICE_PG_PASSWORD: Joi.string().allow('')
         .description('Postgres password'),
+    PG_SSL: Joi.bool()
+        .default(false)
+        .description('Enable SSL connection to PostgreSQL'),
+    PG_CERT_CA: Joi.string()
+        .description('SSL certificate CA'), // Certificate itself, not a filename
     MAILER_EMAIL_ID: Joi.string().allow(''),
     MAILER_PASSWORD: Joi.string().allow(''),
     MAILER_SERVICE_PROVIDER: Joi.any().valid(
@@ -111,6 +116,8 @@ const config = {
         host: envVars.AUTH_SERVICE_PG_HOST,
         user: envVars.AUTH_SERVICE_PG_USER,
         passwd: envVars.AUTH_SERVICE_PG_PASSWORD,
+        ssl: envVars.AUTH_SERVICE_PG_SSL,
+        ssl_ca_cert: envVars.AUTH_SERVICE_PG_CERT_CA,
     },
     mailer: {
         user: envVars.MAILER_EMAIL_ID,

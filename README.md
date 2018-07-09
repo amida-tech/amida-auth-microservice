@@ -115,6 +115,10 @@ MAILER_SERVICE_PROVIDER=Mailgun
 
 `FACEBOOK_CALLBACK_URL` (None, `http://localhost:4000/api/v0/auth/facebook/callback`) The `amida-auth-microservice` url that handles Facebook auth callback.
 
+`PG_SSL` (`=false`) Whether an ssl connection shall be used to connect to postgres.
+
+`PG_CERT_CA` If ssl is enabled with `PG_SSL` this can be set to a certificate to override the CAs trusted while initiating the ssl connection to postgres. Without this set, Mozilla's list of trusted CAs is used. Note that this variable should contain the certificate itself, not a filename.
+
 ## Design
 
 ### Integration with other services

@@ -291,19 +291,19 @@ Also, the containers communicate via a docker network. Therefore,
 1. First, create the Docker network:
 
 ```
-docker network create THE_DOCKER_NETWORK_NAME
+docker network create {DOCKER_NETWORK_NAME}
 ```
 
 2. Start the postgres container:
 
 ```
-docker run -d --name amida-auth-microservice-db --network THE_DOCKER_NETWORK_NAME -e POSTGRES_DB=amida_auth_microservice -e POSTGRES_USER=amida_auth_microservice -e POSTGRES_PASSWORD=THE_PASSWORD postgres:9.6
+docker run -d --name amida-auth-microservice-db --network {DOCKER_NETWORK_NAME} -e POSTGRES_DB=amida_auth_microservice -e POSTGRES_USER=amida_auth_microservice -e POSTGRES_PASSWORD={PASSWORD} postgres:9.6
 ```
 
 3. Start the auth-service container:
 
 ```
-docker run -d --name amida-auth-microservice --network THE_DOCKER_NETWORK_NAME -p 4000:4000 -e NODE_ENV=production -e PG_HOST=amida-auth-microservice-db -e PG_DB=amida_auth_microservice -e PG_USER=amida_auth_microservice -e PG_PASSWD=THE_PASSWORD -e JWT_SECRET=THE_JWT_SECRET amidatech/auth-service
+docker run -d --name amida-auth-microservice --network {DOCKER_NETWORK_NAME} -p 4000:4000 -e NODE_ENV=production -e PG_HOST=amida-auth-microservice-db -e PG_DB=amida_auth_microservice -e PG_USER=amida_auth_microservice -e PG_PASSWD={PASSWORD} -e JWT_SECRET={JWT_SECRET} amidatech/auth-service
 ```
 
 ### Manual deployment with `pm2`

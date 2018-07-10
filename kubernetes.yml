@@ -29,7 +29,7 @@ spec:
           value: 0a6b944d-d2fb-46fc-a85e-0295c986cd9f
         - name: NODE_ENV
           value: development
-        - name: CREATE_USER_ADMIN
+        - name: AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS
           value: 'false'
         - name: JWT_MODE
           value: hmac

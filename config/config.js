@@ -10,7 +10,7 @@ const envVarsSchema = Joi.object({
         .default('development'),
     AUTH_SERVICE_PORT: Joi.number()
         .default(4000),
-    CREATE_USER_ADMIN: Joi.bool()
+    AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS: Joi.bool()
         .default(true),
     JWT_MODE: Joi.string().allow(['rsa', 'hmac']).default('hmac')
         .description('Signing algorithm for JWT'),
@@ -36,10 +36,10 @@ const envVarsSchema = Joi.object({
         .description('Postgres username'),
     AUTH_SERVICE_PG_PASSWORD: Joi.string().allow('')
         .description('Postgres password'),
-    PG_SSL: Joi.bool()
+    AUTH_SERVICE_PG_SSL: Joi.bool()
         .default(false)
         .description('Enable SSL connection to PostgreSQL'),
-    PG_CERT_CA: Joi.string()
+    AUTH_SERVICE_PG_CERT_CA: Joi.string()
         .description('SSL certificate CA'), // Certificate itself, not a filename
     MAILER_EMAIL_ID: Joi.string().allow(''),
     MAILER_PASSWORD: Joi.string().allow(''),
@@ -100,7 +100,7 @@ if (error) {
 const config = {
     env: envVars.NODE_ENV,
     port: envVars.AUTH_SERVICE_PORT,
-    createUserAdmin: envVars.CREATE_USER_ADMIN,
+    createUserAdmin: envVars.AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS,
     jwtMode: envVars.JWT_MODE,
     jwtSecret: envVars.JWT_SECRET,
     jwtPrivateKeyPath: envVars.JWT_PRIVATE_KEY_PATH,

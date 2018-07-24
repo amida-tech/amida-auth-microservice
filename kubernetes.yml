@@ -43,6 +43,8 @@ spec:
           value: ''
         - name: MAILER_PASSWORD
           value: ''
+        - name: MAILER_FROM_EMAIL_ADDRESS
+          value: ''
         - name: MAILER_SERVICE_PROVIDER
           value: '126'
         - name: FACEBOOK_CLIENT_ID

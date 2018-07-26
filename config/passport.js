@@ -47,7 +47,7 @@ module.exports = (passport) => {
             } })
             .spread((user) => {
                 if (user !== null) return done(null, user);
-                const err = new APIError('New facebook user not created', httpStatus.INTERNAL_SERVER_ERROR, true);
+                const err = new APIError('New facebook user not created', 'FACEBOOK_CREATION_ERROR', httpStatus.INTERNAL_SERVER_ERROR, true);
                 return done(err);
             });
         });
@@ -55,4 +55,3 @@ module.exports = (passport) => {
         passport.use(fbStrategy);
     }
 };
-

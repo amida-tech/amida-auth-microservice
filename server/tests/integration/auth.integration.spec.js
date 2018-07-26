@@ -34,14 +34,22 @@ describe('Auth API:', () => {
             request(app).post(`${common.baseURL}/auth/login`)
                 .send(common.badPassword)
                 .expect(httpStatus.UNAUTHORIZED)
-                .then(res => expect(res.body.message).to.equal('Incorrect password'))
+                .then((res) => {
+                    expect(res.body.message).to.equal('Incorrect password');
+                    expect(res.body.code).to.equal('INCORRECT_PASSWORD');
+                    expect(res.body.status).to.equal('ERROR');
+                })
         );
 
         it('should return 404 when there is no username found', () =>
             request(app).post(`${common.baseURL}/auth/login`)
                 .send(common.missingUsername)
                 .expect(httpStatus.NOT_FOUND)
-                .then(res => expect(res.body.message).to.equal('Username not found'))
+                .then((res) => {
+                    expect(res.body.message).to.equal('Username not found');
+                    expect(res.body.code).to.equal('UNKNOWN_USERNAME');
+                    expect(res.body.status).to.equal('ERROR');
+                })
         );
 
         it('should get valid JWT token', () =>
@@ -89,6 +97,7 @@ describe('Auth API:', () => {
             .then((res) => {
                 expect(res.body).to.have.property('refreshToken');
                 refreshToken = res.body.refreshToken;
+                return;
             })
         );
 
@@ -132,6 +141,26 @@ describe('Auth API:', () => {
                 })
                 .expect(httpStatus.NOT_FOUND)
             )
+        );
+
+        it('should allow multiple refresh tokens for multiple devices', () => request(app)
+            .post(`${common.baseURL}/auth/login`)
+            .send(common.validUserCredentials)
+            .expect(httpStatus.OK)
+            .then((res1) => {
+                expect(res1.body).to.have.property('refreshToken');
+                const token1 = res1.body.refreshToken;
+                return request(app)
+                    .post(`${common.baseURL}/auth/login`)
+                    .send(common.validUserCredentials)
+                    .expect(httpStatus.OK)
+                    .then((res2) => {
+                        expect(res2.body).to.have.property('refreshToken');
+                        const token2 = res2.body.refreshToken;
+                        expect(token1).to.not.equal(token2);
+                        return;
+                    });
+            })
         );
     });
 

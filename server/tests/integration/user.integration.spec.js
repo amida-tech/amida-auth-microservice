@@ -275,7 +275,7 @@ describe('User API:', () => {
                 .catch(done);
         });
 
-        it('should return 400 if username is a duplicate', (done) => {
+        it('should return 409 if username is a duplicate', (done) => {
             request(app)
                 .post(`${common.baseURL}/user`)
                 .set('Authorization', `Bearer ${adminToken}`)
@@ -286,7 +286,7 @@ describe('User API:', () => {
                         .post(`${common.baseURL}/user`)
                         .set('Authorization', `Bearer ${adminToken}`)
                         .send(userDuplicateUsername)
-                        .expect(httpStatus.BAD_REQUEST)
+                        .expect(httpStatus.CONFLICT)
                         .then((res) => {
                             expect(res.text).to.contain('username must be unique');
                             done();
@@ -296,7 +296,7 @@ describe('User API:', () => {
                 .catch(done);
         });
 
-        it('should return 400 if email is a duplicate', (done) => {
+        it('should return 409 if email is a duplicate', (done) => {
             request(app)
                 .post(`${common.baseURL}/user`)
                 .set('Authorization', `Bearer ${adminToken}`)
@@ -307,7 +307,7 @@ describe('User API:', () => {
                         .post(`${common.baseURL}/user`)
                         .set('Authorization', `Bearer ${adminToken}`)
                         .send(userDuplicateEmail)
-                        .expect(httpStatus.BAD_REQUEST)
+                        .expect(httpStatus.CONFLICT)
                         .then((res) => {
                             expect(res.text).to.contain('email must be unique');
                             done();

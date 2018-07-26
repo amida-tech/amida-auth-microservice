@@ -9,6 +9,7 @@ import {
     sendEmail,
     generateLink,
 } from '../helpers/mailer';
+import config from '../../config/config';
 
 const User = db.User;
 const RefreshToken = db.RefreshToken;
@@ -26,7 +27,7 @@ function login(req, res, next) {
 
     const passwordMatch = user.then((userResult) => {
         if (_.isNull(userResult)) {
-            const err = new APIError('Username not found', httpStatus.NOT_FOUND, true);
+            const err = new APIError('Username not found', 'UNKNOWN_USERNAME', httpStatus.NOT_FOUND, true);
             return next(err);
         }
         return userResult.testPassword(params.password);
@@ -35,7 +36,7 @@ function login(req, res, next) {
     // once the user and password promises resolve, send the token or an error
     Promise.join(user, passwordMatch, (userResult, passwordMatchResult) => {
         if (!passwordMatchResult) {
-            const err = new APIError('Incorrect password', httpStatus.UNAUTHORIZED, true);
+            const err = new APIError('Incorrect password', 'INCORRECT_PASSWORD', httpStatus.UNAUTHORIZED, true);
             return next(err);
         }
 
@@ -47,12 +48,19 @@ function login(req, res, next) {
         };
 
         const jwtToken = signJWT(userInfo);
-        return RefreshToken.createNewToken(userResult.id)
-        .then(token => res.json({
+
+        if (config.refreshToken.enabled) {
+            return RefreshToken.createNewToken(userResult.id)
+            .then(token => res.json({
+                token: jwtToken,
+                username: user.username,
+                refreshToken: token.token,
+            }));
+        }
+        return res.json({
             token: jwtToken,
             username: user.username,
-            refreshToken: token.token,
-        }));
+        });
     })
     .catch(error => next(error));
 }
@@ -65,15 +73,19 @@ function login(req, res, next) {
  * @returns {*}
  */
 function submitRefreshToken(req, res, next) {
+    if (!config.refreshToken.enabled) {
+        return res.sendStatus(httpStatus.NOT_IMPLEMENTED);
+    }
+
     const params = _.pick(req.body, 'username', 'refreshToken');
-    User
+    return User
     .findOne({ where: { username: params.username } })
     .then(userResult =>
         RefreshToken
         .findOne({ where: { token: params.refreshToken, userId: userResult.id } })
         .then((tokenResult) => {
             if (_.isNull(tokenResult)) {
-                const err = new APIError('Refresh token not found', httpStatus.NOT_FOUND, true);
+                const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
                 return next(err);
             }
             const userInfo = {
@@ -102,11 +114,15 @@ function submitRefreshToken(req, res, next) {
  * @returns {*}
  */
 function rejectRefreshToken(req, res, next) {
+    if (!config.refreshToken.enabled) {
+        return res.sendStatus(httpStatus.NOT_IMPLEMENTED);
+    }
+
     const params = _.pick(req.body, 'refreshToken');
-    RefreshToken.findOne({ where: { token: params.refreshToken } })
+    return RefreshToken.findOne({ where: { token: params.refreshToken } })
     .then((tokenResult) => {
         if (_.isNull(tokenResult)) {
-            const err = new APIError('Refresh token not found', httpStatus.NOT_FOUND, true);
+            const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
             return next(err);
         }
         // delete the refresh token
@@ -146,7 +162,7 @@ function resetToken(req, res, next) {
 
     const email = _.get(req, 'body.email');
     if (!email) {
-        const err = new APIError('Invalid email', httpStatus.BAD_REQUEST, true);
+        const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
         return next(err);
     }
     return User.resetPasswordToken(email, 3600)

@@ -6,7 +6,7 @@ module.exports = {
 
     sendEmail(res, email, text, token, next) {
         const options = {
-            from: util.format('"%s"', config.mailer.user),
+            from: util.format('"%s"', config.mailer.fromAddress),
             to: email,
             subject: 'Password Reset',
             text,

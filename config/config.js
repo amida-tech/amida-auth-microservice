@@ -43,6 +43,7 @@ const envVarsSchema = Joi.object({
         .description('SSL certificate CA'), // Certificate itself, not a filename
     MAILER_EMAIL_ID: Joi.string().allow(''),
     MAILER_PASSWORD: Joi.string().allow(''),
+    MAILER_FROM_EMAIL_ADDRESS: Joi.string().allow(''),
     MAILER_SERVICE_PROVIDER: Joi.any().valid(
         '126',
         '163',
@@ -122,6 +123,7 @@ const config = {
     mailer: {
         user: envVars.MAILER_EMAIL_ID,
         password: envVars.MAILER_PASSWORD,
+        fromAddress: envVars.MAILER_FROM_EMAIL_ADDRESS,
         service: envVars.MAILER_SERVICE_PROVIDER,
     },
     facebook: {

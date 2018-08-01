@@ -281,8 +281,8 @@ Then, in the "Verify Signature" section, enter the shared secret used by the app
 ### Docker
 
 Docker deployment requires two docker containers:
-- An instance of the official Postgres docker image (see: https://hub.docker.com/_/postgres/).
-- An instance of this service's docker image (see: https://hub.docker.com/r/amidatech/auth-service).
+- An instance of the official Postgres docker image (see https://hub.docker.com/_/postgres ).
+- An instance of this service's docker image (see https://hub.docker.com/r/amidatech/auth-service ).
 
 The Postgres container must be running _before_ the auth-service container is started because, upon initial run, the auth-service container defines the schema within the Postgres database.
 

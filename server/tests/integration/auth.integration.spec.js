@@ -230,6 +230,13 @@ describe('Auth API:', () => {
                 })
         );
 
+        it('should accept the invalid email', () =>
+            request(app)
+                .post(`${common.baseURL}/auth/reset-password`)
+                .send({ email: 'fakeemail@fakesite.com' })
+                .expect(httpStatus.OK)
+        );
+
         it('should update the password', () =>
             request(app)
                 .post(`${common.baseURL}/auth/reset-password`)

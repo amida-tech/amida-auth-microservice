@@ -171,7 +171,7 @@ function resetToken(req, res, next) {
             const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);
             sendEmail(res, email, text, token, next);
         })
-        .catch(error => next(error));
+        .catch(() => res.status(200).end());
 }
 
 /**

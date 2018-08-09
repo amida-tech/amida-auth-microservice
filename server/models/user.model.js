@@ -57,6 +57,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ARRAY(DataTypes.STRING),
             defaultValue: [''],
         },
+        refreshToken: {
+            type: DataTypes.STRING,
+        },
         resetToken: {
             type: DataTypes.STRING,
         },

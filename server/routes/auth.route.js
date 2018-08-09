@@ -13,6 +13,12 @@ router.route('/login')
 
 router.route('/logout');
 
+router.route('/token/reject')
+    .post(validate(authValidation.refreshTokenReject), authCtrl.rejectRefreshToken);
+
+router.route('/token')
+    .post(validate(authValidation.refreshToken), authCtrl.submitRefreshToken);
+
 router.route('/update-password')
     .post(validate(authValidation.updatePassword), checkPassword,
           passport.authenticate('jwt', { session: false }),

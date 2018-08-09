@@ -15,21 +15,21 @@ spec:
       - name: amida-auth-microservice
         image: amidatech/auth-service
         env:
-        - name: PG_DB
+        - name: AUTH_SERVICE_PG_DB
           value: amida_auth
-        - name: PG_PORT
+        - name: AUTH_SERVICE_PG_PORT
           value: '5432'
-        - name: PG_HOST
+        - name: AUTH_SERVICE_PG_HOST
           value: kubernetes-auth-microservice.a_database_url.us-west-2.rds.amazonaws.com
-        - name: PG_USER
+        - name: AUTH_SERVICE_PG_USER
           value: amida_auth_microservcie
-        - name: PG_PASSWD
+        - name: AUTH_SERVICE_PG_PASSWORD
           value: amida-auth
         - name: JWT_SECRET
           value: 0a6b944d-d2fb-46fc-a85e-0295c986cd9f
         - name: NODE_ENV
           value: development
-        - name: CREATE_USER_ADMIN
+        - name: AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS
           value: 'false'
         - name: JWT_MODE
           value: hmac

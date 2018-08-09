@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import util from 'util';
 import httpStatus from 'http-status';
+
 import db from '../../config/sequelize';
 import { signJWT } from '../helpers/jwt';
 import APIError from '../helpers/APIError';
@@ -8,8 +9,10 @@ import {
     sendEmail,
     generateLink,
 } from '../helpers/mailer';
+import config from '../../config/config';
 
 const User = db.User;
+const RefreshToken = db.RefreshToken;
 
 /**
  * Sends back jwt token if valid username and password is provided
@@ -24,7 +27,7 @@ function login(req, res, next) {
 
     const passwordMatch = user.then((userResult) => {
         if (_.isNull(userResult)) {
-            const err = new APIError('Username not found', httpStatus.NOT_FOUND, true);
+            const err = new APIError('Username not found', 'UNKNOWN_USERNAME', httpStatus.NOT_FOUND, true);
             return next(err);
         }
         return userResult.testPassword(params.password);
@@ -33,7 +36,7 @@ function login(req, res, next) {
     // once the user and password promises resolve, send the token or an error
     Promise.join(user, passwordMatch, (userResult, passwordMatchResult) => {
         if (!passwordMatchResult) {
-            const err = new APIError('Incorrect password', httpStatus.UNAUTHORIZED, true);
+            const err = new APIError('Incorrect password', 'INCORRECT_PASSWORD', httpStatus.UNAUTHORIZED, true);
             return next(err);
         }
 
@@ -44,17 +47,91 @@ function login(req, res, next) {
             scopes: userResult.scopes,
         };
 
-        const token = signJWT(userInfo);
+        const jwtToken = signJWT(userInfo);
 
+        if (config.refreshToken.enabled) {
+            return RefreshToken.createNewToken(userResult.id)
+            .then(token => res.json({
+                token: jwtToken,
+                username: user.username,
+                refreshToken: token.token,
+            }));
+        }
         return res.json({
-            token,
+            token: jwtToken,
             username: user.username,
         });
     })
     .catch(error => next(error));
 }
 
-function logout() {}
+/**
+ * Sends back jwt token if valid username and password is provided
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function submitRefreshToken(req, res, next) {
+    if (!config.refreshToken.enabled) {
+        return res.sendStatus(httpStatus.NOT_IMPLEMENTED);
+    }
+
+    const params = _.pick(req.body, 'username', 'refreshToken');
+    return User
+    .findOne({ where: { username: params.username } })
+    .then(userResult =>
+        RefreshToken
+        .findOne({ where: { token: params.refreshToken, userId: userResult.id } })
+        .then((tokenResult) => {
+            if (_.isNull(tokenResult)) {
+                const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
+                return next(err);
+            }
+            const userInfo = {
+                id: userResult.id,
+                username: userResult.username,
+                email: userResult.email,
+                scopes: userResult.scopes,
+            };
+
+            const jwtToken = signJWT(userInfo);
+
+            return res.json({
+                token: jwtToken,
+                username: userResult.username,
+            });
+        })
+    )
+    .catch(error => next(error));
+}
+
+/**
+ * Sends back jwt token if valid username and password is provided
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function rejectRefreshToken(req, res, next) {
+    if (!config.refreshToken.enabled) {
+        return res.sendStatus(httpStatus.NOT_IMPLEMENTED);
+    }
+
+    const params = _.pick(req.body, 'refreshToken');
+    return RefreshToken.findOne({ where: { token: params.refreshToken } })
+    .then((tokenResult) => {
+        if (_.isNull(tokenResult)) {
+            const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
+            return next(err);
+        }
+        // delete the refresh token
+        tokenResult.destroy();
+
+        return res.sendStatus(httpStatus.NO_CONTENT);
+    })
+    .catch(error => next(error));
+}
 
 /**
  * Sends back 200 OK if password was updated successfully
@@ -85,7 +162,7 @@ function resetToken(req, res, next) {
 
     const email = _.get(req, 'body.email');
     if (!email) {
-        const err = new APIError('Invalid email', httpStatus.BAD_REQUEST, true);
+        const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
         return next(err);
     }
     return User.resetPasswordToken(email, 3600)
@@ -114,4 +191,11 @@ function resetPassword(req, res, next) {
         .catch(error => next(error));
 }
 
-export default { login, logout, updatePassword, resetToken, resetPassword };
+export default {
+    login,
+    submitRefreshToken,
+    rejectRefreshToken,
+    updatePassword,
+    resetToken,
+    resetPassword,
+};

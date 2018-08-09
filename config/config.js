@@ -8,9 +8,9 @@ const envVarsSchema = Joi.object({
     NODE_ENV: Joi.string()
         .allow(['development', 'production', 'test', 'provision'])
         .default('development'),
-    PORT: Joi.number()
+    AUTH_SERVICE_PORT: Joi.number()
         .default(4000),
-    CREATE_USER_ADMIN: Joi.bool()
+    AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS: Joi.bool()
         .default(true),
     JWT_MODE: Joi.string().allow(['rsa', 'hmac']).default('hmac')
         .description('Signing algorithm for JWT'),
@@ -22,18 +22,28 @@ const envVarsSchema = Joi.object({
         .description('Absolute or relative path to RSA public key'),
     JWT_TTL: Joi.number()
         .default(3600),
-    PG_DB: Joi.string().required()
+    REFRESH_TOKEN_ENABLED: Joi.bool()
+        .default(false),
+    REFRESH_TOKEN_MULTIPLE_DEVICES: Joi.bool()
+        .default(false),
+    AUTH_SERVICE_PG_DB: Joi.string().required()
         .description('Postgres database name'),
-    PG_PORT: Joi.number()
+    AUTH_SERVICE_PG_PORT: Joi.number()
         .default(5432),
-    PG_HOST: Joi.string()
+    AUTH_SERVICE_PG_HOST: Joi.string()
         .default('localhost'),
-    PG_USER: Joi.string().required()
+    AUTH_SERVICE_PG_USER: Joi.string().required()
         .description('Postgres username'),
-    PG_PASSWD: Joi.string().allow('')
+    AUTH_SERVICE_PG_PASSWORD: Joi.string().allow('')
         .description('Postgres password'),
+    AUTH_SERVICE_PG_SSL: Joi.bool()
+        .default(false)
+        .description('Enable SSL connection to PostgreSQL'),
+    AUTH_SERVICE_PG_CERT_CA: Joi.string()
+        .description('SSL certificate CA'), // Certificate itself, not a filename
     MAILER_EMAIL_ID: Joi.string().allow(''),
     MAILER_PASSWORD: Joi.string().allow(''),
+    MAILER_FROM_EMAIL_ADDRESS: Joi.string().allow(''),
     MAILER_SERVICE_PROVIDER: Joi.any().valid(
         '126',
         '163',
@@ -90,23 +100,30 @@ if (error) {
 
 const config = {
     env: envVars.NODE_ENV,
-    port: envVars.PORT,
-    createUserAdmin: envVars.CREATE_USER_ADMIN,
+    port: envVars.AUTH_SERVICE_PORT,
+    createUserAdmin: envVars.AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS,
     jwtMode: envVars.JWT_MODE,
     jwtSecret: envVars.JWT_SECRET,
     jwtPrivateKeyPath: envVars.JWT_PRIVATE_KEY_PATH,
     jwtPublicKeyPath: envVars.JWT_PUBLIC_KEY_PATH,
     jwtExpiresIn: envVars.JWT_TTL,
+    refreshToken: {
+        enabled: envVars.REFRESH_TOKEN_ENABLED,
+        multipleDevices: envVars.REFRESH_TOKEN_MULTIPLE_DEVICES,
+    },
     postgres: {
-        db: envVars.PG_DB,
-        port: envVars.PG_PORT,
-        host: envVars.PG_HOST,
-        user: envVars.PG_USER,
-        passwd: envVars.PG_PASSWD,
+        db: envVars.AUTH_SERVICE_PG_DB,
+        port: envVars.AUTH_SERVICE_PG_PORT,
+        host: envVars.AUTH_SERVICE_PG_HOST,
+        user: envVars.AUTH_SERVICE_PG_USER,
+        passwd: envVars.AUTH_SERVICE_PG_PASSWORD,
+        ssl: envVars.AUTH_SERVICE_PG_SSL,
+        ssl_ca_cert: envVars.AUTH_SERVICE_PG_CERT_CA,
     },
     mailer: {
         user: envVars.MAILER_EMAIL_ID,
         password: envVars.MAILER_PASSWORD,
+        fromAddress: envVars.MAILER_FROM_EMAIL_ADDRESS,
         service: envVars.MAILER_SERVICE_PROVIDER,
     },
     facebook: {

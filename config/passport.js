@@ -24,14 +24,16 @@ const opts = {
 };
 
 module.exports = (passport) => {
-    passport.use(new JwtStrategy(opts, (jwtPayload, done) => {
+    const jwtStrategy = new JwtStrategy(opts, (jwtPayload, done) => {
         User.findOne({ where: { username: jwtPayload.username } })
             .then(user => done(null, user))
             .catch(err => done(err, false));
-    }));
+    });
+
+    passport.use(jwtStrategy);
 
     if (config.facebook.clientId) {
-        passport.use(new FacebookStrategy({
+        const fbStrategy = new FacebookStrategy({
             clientID: config.facebook.clientId,
             clientSecret: config.facebook.clientSecret,
             callbackURL: config.facebook.callbackUrl,
@@ -45,10 +47,11 @@ module.exports = (passport) => {
             } })
             .spread((user) => {
                 if (user !== null) return done(null, user);
-                const err = new APIError('New facebook user not created', httpStatus.INTERNAL_SERVER_ERROR, true);
+                const err = new APIError('New facebook user not created', 'FACEBOOK_CREATION_ERROR', httpStatus.INTERNAL_SERVER_ERROR, true);
                 return done(err);
             });
-        }));
+        });
+
+        passport.use(fbStrategy);
     }
 };
-

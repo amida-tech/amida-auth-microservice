@@ -335,6 +335,7 @@ packer validate -var 'aws_access_key=myAWSAcessKey' \
 -var 'ami_name=api-auth-service-boilerplate' \
 -var 'node_env=development' \
 -var 'jwt_secret=0a6b944d-d2fb-46fc-a85e-0295c986cd9f' \
+-var 'create_user_admin=false' \
 -var 'jwt_mode=hmac' \
 -var 'auth_service_pg_host=amid-messages-packer-test.czgzedfwgy7z.us-west-2.rds.amazonaws.com' \
 -var 'auth_service_pg_db=amida_auth_microservice' \

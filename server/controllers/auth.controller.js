@@ -101,6 +101,7 @@ function submitRefreshToken(req, res, next) {
             return res.json({
                 token: jwtToken,
                 username: userResult.username,
+                ttl: config.jwtExpiresIn,
             });
         })
     )

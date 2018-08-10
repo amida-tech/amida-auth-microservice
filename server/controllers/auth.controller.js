@@ -24,7 +24,6 @@ const RefreshToken = db.RefreshToken;
 function login(req, res, next) {
     const params = _.pick(req.body, 'username', 'password');
     const user = User.findOne({ where: { username: params.username } });
-
     const passwordMatch = user.then((userResult) => {
         if (_.isNull(userResult)) {
             const err = new APIError('Username not found', 'UNKNOWN_USERNAME', httpStatus.NOT_FOUND, true);
@@ -55,11 +54,13 @@ function login(req, res, next) {
                 token: jwtToken,
                 username: user.username,
                 refreshToken: token.token,
+                ttl: config.jwtExpiresIn,
             }));
         }
         return res.json({
             token: jwtToken,
             username: user.username,
+            ttl: config.jwtExpiresIn,
         });
     })
     .catch(error => next(error));

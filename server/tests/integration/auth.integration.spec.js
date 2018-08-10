@@ -33,10 +33,10 @@ describe('Auth API:', () => {
         it('should return 401 error with bad password', () =>
             request(app).post(`${common.baseURL}/auth/login`)
                 .send(common.badPassword)
-                .expect(httpStatus.UNAUTHORIZED)
+                .expect(httpStatus.NOT_FOUND)
                 .then((res) => {
-                    expect(res.body.message).to.equal('Incorrect password');
-                    expect(res.body.code).to.equal('INCORRECT_PASSWORD');
+                    expect(res.body.message).to.equal('Incorrect username or password');
+                    expect(res.body.code).to.equal('INCORRECT_USERNAME_OR_PASSWORD');
                     expect(res.body.status).to.equal('ERROR');
                 })
         );
@@ -46,8 +46,8 @@ describe('Auth API:', () => {
                 .send(common.missingUsername)
                 .expect(httpStatus.NOT_FOUND)
                 .then((res) => {
-                    expect(res.body.message).to.equal('Username not found');
-                    expect(res.body.code).to.equal('UNKNOWN_USERNAME');
+                    expect(res.body.message).to.equal('Incorrect username or password');
+                    expect(res.body.code).to.equal('INCORRECT_USERNAME_OR_PASSWORD');
                     expect(res.body.status).to.equal('ERROR');
                 })
         );
@@ -228,13 +228,6 @@ describe('Auth API:', () => {
                         .expect(httpStatus.OK)
                         .then(res2 => expect(res2.text).to.equal('OK'));
                 })
-        );
-
-        it('should accept the invalid email', () =>
-            request(app)
-                .post(`${common.baseURL}/auth/reset-password`)
-                .send({ email: 'fakeemail@fakesite.com' })
-                .expect(httpStatus.OK)
         );
 
         it('should update the password', () =>

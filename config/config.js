@@ -61,7 +61,6 @@ const envVarsSchema = Joi.object({
         'Hotmail',
         'iCloud',
         'mail.ee',
-        'Mail.ru',
         'Maildev',
         'Mailgun',
         'Mailjet',

@@ -31,25 +31,25 @@ spec:
           value: development
         - name: AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS
           value: 'false'
-        - name: JWT_MODE
+        - name: AUTH_SERVICE_JWT_MODE
           value: hmac
-        - name: JWT_PRIVATE_KEY_PATH
+        - name: AUTH_SERVICE_JWT_PRIVATE_KEY_PATH
           value: private.key
-        - name: JWT_PUBLIC_KEY_PATH
+        - name: AUTH_SERVICE_JWT_PUBLIC_KEY_PATH
           value: private.key.pub
-        - name: JWT_TTL
+        - name: AUTH_SERVICE_JWT_TTL
           value: '3600'
-        - name: MAILER_EMAIL_ID
+        - name: AUTH_SERVICE_MAILER_EMAIL_ID
           value: ''
-        - name: MAILER_PASSWORD
+        - name: AUTH_SERVICE_MAILER_PASSWORD
           value: ''
-        - name: MAILER_SERVICE_PROVIDER
+        - name: AUTH_SERVICE_MAILER_SERVICE_PROVIDER
           value: '126'
-        - name: FACEBOOK_CLIENT_ID
-          value: '12345'
-        - name: FACEBOOK_CLIENT_SECRET
-          value: 6789A
-        - name: FACEBOOK_CALLBACK_URL
+        - name: AUTH_SERVICE_FACEBOOK_CLIENT_ID
+          value: example
+        - name: AUTH_SERVICE_FACEBOOK_CLIENT_SECRET
+          value: example
+        - name: AUTH_SERVICE_FACEBOOK_CALLBACK_URL
           value: http://localhost:4000/api/v0/auth/facebook/callback
         ports:
         - name: nodejs-port

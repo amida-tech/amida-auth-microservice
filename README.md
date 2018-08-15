@@ -109,11 +109,11 @@ AUTH_SERVICE_MAILER_SERVICE_PROVIDER=Mailgun
 
 ### Integration With Facebook for Login
 
-`AUTH_SERVICE_FACEBOOK_CLIENT_ID` (None, `example`) The ID of the Facebook App through which login will occur.
+`FACEBOOK_CLIENT_ID` (None, `example`) The ID of the Facebook App through which login will occur.
 
-`AUTH_SERVICE_FACEBOOK_CLIENT_SECRET` (None, `example`) The secret of the Facebook App through which login will occur.
+`FACEBOOK_CLIENT_SECRET` (None, `example`) The secret of the Facebook App through which login will occur.
 
-`AUTH_SERVICE_FACEBOOK_CALLBACK_URL` (None, `http://localhost:4000/api/v0/auth/facebook/callback`) The `amida-auth-microservice` url that handles Facebook auth callback.
+`FACEBOOK_CALLBACK_URL` (None, `http://localhost:4000/api/v0/auth/facebook/callback`) The `amida-auth-microservice` url that handles Facebook auth callback.
 
 `AUTH_SERVICE_PG_SSL_ENABLED` (`=false`) Whether an SSL connection shall be used to connect to postgres.
 
@@ -163,9 +163,9 @@ To specify the external auth used for an instance of the service, use the `*_CLI
 #### Facebook
 To set up integration with Facebook, configure your domain for the auth service as a Facebook Login product with `<domain>/api/vX/auth/facebook/callback` as a redirect URL, then set the following env vars:
 ```
-AUTH_SERVICE_FACEBOOK_CLIENT_ID
-AUTH_SERVICE_FACEBOOK_CLIENT_SECRET
-AUTH_SERVICE_FACEBOOK_CALLBACK_URL
+FACEBOOK_CLIENT_ID
+FACEBOOK_CLIENT_SECRET
+FACEBOOK_CALLBACK_URL
 ```
 Clients can then get a JWT by doing a `GET` for `/api/vX/auth/facebook` and logging in to Facebook.
 

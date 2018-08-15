@@ -45,11 +45,11 @@ spec:
           value: ''
         - name: AUTH_SERVICE_MAILER_SERVICE_PROVIDER
           value: '126'
-        - name: AUTH_SERVICE_FACEBOOK_CLIENT_ID
+        - name: FACEBOOK_CLIENT_ID
           value: example
-        - name: AUTH_SERVICE_FACEBOOK_CLIENT_SECRET
+        - name: FACEBOOK_CLIENT_SECRET
           value: example
-        - name: AUTH_SERVICE_FACEBOOK_CALLBACK_URL
+        - name: FACEBOOK_CALLBACK_URL
           value: http://localhost:4000/api/v0/auth/facebook/callback
         ports:
         - name: nodejs-port

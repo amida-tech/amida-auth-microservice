@@ -286,7 +286,7 @@ Then, in the "Verify Signature" section, enter the shared secret used by the app
 
 # Deployment
 
-### Docker
+## Deployment Via Docker
 
 Docker deployment requires two docker containers:
 - An instance of the official Postgres docker image (see https://hub.docker.com/_/postgres ).
@@ -305,19 +305,10 @@ docker network create {DOCKER_NETWORK_NAME}
 2. Start the postgres container:
 
 ```sh
-docker run -d --name amida-auth-microservice-db --network {DOCKER_NETWORK_NAME} -e POSTGRES_DB=amida_auth_microservice -e POSTGRES_USER=amida_auth_microservice -e POSTGRES_PASSWORD={PASSWORD} postgres:9.6
+docker run -d --name {AUTH_SERVICE_PG_HOST} --network {DOCKER_NETWORK_NAME} -e POSTGRES_DB={AUTH_SERVICE_PG_DB} -e POSTGRES_USER={AUTH_SERVICE_PG_USER} -e POSTGRES_PASSWORD={AUTH_SERVICE_PG_PASSWORD} postgres:9.6
 ```
 
-3. Create a `.env` file for use by this service's docker container. Set, at minimum, these values in it:
-
-```sh
-NODE_ENV=production
-AUTH_SERVICE_PG_HOST=amida-auth-microservice-db
-AUTH_SERVICE_PG_DB=amida_auth_microservice
-AUTH_SERVICE_PG_USER=amida_auth_microservice
-AUTH_SERVICE_PG_PASSWORD={PASSWORD}
-JWT_SECRET={JWT_SECRET}
-```
+3. Create a `.env` file for use by this service's docker container. A good starting point is `.env.production`.
 
 4. Start the auth-service container:
 
@@ -326,6 +317,14 @@ docker run -d -p 4000:4000 \
 --name amida-auth-microservice --network {DOCKER_NETWORK_NAME} \
 -v {ABSOLUTE_PATH_TO_YOUR_ENV_FILE}:/app/.env:ro \
 amidatech/auth-service
+```
+
+### With docker-compose
+
+Alternatively, there is also a docker-compose.yml file. Therefore, you can:
+
+```sh
+docker-compose up
 ```
 
 ## Manual deployment with `pm2`
@@ -387,12 +386,6 @@ The Bastion jumpbox can be used for debugging and maintenance inside the VPC.
 In a deployment with an application using other services, you would want to maintain a similar VPC configuration, while adding other service AMIs to the deployment.
 
 Further details can be found in the `deploy` directory.
-
-## Docker deployment
-Docker Compose:
-```sh
-docker-compose up
-```
 
 ## Kubernetes Deployment
 See the [paper](https://paper.dropbox.com/doc/Amida-Microservices-Kubernetes-Deployment-Xsz32zX8nwT9qctitGNVc) write-up for instructions on how to deploy with Kubernetes. The `kubernetes.yml` file contains the deployment definition for the project.

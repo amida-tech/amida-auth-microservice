@@ -1,6 +1,7 @@
 # Amida Auth Microservice
 
 # Table of Contents
+
   - [Design](#design)
   - [Development](#development)
   - [Deployment](#deployment)
@@ -87,6 +88,8 @@ Universal logging library [winston](https://www.npmjs.com/package/winston) is us
 
 # Development
 
+## Setup
+
 Install yarn:
 ```js
 npm install -g yarn
@@ -102,9 +105,16 @@ Set environment vars:
 cp .env.example .env
 ```
 
-Setup the database:
+Create the database:
 
-When the `yarn start` command is run (see next step), it runs a script that automatically sets up the DB schema for the DB specified by the `.env` file's `AUTH_SERVICE_PG_DB` value.  In order for this script to work, you must create a DB in your postgres instance that has a name matching your `AUTH_SERVICE_PG_DB` value and that the Postgres user specified by your `.env` file's `AUTH_SERVICE_PG_USER` has permissions to modify.
+When you `yarn start` the first time (see the [Development > Run](#Run) section), a script will automatically create the database schema. However, this will only work if your postgres instance has:
+
+1. A database matching your `.env` file's `AUTH_SERVICE_PG_DB` name
+2. A user matching your `.env` file's `AUTH_SERVICE_PG_USER` name, which has sufficient permissions to modify your `AUTH_SERVICE_PG_DB`.
+
+Therefore, in your Postgres instance, create that user and database now.
+
+## Run
 
 Start server:
 ```sh
@@ -115,7 +125,8 @@ yarn start
 DEBUG=amida-auth-microservice:* yarn start
 ```
 
-Tests:
+## Tests
+
 ```sh
 # Run tests written in ES6
 yarn test
@@ -130,7 +141,8 @@ yarn test:watch
 yarn test:check-coverage
 ```
 
-Lint:
+## Lint
+
 ```sh
 # Lint code with ESLint
 yarn lint
@@ -139,7 +151,7 @@ yarn lint
 yarn lint:watch
 ```
 
-Other gulp tasks:
+## Other gulp tasks
 ```sh
 # Wipe out dist and coverage directory
 gulp clean
@@ -194,7 +206,11 @@ docker network create {DOCKER_NETWORK_NAME}
 2. Start the postgres container:
 
 ```sh
-docker run -d --name {AUTH_SERVICE_PG_HOST} --network {DOCKER_NETWORK_NAME} -e POSTGRES_DB={AUTH_SERVICE_PG_DB} -e POSTGRES_USER={AUTH_SERVICE_PG_USER} -e POSTGRES_PASSWORD={AUTH_SERVICE_PG_PASSWORD} postgres:9.6
+docker run -d --name {AUTH_SERVICE_PG_HOST} --network {DOCKER_NETWORK_NAME} \
+-e POSTGRES_DB={AUTH_SERVICE_PG_DB} \
+-e POSTGRES_USER={AUTH_SERVICE_PG_USER} \
+-e POSTGRES_PASSWORD={AUTH_SERVICE_PG_PASSWORD} \
+postgres:9.6
 ```
 
 3. Create a `.env` file for use by this service's docker container. A good starting point is `.env.production`.
@@ -308,7 +324,7 @@ Variables are listed below in this format:
 `AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES` [`false`] Not fully implemented yet.
 
 `AUTH_SERVICE_PG_HOST` [`localhost`] Hostname of machine the postgres instance is running on.
-- When doing docker, set to the name of the docker container running postgres. Setting to `amida-auth-microservice-db` is recommended.
+- When using docker, set to the name of the docker container running postgres. Setting to `amida-auth-microservice-db` is recommended.
 
 `AUTH_SERVICE_PG_PORT` [`5432`] Port on the machine the postgres instance is running on.
 

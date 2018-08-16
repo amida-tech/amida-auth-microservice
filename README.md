@@ -1,131 +1,10 @@
 # Amida Auth Microservice
 
 # Table of Contents
-  - [Environment Variables](#Environment-Variables)
   - [Design](#design)
   - [Development](#development)
   - [Deployment](#deployment)
-  - [Changelog](#changelog)
-
-# Environment Variables
-
-Environment variables are applied in this order, with the former overwritten by the latter:
-
-1. Default values, which are set automatically by [joi](https://github.com/hapijs/joi) within `config.js`, even if no such environment variable is specified whatsoever.
-2. Variables specified by the `.env` file.
-3. Variables specified via the command line.
-
-Variables are listed below in this format:
-
-`VARIABLE_NAME` (Required (if it actually is)) [`the default value`] A description of what the variable is or does.
-- A description of what to set the variable to, whether that be an example, or what to set it to in development or production, or how to figure out how to set it, etc.
-- Perhaps another example value, etc.
-
-## Auth Microservice
-
-`NODE_ENV` (Required) [`development`]
-- Valid values are `development`, `production`, and `test`.
-
-`JWT_SECRET` (Required) First, see description of `AUTH_SERVICE_JWT_MODE`. When `AUTH_SERVICE_JWT_MODE=hmac`, this is the shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.
-- In production, this should be set to a value different than the one in `.env.example`.
-
-`AUTH_SERVICE_PORT` (Required) [`4000`] The port this server will run on.
-- When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
-
-`AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS` [`true`]
-- When `true`, only a user who has admin privileges/scope can create new users.
-- When `false`, anyone can sign up and create a new account.
-
-`AUTH_SERVICE_JWT_MODE` (Required) [`hmac`]
-- When set to `hmac`, json web tokens will use the shared-secret signing strategy, in which case `JWT_SECRET` needs to be specified on and match between this microservice and all other services that integrate with this microservice.
-- When set to `rsa`, json web tokens will use the public/private key pair signing strategy, in which case `JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY` need to be defined.
-
-`AUTH_SERVICE_JWT_PRIVATE_KEY_PATH` Path on the file system of the JWT private key file.
-
-`AUTH_SERVICE_JWT_PUBLIC_KEY_PATH` Path on the file system of the JWT public key file.
-
-`AUTH_SERVICE_JWT_TTL` [`3600`] Time To Live, in seconds, of the JSON web token.
-
-`AUTH_SERVICE_REFRESH_TOKEN_ENABLED` [`false`] Not fully implemented yet.
-
-`AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES` [`false`] Not fully implemented yet.
-
-`AUTH_SERVICE_PG_HOST` [`localhost`] Hostname of machine the postgres instance is running on.
-- When doing docker, set to the name of the docker container running postgres. Setting to `amida-auth-microservice-db` is recommended.
-
-`AUTH_SERVICE_PG_PORT` [`5432`] Port on the machine the postgres instance is running on.
-
-`AUTH_SERVICE_PG_DB` Postgres database name.
-- Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
-
-`AUTH_SERVICE_PG_USER` Postgres user that will perform operations on behalf of this microservice. Therefore, this user must have permissions to modify the database specified by `AUTH_SERVICE_PG_DB`.
-- Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
-
-`AUTH_SERVICE_PG_PASSWORD` Password of postgres user `AUTH_SERVICE_PG_USER`.
-
-`AUTH_SERVICE_PG_SSL_ENABLED` [`false`] Whether an SSL connection shall be used to connect to postgres.
-
-`AUTH_SERVICE_PG_CA_CERT` If SSL is enabled with `AUTH_SERVICE_PG_SSL_ENABLED` this can be set to a certificate to override the CAs that are trusted while initiating the SSL connection to postgres. Without this set, Mozilla's list of trusted CAs is used. Note that this variable should contain the certificate itself, not a filename.
-
-## Integration With Facebook for Login
-
-`FACEBOOK_CLIENT_ID` The ID of the Facebook App through which login will occur.
-
-`FACEBOOK_CLIENT_SECRET` The secret of the Facebook App through which login will occur.
-
-`FACEBOOK_CALLBACK_URL` The url of the `amida-auth-microservice` endpoint that handles Facebook auth callback.
-
-## Integration With Mail Service Provider
-
-The mail service provider sends password reset emails when the user clicks the "Forgot your password?" button. Each mail service provider (Gmail, SendGrid, Mailgun, etc.) treats the environment variables slighly differently, therefore examples are provided at the end of this section.
-
-`AUTH_SERVICE_MAILER_EMAIL_ID` The username/email address used to login to the email service provider and send SMTP email.
-
-`AUTH_SERVICE_MAILER_PASSWORD` The password to account specified by `AUTH_SERVICE_MAILER_EMAIL_ID`.
-
-`AUTH_SERVICE_MAILER_FROM_EMAIL_ADDRESS` The email address the password reset emails will come from.
-
-`AUTH_SERVICE_MAILER_SERVICE_PROVIDER` One of the service providers that is supported by nodemailer.
-- Recommended values are `Gmail`, `SendGrid`, or `Mailgun`.
-- Potentially valid--though not tested or supported--values are
- `126`, `163`, `1und1`, `AOL`, `DebugMail`, `DynectEmail`, `FastMail`, `GandiMail`, `Gmail`, `Godaddy`, `GodaddyAsia`, `GodaddyEurope`, `hot.ee`, `Hotmail`, `iCloud`, `mail.ee`, `Maildev`, `Mailgun`, `Mailjet`, `Mailosaur`, `Mandrill`, `Naver`, `OpenMailBox`, `Outlook365`, `Postmark`, `QQ`, `QQex`, `SendCloud`, `SendGrid`, `SendinBlue`, `SendPulse`, `SES`, `SES-US-EAST-1`, `SES-US-WEST-2`, `SES-EU-WEST-1`, `Sparkpost`, `Yahoo`, `Yandex`, `Zoho`, and `qiye.aliyun`.
-
-### Email Service Provider Config Examples
-
-Gmail:
-
-```
-AUTH_SERVICE_MAILER_EMAIL_ID=someone@gmail.com
-# Note: Any + appended to the email address will be dropped. That is, Gmail will handle someone+else@gmail.com like someone@gmail.com
-
-AUTH_SERVICE_MAILER_PASSWORD=the_Gmail_password_for_someone@gmail.com
-
-# Gmail ignores this, so comment out or set to empty string ''. The email will always come from the address specified by `AUTH_SERVICE_MAILER_EMAIL_ID`.
-# AUTH_SERVICE_MAILER_FROM_EMAIL_ADDRESS
-
-AUTH_SERVICE_MAILER_SERVICE_PROVIDER=Gmail
-```
-
-SendGrid:
-
-```
-AUTH_SERVICE_MAILER_EMAIL_ID=your_SendGrid_user_id_not_email_address
-AUTH_SERVICE_MAILER_PASSWORD=your_SendGrid_password
-AUTH_SERVICE_MAILER_FROM_EMAIL_ADDRESS=anything_will_work
-AUTH_SERVICE_MAILER_SERVICE_PROVIDER=SendGrid
-```
-
-Mailgun:
-
-Mailgun does not allow SMTP login/send with your Mailgun account username/email and password. Instead, in Mailgun, a send/recieve domain must be set up, and with each such domain, Mailgun associates an SMTP email address and password. Therefore, to use Mailgun, you must, with a domain you own, setup that domain to work with mailgun, which includes setting DNS records for that domain in your DNS service provider, and then use the associated SMTP email address and password in this config.
-
-```
-# Mailgun sets postmaster@yourdomain.com as the default when you setup your domain in Mailgun. In Mailgun, you can change this to something else if you want.
-AUTH_SERVICE_MAILER_EMAIL_ID=postmaster@yourdomain.com
-AUTH_SERVICE_MAILER_PASSWORD=SMTP_password_for_your_domain_as_configured_in_Mailgun
-AUTH_SERVICE_MAILER_FROM_EMAIL_ADDRESS=anything_will_work
-AUTH_SERVICE_MAILER_SERVICE_PROVIDER=Mailgun
-```
+  - [Environment Variables](#Environment-Variables)
 
 # Design
 
@@ -141,9 +20,11 @@ It is the responsibility of the integrated service to extract the JWT, verify it
 For example, one API endpoint could allow _any_ authenticated user to view certain information about all users. Another endpoint may allow password updates, but only for the specific authenticated user. It is up to the developer to ensure that endpoints are protected appropriately.
 
 ### Roles
+
 In order to support fine-grained permissions, the User model contains a `scopes` field. This is an array of arbitrary strings meant to indicate roles and permissions for a User. Within the auth service, the only significant scope is `admin`. Other scopes may be added and used as necessary.
 
 ### Signing algorithm
+
 By default, the auth service signs JWTs with HMAC. This relies on a shared secret between the auth service and the consuming service. Whenever possible, you should use the RSA implementation. This can be activated by setting `AUTH_SERVICE_JWT_MODE='rsa'` and setting the `AUTH_SERVICE_JWT_PRIVATE_KEY_PATH` to the location of a private key. The public key should be available for the consuming service in order to verify the JWTs, and the auth service should locate the public key via `AUTH_SERVICE_JWT_PUBLIC_KEY_PATH`.
 
 To generate a keypair:
@@ -153,10 +34,12 @@ openssl rsa -in private.key -pubout -outform PEM -out private.key.pub
 ```
 
 ## Seeding
+
 Since many operations require an admin user, you may find it easiest to begin using the service with a default admin user, to be removed later.
 To create this user, simply run `yarn seed`.
 
 ## API Spec
+
 Interactive Apiary docs can be found at http://docs.amidaauth.apiary.io/.
 
 The spec can be viewed at https://amida-tech.github.io/amida-auth-microservice/.
@@ -164,11 +47,13 @@ The spec can be viewed at https://amida-tech.github.io/amida-auth-microservice/.
 To update the spec, first edit the files in the docs directory. Then run `aglio -i apiary.apib --theme flatly -o index.html`.
 
 ## External auth
+
 The Amida Auth service can allow external OAuth providers to manage identity. If a user is created via external auth, they will still get an entry in the Users database. However, they will not get a password, and password management functions will be disabled for that user. The `provider` column will contain an identifier for the OAuth provider managing that user.
 
 To specify the external auth used for an instance of the service, use the `*_CLIENT_ID` env vars. Allowed strategies are shown in `config/config.js`.
 
 ### Facebook
+
 To set up integration with Facebook, configure your domain for the auth service as a Facebook Login product with `<domain>/api/vX/auth/facebook/callback` as a redirect URL, then set the following env vars:
 ```
 FACEBOOK_CLIENT_ID
@@ -176,6 +61,10 @@ FACEBOOK_CLIENT_SECRET
 FACEBOOK_CALLBACK_URL
 ```
 Clients can then get a JWT by doing a `GET` for `/api/vX/auth/facebook` and logging in to Facebook.
+
+## Logging
+
+Universal logging library [winston](https://www.npmjs.com/package/winston) is used for logging. It has support for multiple transports. A transport is essentially a storage device for your logs. Each instance of a winston logger can have multiple transports configured at different levels. For example, one may want error logs to be stored in a persistent remote location (like a database), but all logs output to the console or a local file. We just log to the console for simplicity, but you can configure more transports as per your requirement.
 
 ## Features
 
@@ -390,6 +279,122 @@ Further details can be found in the `deploy` directory.
 ## Kubernetes Deployment
 See the [paper](https://paper.dropbox.com/doc/Amida-Microservices-Kubernetes-Deployment-Xsz32zX8nwT9qctitGNVc) write-up for instructions on how to deploy with Kubernetes. The `kubernetes.yml` file contains the deployment definition for the project.
 
-## Logging
+# Environment Variables
 
-Universal logging library [winston](https://www.npmjs.com/package/winston) is used for logging. It has support for multiple transports. A transport is essentially a storage device for your logs. Each instance of a winston logger can have multiple transports configured at different levels. For example, one may want error logs to be stored in a persistent remote location (like a database), but all logs output to the console or a local file. We just log to the console for simplicity, but you can configure more transports as per your requirement.
+Environment variables are applied in this order, with the former overwritten by the latter:
+
+1. Default values, which are set automatically by [joi](https://github.com/hapijs/joi) within `config.js`, even if no such environment variable is specified whatsoever.
+2. Variables specified by the `.env` file.
+3. Variables specified via the command line.
+
+Variables are listed below in this format:
+
+`VARIABLE_NAME` (Required (if it actually is)) [`the default value`] A description of what the variable is or does.
+- A description of what to set the variable to, whether that be an example, or what to set it to in development or production, or how to figure out how to set it, etc.
+- Perhaps another example value, etc.
+
+## Auth Microservice
+
+`NODE_ENV` (Required) [`development`]
+- Valid values are `development`, `production`, and `test`.
+
+`JWT_SECRET` (Required) First, see description of `AUTH_SERVICE_JWT_MODE`. When `AUTH_SERVICE_JWT_MODE=hmac`, this is the shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.
+- In production, this should be set to a value different than the one in `.env.example`.
+
+`AUTH_SERVICE_PORT` (Required) [`4000`] The port this server will run on.
+- When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
+
+`AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS` [`true`]
+- When `true`, only a user who has admin privileges/scope can create new users.
+- When `false`, anyone can sign up and create a new account.
+
+`AUTH_SERVICE_JWT_MODE` (Required) [`hmac`]
+- When set to `hmac`, json web tokens will use the shared-secret signing strategy, in which case `JWT_SECRET` needs to be specified on and match between this microservice and all other services that integrate with this microservice.
+- When set to `rsa`, json web tokens will use the public/private key pair signing strategy, in which case `JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY` need to be defined.
+
+`AUTH_SERVICE_JWT_PRIVATE_KEY_PATH` Path on the file system of the JWT private key file.
+
+`AUTH_SERVICE_JWT_PUBLIC_KEY_PATH` Path on the file system of the JWT public key file.
+
+`AUTH_SERVICE_JWT_TTL` [`3600`] Time To Live, in seconds, of the JSON web token.
+
+`AUTH_SERVICE_REFRESH_TOKEN_ENABLED` [`false`] Not fully implemented yet.
+
+`AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES` [`false`] Not fully implemented yet.
+
+`AUTH_SERVICE_PG_HOST` [`localhost`] Hostname of machine the postgres instance is running on.
+- When doing docker, set to the name of the docker container running postgres. Setting to `amida-auth-microservice-db` is recommended.
+
+`AUTH_SERVICE_PG_PORT` [`5432`] Port on the machine the postgres instance is running on.
+
+`AUTH_SERVICE_PG_DB` Postgres database name.
+- Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
+
+`AUTH_SERVICE_PG_USER` Postgres user that will perform operations on behalf of this microservice. Therefore, this user must have permissions to modify the database specified by `AUTH_SERVICE_PG_DB`.
+- Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
+
+`AUTH_SERVICE_PG_PASSWORD` Password of postgres user `AUTH_SERVICE_PG_USER`.
+
+`AUTH_SERVICE_PG_SSL_ENABLED` [`false`] Whether an SSL connection shall be used to connect to postgres.
+
+`AUTH_SERVICE_PG_CA_CERT` If SSL is enabled with `AUTH_SERVICE_PG_SSL_ENABLED` this can be set to a certificate to override the CAs that are trusted while initiating the SSL connection to postgres. Without this set, Mozilla's list of trusted CAs is used. Note that this variable should contain the certificate itself, not a filename.
+
+## Integration With Facebook for Login
+
+`FACEBOOK_CLIENT_ID` The ID of the Facebook App through which login will occur.
+
+`FACEBOOK_CLIENT_SECRET` The secret of the Facebook App through which login will occur.
+
+`FACEBOOK_CALLBACK_URL` The url of the `amida-auth-microservice` endpoint that handles Facebook auth callback.
+
+## Integration With Mail Service Provider
+
+The mail service provider sends password reset emails when the user clicks the "Forgot your password?" button. Each mail service provider (Gmail, SendGrid, Mailgun, etc.) treats the environment variables slighly differently, therefore examples are provided at the end of this section.
+
+`AUTH_SERVICE_MAILER_EMAIL_ID` The username/email address used to login to the email service provider and send SMTP email.
+
+`AUTH_SERVICE_MAILER_PASSWORD` The password to account specified by `AUTH_SERVICE_MAILER_EMAIL_ID`.
+
+`AUTH_SERVICE_MAILER_FROM_EMAIL_ADDRESS` The email address the password reset emails will come from.
+
+`AUTH_SERVICE_MAILER_SERVICE_PROVIDER` One of the service providers that is supported by nodemailer.
+- Recommended values are `Gmail`, `SendGrid`, or `Mailgun`.
+- Potentially valid--though not tested or supported--values are
+ `126`, `163`, `1und1`, `AOL`, `DebugMail`, `DynectEmail`, `FastMail`, `GandiMail`, `Gmail`, `Godaddy`, `GodaddyAsia`, `GodaddyEurope`, `hot.ee`, `Hotmail`, `iCloud`, `mail.ee`, `Maildev`, `Mailgun`, `Mailjet`, `Mailosaur`, `Mandrill`, `Naver`, `OpenMailBox`, `Outlook365`, `Postmark`, `QQ`, `QQex`, `SendCloud`, `SendGrid`, `SendinBlue`, `SendPulse`, `SES`, `SES-US-EAST-1`, `SES-US-WEST-2`, `SES-EU-WEST-1`, `Sparkpost`, `Yahoo`, `Yandex`, `Zoho`, and `qiye.aliyun`.
+
+### Email Service Provider Config Examples
+
+Gmail:
+
+```
+AUTH_SERVICE_MAILER_EMAIL_ID=someone@gmail.com
+# Note: Any + appended to the email address will be dropped. That is, Gmail will handle someone+else@gmail.com like someone@gmail.com
+
+AUTH_SERVICE_MAILER_PASSWORD=the_Gmail_password_for_someone@gmail.com
+
+# Gmail ignores this, so comment out or set to empty string ''. The email will always come from the address specified by `AUTH_SERVICE_MAILER_EMAIL_ID`.
+# AUTH_SERVICE_MAILER_FROM_EMAIL_ADDRESS
+
+AUTH_SERVICE_MAILER_SERVICE_PROVIDER=Gmail
+```
+
+SendGrid:
+
+```
+AUTH_SERVICE_MAILER_EMAIL_ID=your_SendGrid_user_id_not_email_address
+AUTH_SERVICE_MAILER_PASSWORD=your_SendGrid_password
+AUTH_SERVICE_MAILER_FROM_EMAIL_ADDRESS=anything_will_work
+AUTH_SERVICE_MAILER_SERVICE_PROVIDER=SendGrid
+```
+
+Mailgun:
+
+Mailgun does not allow SMTP login/send with your Mailgun account username/email and password. Instead, in Mailgun, a send/recieve domain must be set up, and with each such domain, Mailgun associates an SMTP email address and password. Therefore, to use Mailgun, you must, with a domain you own, setup that domain to work with mailgun, which includes setting DNS records for that domain in your DNS service provider, and then use the associated SMTP email address and password in this config.
+
+```
+# Mailgun sets postmaster@yourdomain.com as the default when you setup your domain in Mailgun. In Mailgun, you can change this to something else if you want.
+AUTH_SERVICE_MAILER_EMAIL_ID=postmaster@yourdomain.com
+AUTH_SERVICE_MAILER_PASSWORD=SMTP_password_for_your_domain_as_configured_in_Mailgun
+AUTH_SERVICE_MAILER_FROM_EMAIL_ADDRESS=anything_will_work
+AUTH_SERVICE_MAILER_SERVICE_PROVIDER=Mailgun
+```

@@ -216,21 +216,6 @@ Alternatively, there is also a docker-compose.yml file. Therefore, you can:
 docker-compose up
 ```
 
-## Manual deployment with `pm2`
-```sh
-# compile to ES5
-1. yarn build
-
-# upload dist/ to your server
-2. scp -rp dist/ user@dest:/path
-
-# install production dependencies only
-3. yarn --production
-
-# Use any process manager to start your services
-4. pm2 start dist/index.js
-```
-
 ## Deployment to AWS with Packer and Terraform
 You will need to install [packer](https://www.packer.io/) and [terraform](https://www.terraform.io/) installed on your local machine.
 Be sure to have your postgres host running and replace the `auth_service_pg_host` value in the command below with the postgres host address. The command in `1.` below will allow you to build the AMI with default settings. You may also need to include additional environment variables in `./deploy/roles/api/templates/env.service.j2` before build.

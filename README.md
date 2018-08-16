@@ -1,25 +1,35 @@
 # Amida Auth Microservice
 
 ## Table of Contents
-  - [Environment Variables](#Environment-Variables-(Grouped-by-Purpose))
+  - [Environment Variables](#Environment-Variables)
   - [Design](#design)
   - [Development](#development)
   - [Deployment](#deployment)
   - [Changelog](#changelog)
 
-## Environment Variables (Grouped by Purpose)
+## Environment Variables
 
-Note: Values from .env.example and default values (the values the app sets for itself if no environment variable is specified) are listed in the format "(`default`, `example`)"
+Environment variables are applied in this order, with the former overwritten by the latter:
+
+1. Default values, which are set automatically by [joi](https://github.com/hapijs/joi) within `config.js`, even if no such environment variable is specified whatsoever.
+2. Variables specified by the `.env` file.
+3. Variables specified via the command line.
+
+Variables are listed below in this format:
+
+`VARIABLE_NAME` (Required (if it actually is)) [`the default value`] A description of what the variable is or does.
+- A description of what to set the variable to, whether that be an example, or what to set it to in development or production, or how to figure out how to set it, etc.
+- Perhaps another example value, etc.
 
 ### This Server:
 
-`NODE_ENV` (`development`, `development`)
+`NODE_ENV` (Required) [`development`]
 - Valid values are `development`, `production`, and `test`.
 
-`PORT` (`4000`, `4000`) The port this server will run on.
+`AUTH_SERVICE_PORT` (Required) [`4000`] The port this server will run on.
 - When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
 
-`CREATE_USER_ADMIN` (`true`, `false`)
+`AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS` (`true`, `false`)
 - When `true`, only a user who has admin privileges/scope can create new users.
 - When `false`, anyone can sign up and create a new account.
 
@@ -335,7 +345,7 @@ packer validate -var 'aws_access_key=myAWSAcessKey' \
 -var 'ami_name=api-auth-service-boilerplate' \
 -var 'node_env=development' \
 -var 'jwt_secret=0a6b944d-d2fb-46fc-a85e-0295c986cd9f' \
--var 'create_user_admin=false' \
+-var 'auth_service_only_admin_can_create_users=false' \
 -var 'auth_service_jwt_mode=hmac' \
 -var 'auth_service_pg_host=amid-messages-packer-test.czgzedfwgy7z.us-west-2.rds.amazonaws.com' \
 -var 'auth_service_pg_db=amida_auth_microservice' \

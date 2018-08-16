@@ -100,7 +100,7 @@ if (error) {
 const config = {
     env: envVars.NODE_ENV,
     port: envVars.AUTH_SERVICE_PORT,
-    createUserAdmin: envVars.AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS,
+    onlyAdminCanCreateUsers: envVars.AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS,
     jwtMode: envVars.AUTH_SERVICE_JWT_MODE,
     jwtSecret: envVars.JWT_SECRET,
     jwtPrivateKeyPath: envVars.AUTH_SERVICE_JWT_PRIVATE_KEY_PATH,
@@ -115,7 +115,7 @@ const config = {
         port: envVars.AUTH_SERVICE_PG_PORT,
         host: envVars.AUTH_SERVICE_PG_HOST,
         user: envVars.AUTH_SERVICE_PG_USER,
-        passwd: envVars.AUTH_SERVICE_PG_PASSWORD,
+        password: envVars.AUTH_SERVICE_PG_PASSWORD,
         sslEnabled: envVars.AUTH_SERVICE_PG_SSL_ENABLED,
         sslCaCert: envVars.AUTH_SERVICE_PG_CA_CERT,
     },

@@ -32,7 +32,7 @@ if (config.postgres.sslEnabled) {
 const sequelize = new Sequelize(
     config.postgres.db,
     config.postgres.user,
-    config.postgres.passwd,
+    config.postgres.password,
     sequelizeOptions
 );
 

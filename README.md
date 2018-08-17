@@ -290,75 +290,120 @@ Environment variables are applied in this order, with the former overwritten by 
 
 Variables are listed below in this format:
 
-`VARIABLE_NAME` (Required (if it actually is)) [`the default value`] A description of what the variable is or does.
+##### `VARIABLE_NAME` (Required (if it actually is)) [`the default value`]
+
+A description of what the variable is or does.
 - A description of what to set the variable to, whether that be an example, or what to set it to in development or production, or how to figure out how to set it, etc.
 - Perhaps another example value, etc.
 
 ## Auth Microservice
 
-`NODE_ENV` (Required) [`development`]
+##### `NODE_ENV` (Required) [`development`]
+
 - Valid values are `development`, `production`, and `test`.
 
-`JWT_SECRET` (Required) First, see description of `AUTH_SERVICE_JWT_MODE`. When `AUTH_SERVICE_JWT_MODE=hmac`, this is the shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.
+##### `JWT_SECRET` (Required)
+
+First, see description of `AUTH_SERVICE_JWT_MODE`. When `AUTH_SERVICE_JWT_MODE=hmac`, this is the shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.
 - In production, this should be set to a value different than the one in `.env.example`.
 
-`AUTH_SERVICE_PORT` (Required) [`4000`] The port this server will run on.
+##### `AUTH_SERVICE_PORT` (Required) [`4000`]
+
+The port this server will run on.
 - When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
 
-`AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS` [`true`]
+##### `AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS` [`true`]
 - When `true`, only a user who has admin privileges/scope can create new users.
 - When `false`, anyone can sign up and create a new account.
 
-`AUTH_SERVICE_JWT_MODE` (Required) [`hmac`]
+##### `AUTH_SERVICE_JWT_MODE` (Required) [`hmac`]
 - When set to `hmac`, json web tokens will use the shared-secret signing strategy, in which case `JWT_SECRET` needs to be specified on and match between this microservice and all other services that integrate with this microservice.
 - When set to `rsa`, json web tokens will use the public/private key pair signing strategy, in which case `JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY` need to be defined.
 
-`AUTH_SERVICE_JWT_PRIVATE_KEY_PATH` Path on the file system of the JWT private key file.
+##### `AUTH_SERVICE_JWT_PRIVATE_KEY_PATH`
 
-`AUTH_SERVICE_JWT_PUBLIC_KEY_PATH` Path on the file system of the JWT public key file.
+Path on the file system of the JWT private key file.
 
-`AUTH_SERVICE_JWT_TTL` [`3600`] Time To Live, in seconds, of the JSON web token.
+##### `AUTH_SERVICE_JWT_PUBLIC_KEY_PATH`
 
-`AUTH_SERVICE_REFRESH_TOKEN_ENABLED` [`false`] Not fully implemented yet.
+Path on the file system of the JWT public key file.
 
-`AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES` [`false`] Not fully implemented yet.
+##### `AUTH_SERVICE_JWT_TTL` [`3600`]
 
-`AUTH_SERVICE_PG_HOST` [`localhost`] Hostname of machine the postgres instance is running on.
+Time To Live, in seconds, of the JSON web token.
+
+##### `AUTH_SERVICE_REFRESH_TOKEN_ENABLED` [`false`]
+
+Not fully implemented yet.
+
+##### `AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES` [`false`]
+
+Not fully implemented yet.
+
+##### `AUTH_SERVICE_PG_HOST`
+
+Hostname of machine the postgres instance is running on.
 - When using docker, set to the name of the docker container running postgres. Setting to `amida-auth-microservice-db` is recommended.
 
-`AUTH_SERVICE_PG_PORT` [`5432`] Port on the machine the postgres instance is running on.
+##### `AUTH_SERVICE_PG_PORT` [`5432`]
 
-`AUTH_SERVICE_PG_DB` Postgres database name.
+Port on the machine the postgres instance is running on.
+
+##### `AUTH_SERVICE_PG_DB`
+
+Postgres database name.
 - Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
 
-`AUTH_SERVICE_PG_USER` Postgres user that will perform operations on behalf of this microservice. Therefore, this user must have permissions to modify the database specified by `AUTH_SERVICE_PG_DB`.
+##### `AUTH_SERVICE_PG_USER`
+
+Postgres user that will perform operations on behalf of this microservice. Therefore, this user must have permissions to modify the database specified by `AUTH_SERVICE_PG_DB`.
 - Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
 
-`AUTH_SERVICE_PG_PASSWORD` Password of postgres user `AUTH_SERVICE_PG_USER`.
+##### `AUTH_SERVICE_PG_PASSWORD`
 
-`AUTH_SERVICE_PG_SSL_ENABLED` [`false`] Whether an SSL connection shall be used to connect to postgres.
+Password of postgres user `AUTH_SERVICE_PG_USER`.
 
-`AUTH_SERVICE_PG_CA_CERT` If SSL is enabled with `AUTH_SERVICE_PG_SSL_ENABLED` this can be set to a certificate to override the CAs that are trusted while initiating the SSL connection to postgres. Without this set, Mozilla's list of trusted CAs is used. Note that this variable should contain the certificate itself, not a filename.
+##### `AUTH_SERVICE_PG_SSL_ENABLED` [`false`]
+
+Whether an SSL connection shall be used to connect to postgres.
+
+##### `AUTH_SERVICE_PG_CA_CERT`
+
+If SSL is enabled with `AUTH_SERVICE_PG_SSL_ENABLED` this can be set to a certificate to override the CAs that are trusted while initiating the SSL connection to postgres. Without this set, Mozilla's list of trusted CAs is used. Note that this variable should contain the certificate itself, not a filename.
 
 ## Integration With Facebook for Login
 
-`FACEBOOK_CLIENT_ID` The ID of the Facebook App through which login will occur.
+##### `FACEBOOK_CLIENT_ID`
 
-`FACEBOOK_CLIENT_SECRET` The secret of the Facebook App through which login will occur.
+The ID of the Facebook App through which login will occur.
 
-`FACEBOOK_CALLBACK_URL` The url of the `amida-auth-microservice` endpoint that handles Facebook auth callback.
+##### `FACEBOOK_CLIENT_SECRET`
+
+The secret of the Facebook App through which login will occur.
+
+##### `FACEBOOK_CALLBACK_URL`
+
+The url of the `amida-auth-microservice` endpoint that handles Facebook auth callback.
 
 ## Integration With Mail Service Provider
 
 The mail service provider sends password reset emails when the user clicks the "Forgot your password?" button. Each mail service provider (Gmail, SendGrid, Mailgun, etc.) treats the environment variables slighly differently, therefore examples are provided at the end of this section.
 
-`AUTH_SERVICE_MAILER_EMAIL_ID` The username/email address used to login to the email service provider and send SMTP email.
+##### `AUTH_SERVICE_MAILER_EMAIL_ID`
 
-`AUTH_SERVICE_MAILER_PASSWORD` The password to account specified by `AUTH_SERVICE_MAILER_EMAIL_ID`.
+The username/email address used to login to the email service provider and send SMTP email.
 
-`AUTH_SERVICE_MAILER_FROM_EMAIL_ADDRESS` The email address the password reset emails will come from.
+##### `AUTH_SERVICE_MAILER_PASSWORD`
 
-`AUTH_SERVICE_MAILER_SERVICE_PROVIDER` One of the service providers that is supported by nodemailer.
+The password to account specified by `AUTH_SERVICE_MAILER_EMAIL_ID`.
+
+##### `AUTH_SERVICE_MAILER_FROM_EMAIL_ADDRESS`
+
+The email address the password reset emails will come from.
+
+##### `AUTH_SERVICE_MAILER_SERVICE_PROVIDER`
+
+One of the service providers that is supported by nodemailer.
 - Recommended values are `Gmail`, `SendGrid`, or `Mailgun`.
 - Potentially valid--though not tested or supported--values are
  `126`, `163`, `1und1`, `AOL`, `DebugMail`, `DynectEmail`, `FastMail`, `GandiMail`, `Gmail`, `Godaddy`, `GodaddyAsia`, `GodaddyEurope`, `hot.ee`, `Hotmail`, `iCloud`, `mail.ee`, `Maildev`, `Mailgun`, `Mailjet`, `Mailosaur`, `Mandrill`, `Naver`, `OpenMailBox`, `Outlook365`, `Postmark`, `QQ`, `QQex`, `SendCloud`, `SendGrid`, `SendinBlue`, `SendPulse`, `SES`, `SES-US-EAST-1`, `SES-US-WEST-2`, `SES-EU-WEST-1`, `Sparkpost`, `Yahoo`, `Yandex`, `Zoho`, and `qiye.aliyun`.

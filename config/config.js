@@ -30,8 +30,7 @@ const envVarsSchema = Joi.object({
         .description('Postgres database name'),
     AUTH_SERVICE_PG_PORT: Joi.number()
         .default(5432),
-    AUTH_SERVICE_PG_HOST: Joi.string()
-        .default('localhost'),
+    AUTH_SERVICE_PG_HOST: Joi.string(),
     AUTH_SERVICE_PG_USER: Joi.string().required()
         .description('Postgres username'),
     AUTH_SERVICE_PG_PASSWORD: Joi.string().allow('')

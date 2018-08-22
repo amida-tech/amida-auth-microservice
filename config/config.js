@@ -131,6 +131,12 @@ const config = {
         clientSecret: envVars.FACEBOOK_CLIENT_SECRET,
         callbackUrl: envVars.FACEBOOK_CALLBACK_URL,
     },
+    adminUser: {
+        username: 'admin',
+        email: 'admin@default.com',
+        password: '',
+        scopes: ['admin'],
+    },
 };
 
 export default config;

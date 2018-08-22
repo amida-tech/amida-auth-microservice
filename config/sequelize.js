@@ -1,6 +1,5 @@
 import Sequelize from 'sequelize';
 import _ from 'lodash';
-import uuid from 'uuid';
 import config from './config';
 
 let dbLogging;
@@ -30,13 +29,6 @@ if (config.postgres.ssl) {
     }
 }
 
-const adminUser = {
-    username: 'admin',
-    email: 'admin@default.com',
-    password: 'aDmin17$',
-    scopes: ['admin'],
-};
-
 const sequelize = new Sequelize(
     config.postgres.db,
     config.postgres.user,
@@ -45,20 +37,6 @@ const sequelize = new Sequelize(
 );
 
 db.User = sequelize.import('../server/models/user.model');
-sequelize.authenticate()
-    .then(() => {
-        db.User.findOne({ where: { email: adminUser.email } })
-            .then((user) => {
-                if (!user) {
-                    console.log('adminUser not found. Creating.');
-                    adminUser.password += uuid.v4(); // Need stronger password generator.
-                    console.log(adminUser.password); // Need to fire to log instead.
-                    db.User.build(adminUser).save();
-                } else {
-                    console.log('adminUser found.');
-                }
-            });
-    });
 db.RefreshToken = sequelize.import('../server/models/refreshToken.model');
 db.RefreshToken.belongsTo(db.User, { foreignKey: 'userId', targetKey: 'id' });
 

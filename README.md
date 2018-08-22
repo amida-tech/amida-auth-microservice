@@ -203,6 +203,7 @@ yarn
 Set environment vars:
 ```sh
 cp .env.example .env
+cp .env .env.test
 ```
 
 Setup the database:
@@ -221,6 +222,7 @@ DEBUG=amida-auth-microservice:* yarn start
 Tests:
 ```sh
 # Run tests written in ES6
+# Make sure .env.test exists
 yarn test
 
 # Run test along with code coverage

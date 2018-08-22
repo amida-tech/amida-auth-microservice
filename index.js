@@ -1,3 +1,4 @@
+import pg from 'pg';
 import config from './config/config';
 import app from './config/express';
 /* eslint-disable no-unused-vars */
@@ -19,12 +20,21 @@ function startServer() {
     }
 }
 
-db.sequelize
-  .sync()
-  .then(startServer)
-  .catch((err) => {
-      if (err) debug('An error occured %j', err);
-      else debug('Database synchronized');
-  });
+const conStringPri = `postgres://${config.postgres.user}:${config.postgres.passwd}@${config.postgres.host}:${config.postgres.port}/postgres`;
+pg.connect(conStringPri, (err, client, done) => { // eslint-disable-line no-unused-vars
+    // create the db and ignore any errors, for example if it already exists.
+    client.query(`CREATE DATABASE ${config.postgres.db}`, (err1) => { // eslint-disable-line no-unused-vars
+        client.end(); // close the connection
+        // db should exist now, initialize Sequelize
+        db.sequelize
+          .sync()
+          .then(startServer)
+          .catch((err2) => {
+              if (err2) debug('An error occured %j', err2);
+              else debug('Database synchronized');
+          });
+    });
+});
+
 
 export default app;

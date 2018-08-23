@@ -39,6 +39,18 @@ const envVarsSchema = Joi.object({
     AUTH_SERVICE_PG_SSL: Joi.bool()
         .default(false)
         .description('Enable SSL connection to PostgreSQL'),
+    AUTH_SERVICE_SEED_ADMIN_USERNAME: Joi.string()
+        .alphanum()
+        .min(3)
+        .max(30)
+        .required()
+        .default('admin')
+        .description('Admin username for seeding only'),
+    AUTH_SERVICE_SEED_ADMIN_EMAIL: Joi.string()
+        .email({ minDomainAtoms: 2 })
+        .required()
+        .default('admin@default.com')
+        .description('Admin email for seeding only'),
     AUTH_SERVICE_PG_CERT_CA: Joi.string()
         .description('SSL certificate CA'), // Certificate itself, not a filename
     MAILER_EMAIL_ID: Joi.string().allow(''),
@@ -132,8 +144,8 @@ const config = {
         callbackUrl: envVars.FACEBOOK_CALLBACK_URL,
     },
     adminUser: {
-        username: 'admin',
-        email: 'admin@default.com',
+        username: envVars.AUTH_SERVICE_SEED_ADMIN_USERNAME,
+        email: envVars.AUTH_SERVICE_SEED_ADMIN_EMAIL,
         password: '',
         scopes: ['admin'],
     },

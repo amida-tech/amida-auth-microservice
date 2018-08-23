@@ -8,7 +8,6 @@ import app from '../../../index';
 import { User } from '../../../config/sequelize';
 import * as common from './common.spec';
 import config from '../../../config/config';
-import logger from '../../../config/winston';
 
 chai.config.includeStack = true;
 
@@ -28,12 +27,12 @@ describe('Auth API:', () => {
             request(app)
                 .get('/api/health-check')
                 .then(User.count().then((total) => {
-                    expect(total).to.equal(1)
+                    expect(total).to.equal(1);
                 }))
-                .then(User.find({ where: { email: config.adminUser.email}}).then((user) =>
+                .then(User.find({ where: { email: config.adminUser.email } }).then(user =>
                     expect(user.username).to.equal(config.adminUser.username)
                 ))
-        )
+        );
     });
 
     describe('POST /auth/login', () => {

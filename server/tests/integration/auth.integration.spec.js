@@ -13,13 +13,26 @@ chai.config.includeStack = true;
 
 describe('Auth API:', () => {
     let jwtToken;
-
+    before(() => User.destroy({ where: {} }));
     // run health check to ensure sync runs
     before((done) => {
         request(app)
             .get('/api/health-check')
             .expect(httpStatus.OK)
             .then(setTimeout(done, 1000));
+    });
+
+    describe('Seed', () => {
+        it('should seed with the config admin', () =>
+            request(app)
+                .get('/api/health-check')
+                .then(User.count().then((total) => {
+                    expect(total).to.equal(1);
+                }))
+                .then(User.find({ where: { email: config.adminUser.email } }).then(user =>
+                    expect(user.username).to.equal(config.adminUser.username)
+                ))
+        );
     });
 
     describe('POST /auth/login', () => {

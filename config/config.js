@@ -7,7 +7,7 @@ require('dotenv').config();
 const envVarsSchema = Joi.object({
     NODE_ENV: Joi.string()
         .allow(['development', 'production', 'test', 'provision'])
-        .default('development'),
+        .default('production'),
     PORT: Joi.number()
         .default(4000),
     CREATE_USER_ADMIN: Joi.bool()

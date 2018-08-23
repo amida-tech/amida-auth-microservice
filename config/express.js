@@ -38,6 +38,10 @@ app.use(helmet());
 // enable CORS - Cross Origin Resource Sharing
 app.use(cors());
 
+// eslint-disable-next-line import/newline-after-import
+const swStats = require('swagger-stats');
+app.use(swStats.getMiddleware({}));
+
 // enable detailed API logging in dev env
 if (config.env === 'development') {
     expressWinston.requestWhitelist.push('body');

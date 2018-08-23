@@ -1,5 +1,6 @@
 import config from './config/config';
 import app from './config/express';
+import logger from './config/winston';
 /* eslint-disable no-unused-vars */
 import db from './config/sequelize';
 
@@ -14,7 +15,10 @@ function startServer() {
     if (!module.parent) {
     // listen on port config.port
         app.listen(config.port, () => {
-            debug(`server started on port ${config.port} (${config.env})`);
+            logger.info({
+                service: 'auth-service',
+                message: `server started on port ${config.port} (${config.env})`,
+            });
         });
     }
 }

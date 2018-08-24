@@ -3,6 +3,8 @@ import config from './config/config';
 import app from './config/express';
 /* eslint-disable no-unused-vars */
 import db from './config/sequelize';
+import logger from './config/winston';
+import passGenerator from './config/password-generator';
 
 const debug = require('debug')('amida-auth-microservice:index');
 /* eslint-enable no-unused-vars */
@@ -25,14 +27,25 @@ pg.connect(conStringPri, (err, client, done) => { // eslint-disable-line no-unus
     // create the db and ignore any errors, for example if it already exists.
     client.query(`CREATE DATABASE ${config.postgres.db}`, (err1) => { // eslint-disable-line no-unused-vars
         client.end(); // close the connection
-        // db should exist now, initialize Sequelize
+      // db should exist now, initialize Sequelize
         db.sequelize
-          .sync()
-          .then(startServer)
-          .catch((err2) => {
-              if (err2) debug('An error occured %j', err2);
-              else debug('Database synchronized');
-          });
+        .sync()
+        .then(() => {
+            db.User.count().then((total) => {
+                if (total === 0) {
+                    logger.info('Admin user not found. Creating.');
+                    const adminUser = Object.assign({}, config.adminUser);
+                    adminUser.password = passGenerator();
+                    logger.info(`Admin user password: ${adminUser.password}`);
+                    db.User.build(adminUser).save();
+                }
+            });
+        })
+        .then(startServer)
+        .catch((err2) => {
+            if (err2) debug('An error occured %j', err2);
+            else debug('Database synchronized');
+        });
     });
 });
 

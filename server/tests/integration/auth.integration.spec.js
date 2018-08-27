@@ -286,11 +286,11 @@ describe('Auth API:', () => {
             })
         );
 
-        it('should update user password when user is authenticated', () =>
+        it('should update user password when user is authenticated and oldPassword is correct', () =>
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
                 .set('Authorization', jwtToken)
-                .send({ password: 'Newerpass123' })
+                .send({ oldPassword: common.validUserCredentials.password, password: 'Newerpass123' })
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.text).to.equal('OK');
@@ -303,10 +303,23 @@ describe('Auth API:', () => {
                 })
         );
 
+        it('should return 403 when user is authenticated but oldPassword is incorrect', () =>
+            request(app)
+                .post(`${common.baseURL}/auth/update-password`)
+                .set('Authorization', jwtToken)
+                .send({ oldPassword: 'incorrect pass', password: 'Newerpass123' })
+                .expect(httpStatus.FORBIDDEN)
+                .then((res) => {
+                    expect(res.body.message).to.equal('Incorrect password');
+                    expect(res.body.code).to.equal('INCORRECT_PASSWORD');
+                    expect(res.body.status).to.equal('ERROR');
+                })
+        );
+
         it('should return 401 when user is not authenticated', () =>
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
-                .send({ password: 'Newerpass123' })
+                .send({ oldPassword: common.validUserCredentials.password, password: 'Newerpass123' })
                 .expect(httpStatus.UNAUTHORIZED)
                 .then(res => expect(res.text).to.equal('Unauthorized'))
         );
@@ -315,7 +328,7 @@ describe('Auth API:', () => {
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
                 .set('Authorization', 'Bearer BadJWT')
-                .send({ password: 'Newerpass123' })
+                .send({ oldPassword: common.validUserCredentials.password, password: 'Newerpass123' })
                 .expect(httpStatus.UNAUTHORIZED)
                 .then(res => expect(res.text).to.equal('Unauthorized'))
         );
@@ -324,7 +337,7 @@ describe('Auth API:', () => {
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
                 .set('Authorization', jwtToken)
-                .send({ password: 'badpass' })
+                .send({ oldPassword: common.validUserCredentials.password, password: 'badpass' })
                 .expect(httpStatus.BAD_REQUEST)
                 .then(res => expect(res.text).to.contain('must be at least 8 characters long'))
         );

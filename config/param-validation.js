@@ -23,6 +23,7 @@ const userValidation = {
 const authValidation = {
     updatePassword: {
         body: {
+            oldPassword: Joi.string().required(),
             password: Joi.string().required(),
         },
     },

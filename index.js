@@ -40,5 +40,4 @@ db.sequelize
       else debug('Database synchronized');
   });
 
-
 export default app;

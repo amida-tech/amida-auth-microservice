@@ -49,6 +49,7 @@ node_modules
 
 # .env
 .env
+.env.test
 
 # keys
 *.key

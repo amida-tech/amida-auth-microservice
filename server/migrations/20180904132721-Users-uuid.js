@@ -7,24 +7,18 @@ module.exports = {
       Return a promise to correctly handle asynchronicity.
       */
 
-          queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS pgcrypto;').then(function(results) {
-    			return queryInterface.addColumn(
+        queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS pgcrypto;').then(results => queryInterface.addColumn(
     				'Users',
     				'uuid',
     				{
     					type: Sequelize.UUID,
     					defaultValue: Sequelize.literal('gen_random_uuid()'),
     					allowNull: false,
-              unique: true,
-              primaryKey: true,
+                unique: true,
+                primaryKey: true,
     				}
-    			);
-    		})
-        .nodeify( done );
+    			))
+        .nodeify(done);
     },
-    down: (queryInterface, Sequelize, done) => {
-
-          return queryInterface.removeColumn('Users', 'uuid').nodeify( done );
-
-    },
+    down: (queryInterface, Sequelize, done) => queryInterface.removeColumn('Users', 'uuid').nodeify(done),
 };

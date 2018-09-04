@@ -146,6 +146,7 @@ module.exports = {
         host: envVars.AUTH_SERVICE_PG_HOST,
         dialect: 'postgres',
         migrationStorageTableName: 'sequelize_meta',
+        logging: true,
     },
     mailer: {
         user: envVars.MAILER_EMAIL_ID,

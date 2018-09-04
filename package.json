@@ -65,6 +65,7 @@
     "rand-token": "false0.4.0",
     "run-sequence": "^1.1.5",
     "sequelize": "^4.28.0",
+    "sequelize-cli": "false4.1.1",
     "snyk": "^1.40.0",
     "supertest": "^3.0.0",
     "uuid": "3.1.0",

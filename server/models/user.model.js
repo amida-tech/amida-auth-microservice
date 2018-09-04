@@ -32,10 +32,14 @@ module.exports = (sequelize, DataTypes) => {
     // TODO: consider creating an audit trail,
     // or at least making it easy through elasticsearch
     const User = sequelize.define('User', {
+        uuid: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true,
+        },
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
-            primaryKey: true,
         },
         username: {
             type: DataTypes.STRING,

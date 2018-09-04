@@ -40,6 +40,7 @@ db.User = sequelize.import('../server/models/user.model');
 db.RefreshToken = sequelize.import('../server/models/refreshToken.model');
 db.RefreshToken.belongsTo(db.User, { foreignKey: 'userId', targetKey: 'id' });
 
+
 // assign the sequelize variables to the db object and returning the db.
 module.exports = _.extend({
     sequelize,

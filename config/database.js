@@ -1,6 +1,4 @@
-const config = require('./config').development;
-
-console.log(config);
+const config = require('./config.js').development;
 
 module.exports = {
     development: config,

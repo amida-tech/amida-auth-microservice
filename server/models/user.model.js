@@ -2,7 +2,7 @@
 /* eslint new-cap: 0 */
 import crypto from 'crypto';
 import moment from 'moment';
-import uuid from 'uuid';
+import uuid from 'uuid/v4';
 
 /**
  * User Schema

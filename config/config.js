@@ -1,4 +1,4 @@
-import Joi from 'joi';
+const Joi = require('joi');
 
 // require and configure dotenv, will load vars in .env in PROCESS.ENV
 const dotenv = require('dotenv');
@@ -116,7 +116,7 @@ if (error) {
     throw new Error(`Config validation error: ${error.message}`);
 }
 
-const config = {
+module.exports = {
     env: envVars.NODE_ENV,
     port: envVars.AUTH_SERVICE_PORT,
     createUserAdmin: envVars.AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS,
@@ -165,6 +165,3 @@ const config = {
         scopes: ['admin'],
     },
 };
-
-export default config;
-console.log(config.development);

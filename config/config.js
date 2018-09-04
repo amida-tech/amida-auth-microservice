@@ -141,22 +141,7 @@ const config = {
     development: {
         username: envVars.AUTH_SERVICE_PG_USER,
         password: envVars.AUTH_SERVICE_PG_PASSWORD,
-        database: envVars.AUTH_SERVICE_PG_DB,
-        host: envVars.AUTH_SERVICE_PG_HOST,
-        dialect: 'postgres',
-        migrationStorageTableName: 'sequelize_meta',
-    },
-    test: {
-        username: envVars.AUTH_SERVICE_PG_USER,
-        password: envVars.AUTH_SERVICE_PG_PASSWORD,
-        database: envVars.AUTH_SERVICE_PG_DB,
-        host: envVars.AUTH_SERVICE_PG_HOST,
-        dialect: 'postgres',
-        migrationStorageTableName: 'sequelize_meta',
-    },
-    production: {
-        username: envVars.AUTH_SERVICE_PG_USER,
-        password: envVars.AUTH_SERVICE_PG_PASSWORD,
+        port: envVars.AUTH_SERVICE_PG_PORT,
         database: envVars.AUTH_SERVICE_PG_DB,
         host: envVars.AUTH_SERVICE_PG_HOST,
         dialect: 'postgres',
@@ -182,3 +167,4 @@ const config = {
 };
 
 export default config;
+console.log(config.development);

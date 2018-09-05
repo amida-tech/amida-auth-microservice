@@ -1,7 +1,13 @@
 import Joi from 'joi';
 
 // require and configure dotenv, will load vars in .env in PROCESS.ENV
-require('dotenv').config();
+const dotenv = require('dotenv');
+
+if (process.env.NODE_ENV === 'test') {
+    dotenv.config({ path: '.env.test' });
+} else {
+    dotenv.config();
+}
 
 // define validation for all the env vars
 const envVarsSchema = Joi.object({
@@ -26,6 +32,18 @@ const envVarsSchema = Joi.object({
         .default(false),
     AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES: Joi.bool()
         .default(false),
+    AUTH_SERVICE_SEED_ADMIN_USERNAME: Joi.string()
+        .alphanum()
+        .min(3)
+        .max(30)
+        .required()
+        .default('admin')
+        .description('Admin username for seeding only'),
+    AUTH_SERVICE_SEED_ADMIN_EMAIL: Joi.string()
+        .email({ minDomainAtoms: 2 })
+        .required()
+        .default('admin@default.com')
+        .description('Admin email for seeding only'),
     AUTH_SERVICE_PG_DB: Joi.string().required()
         .description('Postgres database name'),
     AUTH_SERVICE_PG_PORT: Joi.number()
@@ -128,6 +146,12 @@ const config = {
         clientId: envVars.FACEBOOK_CLIENT_ID,
         clientSecret: envVars.FACEBOOK_CLIENT_SECRET,
         callbackUrl: envVars.FACEBOOK_CALLBACK_URL,
+    },
+    adminUser: {
+        username: envVars.AUTH_SERVICE_SEED_ADMIN_USERNAME,
+        email: envVars.AUTH_SERVICE_SEED_ADMIN_EMAIL,
+        password: '',
+        scopes: ['admin'],
     },
 };
 

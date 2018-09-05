@@ -13,13 +13,26 @@ chai.config.includeStack = true;
 
 describe('Auth API:', () => {
     let jwtToken;
-
+    before(() => User.destroy({ where: {}, logging: false }).catch(() => 1));
     // run health check to ensure sync runs
     before((done) => {
         request(app)
             .get('/api/health-check')
             .expect(httpStatus.OK)
             .then(setTimeout(done, 1000));
+    });
+
+    describe('Seed', () => {
+        it('should seed with the config admin', () =>
+            request(app)
+                .get('/api/health-check')
+                .then(User.count().then((total) => {
+                    expect(total).to.equal(1);
+                }))
+                .then(User.find({ where: { email: config.adminUser.email } }).then(user =>
+                    expect(user.username).to.equal(config.adminUser.username)
+                ))
+        );
     });
 
     describe('POST /auth/login', () => {
@@ -33,10 +46,10 @@ describe('Auth API:', () => {
         it('should return 401 error with bad password', () =>
             request(app).post(`${common.baseURL}/auth/login`)
                 .send(common.badPassword)
-                .expect(httpStatus.UNAUTHORIZED)
+                .expect(httpStatus.NOT_FOUND)
                 .then((res) => {
-                    expect(res.body.message).to.equal('Incorrect password');
-                    expect(res.body.code).to.equal('INCORRECT_PASSWORD');
+                    expect(res.body.message).to.equal('Incorrect username or password');
+                    expect(res.body.code).to.equal('INCORRECT_USERNAME_OR_PASSWORD');
                     expect(res.body.status).to.equal('ERROR');
                 })
         );
@@ -46,8 +59,8 @@ describe('Auth API:', () => {
                 .send(common.missingUsername)
                 .expect(httpStatus.NOT_FOUND)
                 .then((res) => {
-                    expect(res.body.message).to.equal('Username not found');
-                    expect(res.body.code).to.equal('UNKNOWN_USERNAME');
+                    expect(res.body.message).to.equal('Incorrect username or password');
+                    expect(res.body.code).to.equal('INCORRECT_USERNAME_OR_PASSWORD');
                     expect(res.body.status).to.equal('ERROR');
                 })
         );

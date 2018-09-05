@@ -24,10 +24,9 @@ const RefreshToken = db.RefreshToken;
 function login(req, res, next) {
     const params = _.pick(req.body, 'username', 'password');
     const user = User.findOne({ where: { username: params.username } });
-
     const passwordMatch = user.then((userResult) => {
         if (_.isNull(userResult)) {
-            const err = new APIError('Username not found', 'UNKNOWN_USERNAME', httpStatus.NOT_FOUND, true);
+            const err = new APIError('Incorrect username or password', 'INCORRECT_USERNAME_OR_PASSWORD', httpStatus.NOT_FOUND, true);
             return next(err);
         }
         return userResult.testPassword(params.password);
@@ -36,7 +35,7 @@ function login(req, res, next) {
     // once the user and password promises resolve, send the token or an error
     Promise.join(user, passwordMatch, (userResult, passwordMatchResult) => {
         if (!passwordMatchResult) {
-            const err = new APIError('Incorrect password', 'INCORRECT_PASSWORD', httpStatus.UNAUTHORIZED, true);
+            const err = new APIError('Incorrect username or password', 'INCORRECT_USERNAME_OR_PASSWORD', httpStatus.NOT_FOUND, true);
             return next(err);
         }
 
@@ -55,11 +54,13 @@ function login(req, res, next) {
                 token: jwtToken,
                 username: user.username,
                 refreshToken: token.token,
+                ttl: config.jwtExpiresIn,
             }));
         }
         return res.json({
             token: jwtToken,
             username: user.username,
+            ttl: config.jwtExpiresIn,
         });
     })
     .catch(error => next(error));
@@ -100,6 +101,7 @@ function submitRefreshToken(req, res, next) {
             return res.json({
                 token: jwtToken,
                 username: userResult.username,
+                ttl: config.jwtExpiresIn,
             });
         })
     )

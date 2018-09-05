@@ -147,6 +147,11 @@ module.exports = {
         dialect: 'postgres',
         migrationStorageTableName: 'sequelize_meta',
         logging: true,
+        // dialectOptions: {
+        //   ssl: {
+        //     ca: fs.readFileSync(__dirname + '/mysql-ca-master.crt')
+        //   }
+        // }
     },
     mailer: {
         user: envVars.MAILER_EMAIL_ID,

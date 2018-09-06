@@ -35,11 +35,11 @@ module.exports = (sequelize, DataTypes) => {
         uuid: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
-            primaryKey: true,
         },
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
+            primaryKey: true,
         },
         username: {
             type: DataTypes.STRING,
@@ -133,6 +133,7 @@ module.exports = (sequelize, DataTypes) => {
     User.prototype.getBasicUserInfo = function getBasicUserInfo() {
         return {
             id: this.id,
+            uuid: this.uuid,
             username: this.username,
             email: this.email,
             scopes: this.scopes,

@@ -26,11 +26,3 @@
 - include: metricbeat.yml
 
 - include: filebeat.yml
-
-- name: logging | set up pm2 log clearing cronjob
-  cron:
-    name: "clear pm2 logs older than 3 days"
-    minute: 0
-    hour: 3
-    job: "find /home/centos/.pm2/logs/* -mtime +3 -exec rm -f {} \\;"
-    user: centos

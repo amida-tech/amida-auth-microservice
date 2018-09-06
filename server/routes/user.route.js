@@ -14,7 +14,7 @@ const permissions = guard({ permissionsProperty: 'scopes' });
 // This array will remain empty if admin user is not required
 // TODO: a more granular registrar role, rather than admin
 let userAdminFunctions = [];
-if (config.createUserAdmin) {
+if (config.onlyAdminCanCreateUsers) {
     userAdminFunctions = [
         passport.authenticate('jwt', { session: false }),
         permissions.check('admin'),

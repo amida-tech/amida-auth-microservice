@@ -78,6 +78,9 @@ module.exports = (sequelize, DataTypes) => {
         hooks,
         indexes: [
             {
+                fields: ['uuid'],
+            },
+            {
                 fields: ['username'],
             },
         ],

@@ -11,6 +11,7 @@ module.exports = {
                 defaultValue: Sequelize.literal('gen_random_uuid()'),
                 allowNull: false,
                 unique: true,
+                after: 'id',
                 // primaryKey: true,
             })
           );

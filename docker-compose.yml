@@ -24,11 +24,11 @@ services:
 
     # Overwrite any env var defined in .env file (if required)
     environment:
-      - PG_DB=api
-      - PG_PORT=5432
-      - PG_HOST=postgres
-      - PG_USER=api
-      - PG_PASSWD=boilerplate
+      - AUTH_SERVICE_PG_HOST=postgres
+      - AUTH_SERVICE_PG_PORT=5432
+      - AUTH_SERVICE_PG_DB=amida_auth_microservice
+      - AUTH_SERVICE_PG_USER=amida_auth_microservice
+      - AUTH_SERVICE_PG_PASSWORD=boilerplate
       - DEBUG=amida-api-boilerplate:*
 
     # Link to containers in another service.
@@ -42,5 +42,5 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=api
+      - POSTGRES_USER=amida_auth_microservice
       - POSTGRES_PASSWORD=boilerplate

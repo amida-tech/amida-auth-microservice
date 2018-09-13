@@ -11,17 +11,29 @@ if (config.env === 'test') {
 
 const db = {};
 
-// // connect to postgres db
+// connect to postgres db
+const sequelizeOptions = {
+    dialect: 'postgres',
+    port: config.postgres.port,
+    host: config.postgres.host,
+    logging: dbLogging,
+};
+if (config.postgres.sslEnabled) {
+    sequelizeOptions.ssl = config.postgres.sslEnabled;
+    if (config.postgres.sslCaCert) {
+        sequelizeOptions.dialectOptions = {
+            ssl: {
+                ca: config.postgres.sslCaCert,
+            },
+        };
+    }
+}
+
 const sequelize = new Sequelize(
     config.postgres.db,
     config.postgres.user,
-    config.postgres.passwd,
-    {
-        dialect: 'postgres',
-        port: config.postgres.port,
-        host: config.postgres.host,
-        logging: dbLogging,
-    }
+    config.postgres.password,
+    sequelizeOptions
 );
 
 db.User = sequelize.import('../server/models/user.model');

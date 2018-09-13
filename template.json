@@ -91,6 +91,6 @@
       "./deploy/roles/cron",
       "./deploy/roles/nginx"
     ],
-    "extra_arguments": "-vv --extra-vars \"pg_db={{user `pg_db`}} pg_host={{user `pg_host`}} pg_passwd={{user `pg_passwd`}} pg_user={{user `pg_user`}} node_env={{user `build_env`}} jwt_mode={{user `jwt_mode`}} port={{user `port`}} jwt_secret={{user `jwt_secret`}} service_name={{user `service_name`}} logstash_host={{user `logstash_host`}}\""
+    "extra_arguments": "-vv --extra-vars \"auth_service_pg_db={{user `auth_service_pg_db`}} auth_service_pg_host={{user `auth_service_pg_host`}} auth_service_pg_password={{user `auth_service_pg_password`}} auth_service_pg_user={{user `auth_service_pg_user`}} node_env={{user `build_env`}} auth_service_jwt_mode={{user `auth_service_jwt_mode`}} auth_service_port={{user `auth_service_port`}} jwt_secret={{user `jwt_secret`}} auth_service_only_admin_can_create_users={{user `auth_service_only_admin_can_create_users`}} service_name={{user `service_name`}} logstash_host={{user `logstash_host`}}\""
   }]
 }

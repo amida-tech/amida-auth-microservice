@@ -66,7 +66,7 @@ Finally, run:
 `terraform apply vpc.tfplan`
 
 To remove the resources, run the following commands:
-```
+```sh
 terraform plan -var-file terraform.tfvars -var-file provider-credentials.tfvars -destroy -out vpc.tfplan
 terraform apply vpc.tfplan
 ```

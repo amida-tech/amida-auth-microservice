@@ -1,9 +1,10 @@
-import winston from 'winston';
+const { createLogger, format, transports } = require('winston');
+const { combine, label } = format;
 
-const logger = winston.createLogger({
+const logger = createLogger({
     level: 'info',
     transports: [
-        new winston.transports.Console(),
+        new transports.Console(),
     ],
 });
 export default logger;

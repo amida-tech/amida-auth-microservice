@@ -1,6 +1,5 @@
 import config from './config/config';
 import app from './config/express';
-import logger from './config/winston';
 /* eslint-disable no-unused-vars */
 import db from './config/sequelize';
 import logger from './config/winston';

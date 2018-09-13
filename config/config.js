@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === 'test') {
 const envVarsSchema = Joi.object({
     NODE_ENV: Joi.string()
         .allow(['development', 'production', 'test', 'provision'])
-        .default('production'),
+        .default('development'),
     AUTH_SERVICE_PORT: Joi.number()
         .default(4000),
     AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS: Joi.bool()

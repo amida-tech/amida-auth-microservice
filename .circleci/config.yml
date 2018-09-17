@@ -11,20 +11,20 @@ jobs:
         environment:
         - NODE_ENV: development
         - AUTH_SERVICE_PORT: 4000
-        - JWT_MODE: hmac
+        - AUTH_SERVICE_JWT_MODE: hmac
         - JWT_SECRET: dumb-secret
-        - JWT_PRIVATE_KEY_PATH: private.key
-        - JWT_PUBLIC_KEY_PATH: private.key.pub
-        - JWT_TTL: 3600
+        - AUTH_SERVICE_JWT_PRIVATE_KEY_PATH: private.key
+        - AUTH_SERVICE_JWT_PUBLIC_KEY_PATH: private.key.pub
+        - AUTH_SERVICE_JWT_TTL: 3600
         - AUTH_SERVICE_PG_DB: auth
         - AUTH_SERVICE_PG_PORT: 5432
         - AUTH_SERVICE_PG_HOST: 127.0.0.1
         - AUTH_SERVICE_PG_USER: auth
         - AUTH_SERVICE_PG_PASSWORD: postgres
-        - MAILER_EMAIL_ID: ''
-        - MAILER_PASSWORD: testpass
-        - MAILER_FROM_EMAIL_ADDRESS: ''
-        - MAILER_SERVICE_PROVIDER: Gmail
+        - AUTH_SERVICE_MAILER_EMAIL_ID: ''
+        - AUTH_SERVICE_MAILER_PASSWORD: testpass
+        - AUTH_SERVICE_MAILER_FROM_EMAIL_ADDRESS: ''
+        - AUTH_SERVICE_MAILER_SERVICE_PROVIDER: Gmail
       - image: circleci/postgres:9.6.2-alpine
         environment:
         - POSTGRES_USER: auth

@@ -149,11 +149,11 @@ function updatePassword(req, res, next) {
 
     if (!user.testPassword(params.oldPassword)) {
         const err = new APIError('Incorrect password', 'INCORRECT_PASSWORD', httpStatus.FORBIDDEN, true);
-        next(err);
+        return next(err);
     }
 
     user.password = params.password;
-    user.save()
+    return user.save()
         .then(() => res.sendStatus(httpStatus.OK))
         .catch(error => next(error));
 }

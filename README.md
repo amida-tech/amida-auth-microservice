@@ -19,9 +19,15 @@ Note: Values from .env.example and default values (the values the app sets for i
 `PORT` (`4000`, `4000`) The port this server will run on.
 - When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
 
-`CREATE_USER_ADMIN` (`true`, `false`)
-- When `true`, only a user who has admin privileges/scope can create new users.
-- When `false`, anyone can sign up and create a new account.
+`AUTH_SERVICE_PUBLIC_REGISTRATION` (`true`, `false`)
+- When `false`, only a user who has `admin` OR a scope defined in `AUTH_SERVICE_REGISTRAR_SCOPES` can create new users.
+- When `true`, anyone can sign up and create a new account.
+- Defaults to `false`.
+
+`AUTH_SERVICE_REGISTRAR_SCOPES` (None, `[]`, `["registrar"]`)
+- Can be None *iff* `AUTH_SERVICE_PUBLIC_REGISTRATION` is `true`.
+- Otherwise must be JSON array of strings (Use double quotes!). Each string is a scope that will be allowed to create users.
+  - An empty array `[]` is acceptable and will allow only the `admin` scope to create users.
 
 `JWT_MODE` (`hmac`, `hmac`)
 - When set to `hmac`, json web tokens will use the shared-secret signing strategy, in which case `JWT_SECRET` needs to be specified on and match between this microservice and all other services that integrate with this microservice.

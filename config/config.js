@@ -10,8 +10,15 @@ const envVarsSchema = Joi.object({
         .default('development'),
     AUTH_SERVICE_PORT: Joi.number()
         .default(4000),
-    AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS: Joi.bool()
-        .default(true),
+    AUTH_SERVICE_PUBLIC_REGISTRATION: Joi.bool()
+        .default(false),
+    AUTH_SERVICE_REGISTRAR_SCOPES: Joi.array()
+        .items(Joi.string())
+        .when('AUTH_SERVICE_PUBLIC_REGISTRATION', {
+            is: false,
+            then: Joi.required(),
+            otherwise: Joi.forbidden(),
+        }),
     JWT_MODE: Joi.string().allow(['rsa', 'hmac']).default('hmac')
         .description('Signing algorithm for JWT'),
     JWT_SECRET: Joi.string()
@@ -113,7 +120,8 @@ if (error) {
 const config = {
     env: envVars.NODE_ENV,
     port: envVars.AUTH_SERVICE_PORT,
-    createUserAdmin: envVars.AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS,
+    publicRegistration: envVars.AUTH_SERVICE_PUBLIC_REGISTRATION,
+    registrarScopes: envVars.AUTH_SERVICE_REGISTRAR_SCOPES,
     jwtMode: envVars.JWT_MODE,
     jwtSecret: envVars.JWT_SECRET,
     jwtPrivateKeyPath: envVars.JWT_PRIVATE_KEY_PATH,

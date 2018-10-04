@@ -18,12 +18,12 @@ const sequelizeOptions = {
     host: config.postgres.host,
     logging: dbLogging,
 };
-if (config.postgres.ssl) {
-    sequelizeOptions.ssl = config.postgres.ssl;
-    if (config.postgres.ssl_ca_cert) {
+if (config.postgres.sslEnabled) {
+    sequelizeOptions.ssl = config.postgres.sslEnabled;
+    if (config.postgres.sslCaCert) {
         sequelizeOptions.dialectOptions = {
             ssl: {
-                ca: config.postgres.ssl_ca_cert,
+                ca: config.postgres.sslCaCert,
             },
         };
     }
@@ -32,7 +32,7 @@ if (config.postgres.ssl) {
 const sequelize = new Sequelize(
     config.postgres.db,
     config.postgres.user,
-    config.postgres.passwd,
+    config.postgres.password,
     sequelizeOptions
 );
 

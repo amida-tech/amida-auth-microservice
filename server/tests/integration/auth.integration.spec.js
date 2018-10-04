@@ -13,7 +13,7 @@ chai.config.includeStack = true;
 
 describe('Auth API:', () => {
     let jwtToken;
-    before(() => User.destroy({ where: {} }));
+    before(() => User.destroy({ where: {}, logging: false }).catch(() => 1));
     // run health check to ensure sync runs
     before((done) => {
         request(app)

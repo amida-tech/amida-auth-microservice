@@ -49,7 +49,11 @@ node_modules
 
 # .env
 .env
+.env.test
 
 # keys
 *.key
 *.pub
+
+# build objects
+build

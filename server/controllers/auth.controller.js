@@ -137,6 +137,7 @@ function rejectRefreshToken(req, res, next) {
 
 /**
  * Sends back 200 OK if password was updated successfully
+ * Sends back 403 FORBIDDEN if old password doesn't match
  * @param req
  * @param res
  * @param next
@@ -144,8 +145,15 @@ function rejectRefreshToken(req, res, next) {
  */
 function updatePassword(req, res, next) {
     const user = req.user;
-    user.password = req.body.password;
-    user.save()
+    const params = _.pick(req.body, 'oldPassword', 'password');
+
+    if (!user.testPassword(params.oldPassword)) {
+        const err = new APIError('Incorrect password', 'INCORRECT_PASSWORD', httpStatus.FORBIDDEN, true);
+        return next(err);
+    }
+
+    user.password = params.password;
+    return user.save()
         .then(() => res.sendStatus(httpStatus.OK))
         .catch(error => next(error));
 }

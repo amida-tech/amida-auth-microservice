@@ -7,7 +7,7 @@ let dbLogging;
 if (config.env === 'test') {
     dbLogging = false;
 } else {
-    dbLogging = (msg) => logger.info(msg)
+    dbLogging = (msg) => logger.debug(msg);
     // dbLogging = console.log;
 }
 

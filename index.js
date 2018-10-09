@@ -5,7 +5,6 @@ import db from './config/sequelize';
 import logger from './config/winston';
 import passGenerator from './config/password-generator';
 
-const debug = require('debug')('amida-auth-microservice:index');
 /* eslint-enable no-unused-vars */
 
 // make bluebird default Promise
@@ -39,8 +38,8 @@ db.sequelize
   })
   .then(startServer)
   .catch((err) => {
-      if (err) debug('An error occured %j', err);
-      else debug('Database synchronized');
+      if (err) logger.debug('An error occured %j', err);
+      else logger.debug('Database synchronized');
   });
 
 export default app;

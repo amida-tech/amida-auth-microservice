@@ -11,9 +11,7 @@ const logger = createLogger({
     ],
 });
 
-const developmentFormat = printf((info) => {
-    return `${info.timestamp} ${info.level}: ${info.message}`;
-})
+const developmentFormat = printf(info => `${info.timestamp} ${info.level}: ${info.message}`);
 
 if (config.env !== 'production') {
     logger.format = combine(

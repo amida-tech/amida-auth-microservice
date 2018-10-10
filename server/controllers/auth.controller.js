@@ -182,7 +182,7 @@ function resetToken(req, res, next) {
     }
     return User.resetPasswordToken(email, 3600)
         .then((token) => {
-            const link = generateLink(req, token);
+            const link = generateLink(token);
             const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);
             sendEmail(res, email, text, token, next);
         })

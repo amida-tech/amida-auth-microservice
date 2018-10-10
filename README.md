@@ -309,6 +309,14 @@ A description of what the variable is or does.
 First, see description of `AUTH_SERVICE_JWT_MODE`. When `AUTH_SERVICE_JWT_MODE=hmac`, this is the shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.
 - In production, this should be set to a value different than the one in `.env.example`.
 
+##### `AUTH_MICROSERVICE_URL`
+
+URL of this service's API. It must be defined because this service uses it to generate its password reset link URLs.
+- `.env.production` sets this to to `https://amida-auth-microservice:4000/api/v1`, which assumes:
+  - `amida-auth-microservice` is the name of the docker container running the Auth Service.
+  - `4000` is the port the Auth Service is running on in its container.
+  - The Auth Service's docker container and this service's docker container are a part of the same docker network.
+
 ##### `AUTH_SERVICE_PORT` (Required) [`4000`]
 
 The port this server will run on.

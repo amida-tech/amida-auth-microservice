@@ -38,7 +38,6 @@
     "compression": "1.7.1",
     "cookie-parser": "1.4.3",
     "cors": "2.8.1",
-    "debug": "^2.4.5",
     "del": "^2.2.0",
     "dotenv": "^4.0.0",
     "eslintrc": "false1.0.6",
@@ -71,8 +70,9 @@
     "sequelize-cli": "^4.1.1",
     "snyk": "^1.40.0",
     "supertest": "^3.0.0",
-    "uuid": "^3.1.0",
-    "winston": "2.3.0"
+    "swagger-stats": "^0.95.6",
+    "uuid": "3.1.0",
+    "winston": "^3.0.0"
   },
   "devDependencies": {
     "babel-cli": "6.18.0",

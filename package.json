@@ -11,7 +11,9 @@
     "yarn": ">=0.20.3"
   },
   "scripts": {
-    "start": "./node_modules/.bin/sequelize db:migrate && gulp serve",
+    "start": "gulp serve",
+    "migrate": "./node_modules/.bin/sequelize db:migrate",
+    "migrate:undo": "./node_modules/.bin/sequelize db:migrate:undo:all",
     "create_db": "cross-env NODE_ENV=test node dist/create_db.js",
     "delete_db": "cross-env NODE_ENV=test node dist/delete_db.js",
     "start:debug": "cross-env DEBUG=amida-auth-microservice:* yarn start",

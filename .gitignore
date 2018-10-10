@@ -56,4 +56,6 @@ node_modules
 *.key
 *.pub
 
-#
+
+# build objects
+build

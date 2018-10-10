@@ -41,6 +41,7 @@ function login(req, res, next) {
 
         const userInfo = {
             id: userResult.id,
+            uuid: userResult.uuid,
             username: userResult.username,
             email: userResult.email,
             scopes: userResult.scopes,
@@ -52,6 +53,7 @@ function login(req, res, next) {
             return RefreshToken.createNewToken(userResult.id)
             .then(token => res.json({
                 token: jwtToken,
+                uuid: user.uuid,
                 username: user.username,
                 refreshToken: token.token,
                 ttl: config.jwtExpiresIn,
@@ -59,6 +61,7 @@ function login(req, res, next) {
         }
         return res.json({
             token: jwtToken,
+            uuid: user.uuid,
             username: user.username,
             ttl: config.jwtExpiresIn,
         });
@@ -91,6 +94,7 @@ function submitRefreshToken(req, res, next) {
             }
             const userInfo = {
                 id: userResult.id,
+                uuid: userResult.uuid,
                 username: userResult.username,
                 email: userResult.email,
                 scopes: userResult.scopes,
@@ -100,6 +104,7 @@ function submitRefreshToken(req, res, next) {
 
             return res.json({
                 token: jwtToken,
+                uuid: userResult.uuid,
                 username: userResult.username,
                 ttl: config.jwtExpiresIn,
             });

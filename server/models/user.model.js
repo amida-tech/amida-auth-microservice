@@ -2,7 +2,7 @@
 /* eslint new-cap: 0 */
 import crypto from 'crypto';
 import moment from 'moment';
-import uuid from 'uuid';
+import uuid from 'uuid/v4';
 
 /**
  * User Schema
@@ -32,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
     // TODO: consider creating an audit trail,
     // or at least making it easy through elasticsearch
     const User = sequelize.define('User', {
+        uuid: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+        },
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
@@ -73,6 +77,9 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         hooks,
         indexes: [
+            {
+                fields: ['uuid'],
+            },
             {
                 fields: ['username'],
             },
@@ -129,6 +136,7 @@ module.exports = (sequelize, DataTypes) => {
     User.prototype.getBasicUserInfo = function getBasicUserInfo() {
         return {
             id: this.id,
+            uuid: this.uuid,
             username: this.username,
             email: this.email,
             scopes: this.scopes,

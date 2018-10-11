@@ -137,7 +137,7 @@ function updateScopes(req, res, next) {
  */
 function list(req, res, next) {
     User.findAll({
-        attributes: ['id', 'username', 'email'],
+        attributes: ['id', 'uuid', 'username', 'email'],
     })
     .then(users => res.json(users))
     .catch(e => next(e));

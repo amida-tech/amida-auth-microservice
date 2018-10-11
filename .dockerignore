@@ -25,6 +25,7 @@ coverage
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
+build
 
 # Dependency directories
 node_modules
@@ -35,3 +36,7 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+# The Dockerfile builds these, so don't copy them from your local dir
+private.key
+private.key.pub

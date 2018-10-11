@@ -1,12 +1,14 @@
 import Sequelize from 'sequelize';
 import _ from 'lodash';
 import config from './config';
+import logger from './winston';
 
 let dbLogging;
 if (config.env === 'test') {
     dbLogging = false;
 } else {
-    dbLogging = console.log;
+    dbLogging = msg => logger.debug(msg);
+    // dbLogging = console.log;
 }
 
 const db = {};
@@ -38,7 +40,8 @@ const sequelize = new Sequelize(
 
 db.User = sequelize.import('../server/models/user.model');
 db.RefreshToken = sequelize.import('../server/models/refreshToken.model');
-db.RefreshToken.belongsTo(db.User, { foreignKey: 'userId', targetKey: 'id' });
+db.RefreshToken.belongsTo(db.User, { foreignKey: 'uuid', targetKey: 'uuid' });
+
 
 // assign the sequelize variables to the db object and returning the db.
 module.exports = _.extend({

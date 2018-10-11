@@ -41,6 +41,7 @@ function login(req, res, next) {
 
         const userInfo = {
             id: userResult.id,
+            uuid: userResult.uuid,
             username: userResult.username,
             email: userResult.email,
             scopes: userResult.scopes,
@@ -52,6 +53,7 @@ function login(req, res, next) {
             return RefreshToken.createNewToken(userResult.id)
             .then(token => res.json({
                 token: jwtToken,
+                uuid: user.uuid,
                 username: user.username,
                 refreshToken: token.token,
                 ttl: config.jwtExpiresIn,
@@ -59,6 +61,7 @@ function login(req, res, next) {
         }
         return res.json({
             token: jwtToken,
+            uuid: user.uuid,
             username: user.username,
             ttl: config.jwtExpiresIn,
         });
@@ -91,6 +94,7 @@ function submitRefreshToken(req, res, next) {
             }
             const userInfo = {
                 id: userResult.id,
+                uuid: userResult.uuid,
                 username: userResult.username,
                 email: userResult.email,
                 scopes: userResult.scopes,
@@ -100,6 +104,7 @@ function submitRefreshToken(req, res, next) {
 
             return res.json({
                 token: jwtToken,
+                uuid: userResult.uuid,
                 username: userResult.username,
                 ttl: config.jwtExpiresIn,
             });
@@ -177,7 +182,7 @@ function resetToken(req, res, next) {
     }
     return User.resetPasswordToken(email, 3600)
         .then((token) => {
-            const link = generateLink(req, token);
+            const link = generateLink(token);
             const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);
             sendEmail(res, email, text, token, next);
         })

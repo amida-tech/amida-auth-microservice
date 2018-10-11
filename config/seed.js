@@ -8,7 +8,7 @@ import {
     sequelize,
 } from './sequelize';
 
-const debug = require('debug')('amida-auth-microservice:seed');
+import logger from './winston';
 
 const adminUser = {
     username: 'admin',
@@ -34,10 +34,10 @@ User.sync({ pool: false })
     }))
     .then(() => User.create(adminUser))
     .then(() => {
-        debug('finished populating users');
+        logger.debug('finished populating users');
         process.exit(0);
     })
     .catch((err) => {
-        debug(err);
+        logger.debug(err);
         process.exit(1);
     });

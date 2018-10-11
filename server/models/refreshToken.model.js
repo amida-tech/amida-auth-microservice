@@ -20,20 +20,20 @@ module.exports = (sequelize, DataTypes) => {
         },
     });
 
-    RefreshToken.createNewToken = function createNewToken(userId) {
+    RefreshToken.createNewToken = function createNewToken(uuid) {
         const refreshToken = randtoken.uid(128);
 
         if (!config.refreshToken.multipleDevices) {
-            return this.destroy({ where: { userId } })
+            return this.destroy({ where: { uuid } })
             .then(() => this.create({
                 token: refreshToken,
-                userId,
+                uuid,
             }));
         }
 
         return this.create({
             token: refreshToken,
-            userId,
+            uuid,
         });
     };
 

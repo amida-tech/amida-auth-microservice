@@ -38,7 +38,7 @@ db.sequelize
   })
   .then(startServer)
   .catch((err) => {
-      if (err) logger.debug('An error occured %j', err);
+      if (err) logger.debug('An error occured', err);
       else logger.debug('Database synchronized');
   });
 

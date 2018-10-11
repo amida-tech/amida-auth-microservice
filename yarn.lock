@@ -2312,11 +2312,11 @@ express-actuator@false1.1.0:
     moment "2.16.0"
     utils-fs-read-properties "1.0.0"
 
-express-jwt-permissions@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/express-jwt-permissions/-/express-jwt-permissions-1.0.0.tgz#ed6171d06f662dfa58f3a7707b7d2c8e37583a7d"
-  integrity sha1-7WFx0G9mLfpY86dwe30sjjdYOn0=
+express-jwt-permissions@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/express-jwt-permissions/-/express-jwt-permissions-1.2.1.tgz#f7bf5c775c382b5b8c78feb81714661378882365"
   dependencies:
+    express-unless "^0.5.0"
     lodash.get "^4.4.2"
     xtend "^4.0.1"
 
@@ -2334,6 +2334,10 @@ express-unless@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/express-unless/-/express-unless-0.3.0.tgz#5c795e7392571512dd28f520b3857a52b21261a2"
   integrity sha1-XHlec5JXFRLdKPUgs4V6UrISYaI=
+
+express-unless@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/express-unless/-/express-unless-0.5.0.tgz#c2ece477f4155089143dbb869d07c57c5eb6ab9b"
 
 express-validation@1.0.1:
   version "1.0.1"

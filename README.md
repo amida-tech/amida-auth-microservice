@@ -322,9 +322,14 @@ URL of this service's API. It must be defined because this service uses it to ge
 The port this server will run on.
 - When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
 
-##### `AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS` [`true`]
-- When `true`, only a user who has admin privileges/scope can create new users.
-- When `false`, anyone can sign up and create a new account.
+##### `AUTH_SERVICE_PUBLIC_REGISTRATION` (Required) [`false`]
+- When `false`, only a user who has `admin` OR a scope defined in `AUTH_SERVICE_REGISTRAR_SCOPES` can create new users.
+- When `true`, anyone can sign up and create a new account.
+
+##### `AUTH_SERVICE_REGISTRAR_SCOPES`
+- Can be undefined *iff* `AUTH_SERVICE_PUBLIC_REGISTRATION` is `true`.
+- Otherwise must be JSON array of strings (Use double quotes!) I.e. `["registrar"]`. Each string is a scope that will be allowed to create users.
+  - An empty array `[]` is acceptable and will allow only the `admin` scope to create users.
 
 ##### `AUTH_SERVICE_JWT_MODE` (Required) [`hmac`]
 - When set to `hmac`, json web tokens will use the shared-secret signing strategy, in which case `JWT_SECRET` needs to be specified on and match between this microservice and all other services that integrate with this microservice.

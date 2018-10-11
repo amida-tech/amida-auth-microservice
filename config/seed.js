@@ -8,7 +8,7 @@ import {
     sequelize,
 } from './sequelize';
 
-import logger from './config/winston';
+import logger from './winston';
 
 const adminUser = {
     username: 'admin',

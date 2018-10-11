@@ -27,6 +27,24 @@ describe('User API:', () => {
         password: 'Testpass123',
     };
 
+    const testCreateUser = {
+        username: 'Terrance',
+        email: 'terrancodactylus@amida.com',
+        password: 'Testpass123',
+    };
+
+    const registrarUser = {
+        username: 'Reggie',
+        email: 'reg@amida.com',
+        password: 'Testpass123',
+        scopes: ['registrar'],
+    };
+
+    const registrarUserCredentials = {
+        username: 'Reggie',
+        password: 'Testpass123',
+    };
+
     const userBadPassword = {
         username: 'KK123',
         email: 'test@amida.com',
@@ -217,6 +235,25 @@ describe('User API:', () => {
     });
 
     describe('POST /api/user', () => {
+        let nonAdminAuth;
+        let registrarAuth;
+
+        beforeEach(() => common.createUser(app, testUser, adminToken));
+        beforeEach(() => common.login(app, testUserCredentials)
+            .then((token) => {
+                nonAdminAuth = token;
+                return;
+            })
+        );
+
+        beforeEach(() => common.createUser(app, registrarUser, adminToken));
+        beforeEach(() => common.login(app, registrarUserCredentials)
+            .then((token) => {
+                registrarAuth = token;
+                return;
+            })
+        );
+
         it('should reject a bad password and return error info', () => request(app)
             .post(`${common.baseURL}/user`)
             .set('Authorization', `Bearer ${adminToken}`)
@@ -238,12 +275,47 @@ describe('User API:', () => {
             request(app)
                 .post(`${common.baseURL}/user`)
                 .set('Authorization', `Bearer ${adminToken}`)
-                .send(testUser)
+                .send(testCreateUser)
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body.id).to.exist;
-                    expect(res.body.username).to.equal(testUser.username);
-                    expect(res.body.email).to.equal(testUser.email);
+                    expect(res.body.username).to.equal(testCreateUser.username);
+                    expect(res.body.email).to.equal(testCreateUser.email);
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('should succeed with registrarUser token (AUTH_SERVICE_REGISTAR_SCOPES=["registrar"]', (done) => {
+            request(app)
+                .post(`${common.baseURL}/user`)
+                .set('Authorization', registrarAuth)
+                .send(testCreateUser)
+                .expect(httpStatus.OK)
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('should return 401 if no token (AUTH_SERVICE_PUBLIC_REGISTRATION=false)', (done) => {
+            request(app)
+                .post(`${common.baseURL}/user`)
+                .send(testCreateUser)
+                .expect(httpStatus.UNAUTHORIZED)
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('should return 403 if nonAdmin token (AUTH_SERVICE_PUBLIC_REGISTRATION=false)', (done) => {
+            request(app)
+                .post(`${common.baseURL}/user`)
+                .set('Authorization', nonAdminAuth)
+                .send(testCreateUser)
+                .expect(httpStatus.FORBIDDEN)
+                .then(() => {
                     done();
                 })
                 .catch(done);
@@ -279,19 +351,11 @@ describe('User API:', () => {
             request(app)
                 .post(`${common.baseURL}/user`)
                 .set('Authorization', `Bearer ${adminToken}`)
-                .send(testUser)
-                .expect(httpStatus.OK)
-                .then(() => {
-                    request(app)
-                        .post(`${common.baseURL}/user`)
-                        .set('Authorization', `Bearer ${adminToken}`)
-                        .send(userDuplicateUsername)
-                        .expect(httpStatus.CONFLICT)
-                        .then((res) => {
-                            expect(res.text).to.contain('username must be unique');
-                            done();
-                        })
-                        .catch(done);
+                .send(userDuplicateUsername)
+                .expect(httpStatus.CONFLICT)
+                .then((res) => {
+                    expect(res.text).to.contain('username must be unique');
+                    done();
                 })
                 .catch(done);
         });
@@ -300,19 +364,11 @@ describe('User API:', () => {
             request(app)
                 .post(`${common.baseURL}/user`)
                 .set('Authorization', `Bearer ${adminToken}`)
-                .send(testUser)
-                .expect(httpStatus.OK)
-                .then(() => {
-                    request(app)
-                        .post(`${common.baseURL}/user`)
-                        .set('Authorization', `Bearer ${adminToken}`)
-                        .send(userDuplicateEmail)
-                        .expect(httpStatus.CONFLICT)
-                        .then((res) => {
-                            expect(res.text).to.contain('email must be unique');
-                            done();
-                        })
-                        .catch(done);
+                .send(userDuplicateEmail)
+                .expect(httpStatus.CONFLICT)
+                .then((res) => {
+                    expect(res.text).to.contain('email must be unique');
+                    done();
                 })
                 .catch(done);
         });
@@ -321,7 +377,7 @@ describe('User API:', () => {
             request(app)
                 .post(`${common.baseURL}/user`)
                 .set('Authorization', `Bearer ${adminToken}`)
-                .send(testUser)
+                .send(testCreateUser)
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body.password).to.not.exist;

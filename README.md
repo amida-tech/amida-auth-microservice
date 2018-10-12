@@ -304,6 +304,10 @@ A description of what the variable is or does.
 
 - Valid values are `development`, `production`, and `test`.
 
+##### `LOG_LEVEL` [`info`]
+
+- Valid values are [winston](https://github.com/winstonjs/winston) logging levels (`error`, `warn`, etc.).
+
 ##### `JWT_SECRET` (Required)
 
 First, see description of `AUTH_SERVICE_JWT_MODE`. When `AUTH_SERVICE_JWT_MODE=hmac`, this is the shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.

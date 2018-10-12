@@ -14,6 +14,8 @@ const envVarsSchema = Joi.object({
     NODE_ENV: Joi.string()
         .allow(['development', 'production', 'test', 'provision'])
         .default('production'),
+    LOG_LEVEL: Joi.string()
+        .default('info'),
     AUTH_SERVICE_PORT: Joi.number()
         .default(4000),
     AUTH_SERVICE_PUBLIC_REGISTRATION: Joi.bool()
@@ -125,6 +127,7 @@ if (error) {
 
 module.exports = {
     env: envVars.NODE_ENV,
+    logLevel: envVars.LOG_LEVEL,
     authMicroserviceUrl: envVars.AUTH_MICROSERVICE_URL,
     port: envVars.AUTH_SERVICE_PORT,
     publicRegistration: envVars.AUTH_SERVICE_PUBLIC_REGISTRATION,

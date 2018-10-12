@@ -5,7 +5,7 @@ const { createLogger, transports, format } = require('winston');
 const { printf, timestamp, combine, colorize } = format;
 
 const logger = createLogger({
-    level: 'info',
+    level: config.logLevel,
     transports: [
         new transports.Console(),
     ],

@@ -24,7 +24,6 @@ function startServer() {
 }
 
 db.sequelize
-  .sync()
   .then(() => {
       db.User.count().then((total) => {
           if (total === 0) {

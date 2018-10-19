@@ -5,9 +5,9 @@ module.exports = {
       Add altering commands here.
       Return a promise to correctly handle asynchronicity.
       */
-        return queryInterface.addIndex('Users', ['uuid']).then(() => queryInterface.addIndex('Users', ['username']));
+        return queryInterface.addIndex('Users', ['uuid']);
     },
     down(queryInterface) {
-        return queryInterface.removeIndex('Users', ['uuid']).then(() => queryInterface.removeIndex('Users', ['username']));
+        return queryInterface.removeIndex('Users', ['uuid']);
     },
 };

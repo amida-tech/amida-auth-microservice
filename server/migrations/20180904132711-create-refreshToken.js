@@ -33,7 +33,10 @@ module.exports = {
             },
         });
     },
-    down(queryInterface) {
-        return queryInterface.dropTable('refreshToken');
+    down(queryInterface, Sequelize) {
+        return true;
     },
+    // down(queryInterface) {
+    //     return queryInterface.dropTable('refreshToken');
+    // },
 };

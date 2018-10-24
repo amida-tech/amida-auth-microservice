@@ -2,6 +2,7 @@
 import httpStatus from 'http-status';
 import db from '../../config/sequelize';
 import APIError from '../helpers/APIError';
+import { signJWT } from '../helpers/jwt';
 
 const User = db.User;
 
@@ -92,9 +93,11 @@ function create(req, res, next) {
         scopes: req.body.scopes,
     });
 
-    user.save()
-        .then(savedUser => res.json(savedUser.getBasicUserInfo()))
-        .catch(e => next(e));
+    user.save().then((savedUser) => {
+        const userInfo = savedUser.getBasicUserInfo();
+        userInfo.jwtToken = signJWT(userInfo);
+        res.json(userInfo);
+    }).catch(e => next(e));
 }
 
 function update(req, res, next) {

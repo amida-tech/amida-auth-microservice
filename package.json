@@ -68,7 +68,7 @@
     "run-sequence": "^1.1.5",
     "sequelize": "^4.28.0",
     "sequelize-cli": "^4.1.1",
-    "snyk": "^1.40.0",
+    "snyk": "^1.73.0",
     "supertest": "^3.0.0",
     "swagger-stats": "^0.95.6",
     "uuid": "3.1.0",

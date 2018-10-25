@@ -26,6 +26,7 @@ if (config.postgres.sslEnabled) {
         sequelizeOptions.dialectOptions = {
             ssl: {
                 ca: config.postgres.sslCaCert,
+                rejectUnauthorized: true
             },
         };
     }

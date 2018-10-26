@@ -1,4 +1,4 @@
-import config from './config';
+const config = require('./config');
 
 const { createLogger, transports, format } = require('winston');
 
@@ -21,4 +21,4 @@ if (config.env !== 'production') {
     );
 }
 
-export default logger;
+module.exports = logger;

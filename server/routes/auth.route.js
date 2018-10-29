@@ -1,8 +1,8 @@
 import express from 'express';
 import validate from 'express-validation';
 import passport from 'passport';
-import { authValidation } from '../../config/param-validation';
 import authCtrl from '../controllers/auth.controller';
+import { authValidation } from '../../config/param-validation';
 import { checkExternalProvider, signJWT } from '../helpers/jwt';
 import { checkPassword } from '../helpers/owasp';
 

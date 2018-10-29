@@ -23,19 +23,16 @@ function startServer() {
     }
 }
 
-db.sequelize
-  .sync()
-  .then(() => {
-      db.User.count().then((total) => {
-          if (total === 0) {
-              logger.info('Admin user not found. Creating.');
-              const adminUser = Object.assign({}, config.adminUser);
-              adminUser.password = passGenerator();
-              logger.info(`Admin user password: ${adminUser.password}`);
-              db.User.build(adminUser).save();
-          }
-      });
-  })
+
+db.User.count().then((total) => {
+    if (total === 0) {
+        logger.info('Admin user not found. Creating.');
+        const adminUser = Object.assign({}, config.adminUser);
+        adminUser.password = passGenerator();
+        logger.info(`Admin user password: ${adminUser.password}`);
+        db.User.build(adminUser).save();
+    }
+})
   .then(startServer)
   .catch((err) => {
       if (err) logger.debug('An error occured', err);

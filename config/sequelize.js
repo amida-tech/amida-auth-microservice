@@ -8,8 +8,7 @@ let dbLogging;
 if (config.env === 'test') {
     dbLogging = false;
 } else {
-    // dbLogging = msg => logger.debug(msg);
-    dbLogging = console.log;
+    dbLogging = msg => logger.debug(msg);
 }
 
 const db = {};

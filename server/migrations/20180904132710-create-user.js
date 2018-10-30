@@ -17,13 +17,13 @@ module.exports = {
             allowNull: false,
         },
         password: {
-            type: Sequelize.STRING(512),
+            type: Sequelize.STRING(512), // eslint-disable-line new-cap
         },
         salt: {
             type: Sequelize.STRING,
         },
         scopes: {
-            type: Sequelize.ARRAY(Sequelize.STRING),
+            type: Sequelize.ARRAY(Sequelize.STRING), // eslint-disable-line new-cap
             defaultValue: [''],
         },
         refreshToken: {
@@ -50,7 +50,7 @@ module.exports = {
             defaultValue: Sequelize.literal('NOW()'),
         },
     }),
-    down(queryInterface, Sequelize) {
+    down(queryInterface, Sequelize) { // eslint-disable-line no-unused-vars
         return true;
     },
     // down: (queryInterface, Sequelize) => queryInterface.dropTable('Users'),

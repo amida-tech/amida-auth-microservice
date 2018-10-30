@@ -23,8 +23,7 @@ function startServer() {
     }
 }
 
-
-db.User.count().then((total) => {
+db.User.count({ where: { scopes: { $contains: ['admin'] } } }).then((total) => {
     if (total === 0) {
         logger.info('Admin user not found. Creating.');
         const adminUser = Object.assign({}, config.adminUser);

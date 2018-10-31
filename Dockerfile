@@ -21,8 +21,7 @@ FROM node:8.9
 
 WORKDIR /app
 
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app /app
 
 # set up public and private keys
 RUN echo -e 'y\n'|ssh-keygen -q -t rsa -b 4096 -N "" -f private.key &&\

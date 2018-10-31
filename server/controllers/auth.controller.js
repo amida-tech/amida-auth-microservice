@@ -108,7 +108,7 @@ function submitRefreshToken(req, res, next) {
                 username: userResult.username,
                 ttl: config.jwtExpiresIn,
             });
-        })
+        }).catch(error => next(error))
     )
     .catch(error => next(error));
 }

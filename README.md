@@ -452,6 +452,8 @@ AUTH_SERVICE_MAILER_FROM_EMAIL_ADDRESS=anything_will_work
 AUTH_SERVICE_MAILER_SERVICE_PROVIDER=SendGrid
 ```
 
+Note: To implement this feature, this service uses the nodemailer npm package. The nodemailer documentation for SendGrid says to use a SendGrid API key. Amida has never been able to get this to work. Amida has only been able to get it to work by actually specifying, as suggested above, the SendGrid user ID and password.
+
 Mailgun:
 
 Mailgun does not allow SMTP login/send with your Mailgun account username/email and password. Instead, in Mailgun, a send/recieve domain must be set up, and with each such domain, Mailgun associates an SMTP email address and password. Therefore, to use Mailgun, you must, with a domain you own, setup that domain to work with mailgun, which includes setting DNS records for that domain in your DNS service provider, and then use the associated SMTP email address and password in this config.

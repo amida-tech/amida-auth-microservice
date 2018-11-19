@@ -359,6 +359,13 @@ Not fully implemented yet.
 
 Not fully implemented yet.
 
+##### `AUTH_SERVICE_PASSWORD_RESET_PAGE_URL`
+The URL of the web page where the user will enter their new password, which then submits the updated password with the password reset token to the appropriate Auth Service endpoint.
+- Must not have a trailing slash.
+- That page must have the password reset token at the end if its path, as in `protocol://some-domain.com/some/path/the-token`
+
+Note: This is temporary, and this variable will be removed and replaced with a more elegant way of doing things. The more elegant way of doing this is documented in Jira ticket ORANGE-996.
+
 ##### `AUTH_SERVICE_PG_HOST`
 
 Hostname of machine the postgres instance is running on.

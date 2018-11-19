@@ -33,7 +33,7 @@ module.exports = {
     },
 
     generateLink(token) {
-        return util.format('%s/reset-password/%s', config.authMicroserviceUrl, token);
+        return util.format('%s/%s', config.passwordResetPageUrl, token);
     },
 
 };

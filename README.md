@@ -326,6 +326,9 @@ URL of this service's API. It must be defined because this service uses it to ge
 The port this server will run on.
 - When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
 
+##### `AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS` (Deprecated)
+- This environment variable is no longer used. Use `AUTH_SERVICE_PUBLIC_REGISTRATION` instead.
+
 ##### `AUTH_SERVICE_PUBLIC_REGISTRATION` (Required) [`false`]
 - When `false`, only a user who has `admin` OR a scope defined in `AUTH_SERVICE_REGISTRAR_SCOPES` can create new users.
 - When `true`, anyone can sign up and create a new account.

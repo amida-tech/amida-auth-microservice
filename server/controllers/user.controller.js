@@ -96,7 +96,7 @@ function create(req, res, next) {
     // if current user is admin or a registrar, allow them to include
     // scopes on creation
     // however, don't allow registrar to create more registrars, only admin can do that
-    if (potentialScopes) {
+    if (potentialScopes && req.user) {
         if (req.user.scopes.includes('admin')) {
             // we are admin
             user.scopes = potentialScopes;

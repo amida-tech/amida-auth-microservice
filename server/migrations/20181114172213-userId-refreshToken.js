@@ -7,7 +7,7 @@ module.exports = {
       */
         return queryInterface.sequelize.query('ALTER TABLE "refreshToken" ADD COLUMN IF NOT EXISTS "userId" INTEGER; ALTER TABLE "refreshToken" DROP COLUMN IF EXISTS "uuid";');
     },
-    down(queryInterface) {
+    down() {
         return true;
     },
 };

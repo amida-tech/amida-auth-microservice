@@ -119,11 +119,28 @@ Therefore, in your Postgres instance, create that user and database now.
 
 Start server:
 ```sh
+# Create initial tables and run migrations
+# Only needs to be run on clean builds  
+# or when new migrations are added
+yarn migrate
+
 # Start server
 yarn start
 
 # Selectively set DEBUG env var to get logs
 DEBUG=amida-auth-microservice:* yarn start
+```
+
+## Migrations
+
+```sh
+# Create tables and run migrations (migrations will
+# be run in chronological order, and only newly  
+# added migrations will be run)
+yarn migrate
+
+# Undo all migrations (will not undo table creation)
+yarn migrate:undo
 ```
 
 ## Tests

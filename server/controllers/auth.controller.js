@@ -176,13 +176,14 @@ function resetToken(req, res, next) {
     const ifNotLine = 'If you or your admin did not request a reset, please ignore this email.';
 
     const email = _.get(req, 'body.email');
+    const resetPageUrl = _.get(req, 'body.resetPageUrl');
     if (!email) {
         const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
         return next(err);
     }
     return User.resetPasswordToken(email, 3600)
         .then((token) => {
-            const link = generateLink(token);
+            const link = generateLink(resetPageUrl, token);
             const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);
             sendEmail(res, email, text, token, next);
         })

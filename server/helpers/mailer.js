@@ -32,8 +32,8 @@ module.exports = {
         }
     },
 
-    generateLink(token) {
-        return util.format('%s/%s', config.passwordResetPageUrl, token);
+    generateLink(resetPageUrl, token) {
+        return util.format('%s/%s', resetPageUrl, token);
     },
 
 };

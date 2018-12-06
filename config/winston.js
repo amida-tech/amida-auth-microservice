@@ -1,24 +1,27 @@
-const config = require('./config');
+const { configuredFormatter } = require('winston-json-formatter');
 
-const { createLogger, transports, format } = require('winston');
-
-const { printf, timestamp, combine, colorize } = format;
+const { createLogger, transports } = require('winston');
 
 const logger = createLogger({
-    level: config.logLevel,
     transports: [
         new transports.Console(),
     ],
 });
 
-const developmentFormat = printf(info => `${info.timestamp} ${info.level}: ${info.message}`);
+const options = {
+    service: 'test-service',
+    name: 'Winston-JSON-Formatter',
+    version: '1.0.0',
+    typeFormat: 'json',
+};
 
-if (config.env !== 'production') {
-    logger.format = combine(
-        timestamp(),
-        colorize(),
-        developmentFormat
-    );
-}
+logger.format = configuredFormatter({}, options);
+
+logger.error('message');
+logger.warn('message');
+logger.info('message');
+logger.verbose('message');
+logger.debug('message');
+logger.silly('message');
 
 module.exports = logger;

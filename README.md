@@ -383,6 +383,15 @@ The URL of the web page where the user will enter their new password, which then
 
 Note: This is temporary, and this variable will be removed and replaced with a more elegant way of doing things. The more elegant way of doing this is documented in Jira ticket ORANGE-996.
 
+##### `AUTH_SERVICE_SEED_ADMIN_USERNAME`
+The username for an admin that will be place inside the user's table if none exist on startup.
+
+##### `AUTH_SERVICE_SEED_ADMIN_EMAIL`
+The email address of the admin created with `AUTH_SERVICE_SEED_ADMIN_USERNAME`.
+
+##### `AUTH_SERVICE_SEED_ADMIN_PASSWORD`
+A password to be used for `AUTH_SERVICE_SEED_ADMIN_USERNAME` in the database. This is not to be placed in any .env files but injected via the command line.
+
 ##### `AUTH_SERVICE_PG_HOST`
 
 Hostname of machine the postgres instance is running on.

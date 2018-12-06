@@ -41,6 +41,7 @@ const envVarsSchema = Joi.object({
         .default(false),
     AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES: Joi.bool()
         .default(false),
+    AUTH_SERVICE_PASSWORD_RESET_PAGE_URL: Joi.string(),
     AUTH_SERVICE_SEED_ADMIN_USERNAME: Joi.string()
         .alphanum()
         .min(3)
@@ -130,6 +131,7 @@ module.exports = {
     logLevel: envVars.LOG_LEVEL,
     authMicroserviceUrl: envVars.AUTH_MICROSERVICE_URL,
     port: envVars.AUTH_SERVICE_PORT,
+    passwordResetPageUrl: envVars.AUTH_SERVICE_PASSWORD_RESET_PAGE_URL,
     publicRegistration: envVars.AUTH_SERVICE_PUBLIC_REGISTRATION,
     registrarScopes: envVars.AUTH_SERVICE_REGISTRAR_SCOPES,
     jwtMode: envVars.AUTH_SERVICE_JWT_MODE,

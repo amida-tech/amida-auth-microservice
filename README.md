@@ -119,11 +119,28 @@ Therefore, in your Postgres instance, create that user and database now.
 
 Start server:
 ```sh
+# Create initial tables and run migrations
+# Only needs to be run on clean builds  
+# or when new migrations are added
+yarn migrate
+
 # Start server
 yarn start
 
 # Selectively set DEBUG env var to get logs
 DEBUG=amida-auth-microservice:* yarn start
+```
+
+## Migrations
+
+```sh
+# Create tables and run migrations (migrations will
+# be run in chronological order, and only newly  
+# added migrations will be run)
+yarn migrate
+
+# Undo all migrations (will not undo table creation)
+yarn migrate:undo
 ```
 
 ## Tests
@@ -358,6 +375,13 @@ Not fully implemented yet.
 ##### `AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES` [`false`]
 
 Not fully implemented yet.
+
+##### `AUTH_SERVICE_PASSWORD_RESET_PAGE_URL`
+The URL of the web page where the user will enter their new password, which then submits the updated password with the password reset token to the appropriate Auth Service endpoint.
+- Must not have a trailing slash.
+- That page must have the password reset token at the end if its path, as in `protocol://some-domain.com/some/path/the-token`
+
+Note: This is temporary, and this variable will be removed and replaced with a more elegant way of doing things. The more elegant way of doing this is documented in Jira ticket ORANGE-996.
 
 ##### `AUTH_SERVICE_PG_HOST`
 

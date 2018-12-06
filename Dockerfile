@@ -5,7 +5,7 @@ FROM node:8.14.0-alpine
 WORKDIR /app/
 COPY . /app/
 
-# Obtain ssh-keygen
+# Obtain ssh-keygen and patch for snyk
 RUN apk update && apk add --no-cache openssh-keygen && apk add --no-cache openssl && apk add --no-cache patch
 
 # set up public and private keys

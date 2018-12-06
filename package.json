@@ -31,7 +31,7 @@
     "report-coverage": "coveralls < ./coverage/lcov.info",
     "snyk-protect": "snyk protect",
     "prepublish": "npm run snyk-protect",
-    "seed": "gulp; cross-env DEBUG=amida-auth-microservice:* node dist/config/seed.js; gulp clean"
+    "seed": "gulp && cross-env DEBUG=amida-auth-microservice:* node dist/config/seed.js && gulp clean"
   },
   "dependencies": {
     "bluebird": "3.4.6",

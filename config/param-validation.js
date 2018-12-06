@@ -41,6 +41,7 @@ const authValidation = {
     resetToken: {
         body: {
             email: Joi.string().email().required(),
+            resetPageUrl: Joi.string().uri().required()
         },
     },
     resetPassword: {

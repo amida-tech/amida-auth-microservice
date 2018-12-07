@@ -203,14 +203,17 @@ describe('Auth API:', () => {
             request(app)
                 .post(`${common.baseURL}/auth/reset-password`)
                 .expect(httpStatus.BAD_REQUEST)
-                .then(res => expect(JSON.parse(res.text).message).to.equal('"email" is required'))
+                .then(res => expect(JSON.parse(res.text).message).to.equal('"email" is required and "resetPageUrl" is required'))
         );
 
         it('should set the password to a random string', () =>
             User.find({ where: { username: common.testUser.username } })
                 .then(oldUser => request(app)
                     .post(`${common.baseURL}/auth/reset-password`)
-                    .send({ email: common.testUser.email })
+                    .send({
+                        email: common.testUser.email,
+                        resetPageUrl: common.passwordResetPageUrl
+                    })
                     .expect(httpStatus.OK)
                     .then(() => User.find({ where: { username: common.testUser.username } }))
                     .then((user) => {
@@ -224,7 +227,10 @@ describe('Auth API:', () => {
         it('should generate a token (test env only)', () =>
             request(app)
                 .post(`${common.baseURL}/auth/reset-password`)
-                .send({ email: common.testUser.email })
+                .send({
+                    email: common.testUser.email,
+                    resetPageUrl: common.passwordResetPageUrl
+                })
                 .expect(httpStatus.OK)
                 .then(res => expect(res.body.token).to.exist)
         );
@@ -232,7 +238,10 @@ describe('Auth API:', () => {
         it('should accept the reset token', () =>
             request(app)
                 .post(`${common.baseURL}/auth/reset-password`)
-                .send({ email: common.testUser.email })
+                .send({
+                    email: common.testUser.email,
+                    resetPageUrl: common.passwordResetPageUrl
+                })
                 .expect(httpStatus.OK)
                 .then((res1) => {
                     resetToken = res1.body.token;
@@ -246,7 +255,10 @@ describe('Auth API:', () => {
         it('should update the password', () =>
             request(app)
                 .post(`${common.baseURL}/auth/reset-password`)
-                .send({ email: common.testUser.email })
+                .send({
+                    email: common.testUser.email,
+                    resetPageUrl: common.passwordResetPageUrl
+                  })
                 .expect(httpStatus.OK)
                 .then((res1) => {
                     resetToken = res1.body.token;

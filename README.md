@@ -265,7 +265,7 @@ packer validate -var 'aws_access_key=myAWSAcessKey' \
 -var 'ami_name=api-auth-service-boilerplate' \
 -var 'node_env=development' \
 -var 'jwt_secret=0a6b944d-d2fb-46fc-a85e-0295c986cd9f' \
--var 'auth_service_only_admin_can_create_users=false' \
+-var 'auth_service_public_registration=true' \
 -var 'auth_service_jwt_mode=hmac' \
 -var 'auth_service_pg_host=amid-messages-packer-test.czgzedfwgy7z.us-west-2.rds.amazonaws.com' \
 -var 'auth_service_pg_db=amida_auth_microservice' \
@@ -336,6 +336,9 @@ First, see description of `AUTH_SERVICE_JWT_MODE`. When `AUTH_SERVICE_JWT_MODE=h
 
 The port this server will run on.
 - When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
+
+##### `AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS` (Deprecated)
+- This environment variable is no longer used. Use `AUTH_SERVICE_PUBLIC_REGISTRATION` instead.
 
 ##### `AUTH_SERVICE_PUBLIC_REGISTRATION` (Required) [`false`]
 - When `false`, only a user who has `admin` OR a scope defined in `AUTH_SERVICE_REGISTRAR_SCOPES` can create new users.

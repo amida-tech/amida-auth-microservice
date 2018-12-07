@@ -8,6 +8,10 @@ COPY . /app/
 # Obtain ssh-keygen and patch for snyk
 RUN apk update && apk add --no-cache openssh-keygen && apk add --no-cache openssl && apk add --no-cache patch
 
+# set up public and private keys
+RUN echo -e 'y\n'|ssh-keygen -q -t rsa -b 4096 -N "" -f private.key && \
+    openssl rsa -in private.key -pubout -outform PEM -out private.key.pub
+
 # Run yarn
 RUN yarn install --pure-lockfile
 RUN yarn build
@@ -15,11 +19,9 @@ RUN yarn install --production --frozen-lockfile
 
 FROM node:8.14.0-alpine
 
-COPY --from=builder /app/ /app/
+WORKDIR /app/
 
-# set up public and private keys
-RUN echo -e 'y\n'|ssh-keygen -q -t rsa -b 4096 -N "" -f private.key && \
-    openssl rsa -in private.key -pubout -outform PEM -out private.key.pub
+COPY --from=builder /app/ /app/
 
 # USER 50000:50000
 

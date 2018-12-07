@@ -212,7 +212,7 @@ describe('Auth API:', () => {
                     .post(`${common.baseURL}/auth/reset-password`)
                     .send({
                         email: common.testUser.email,
-                        resetPageUrl: common.passwordResetPageUrl
+                        resetPageUrl: common.passwordResetPageUrl,
                     })
                     .expect(httpStatus.OK)
                     .then(() => User.find({ where: { username: common.testUser.username } }))
@@ -229,7 +229,7 @@ describe('Auth API:', () => {
                 .post(`${common.baseURL}/auth/reset-password`)
                 .send({
                     email: common.testUser.email,
-                    resetPageUrl: common.passwordResetPageUrl
+                    resetPageUrl: common.passwordResetPageUrl,
                 })
                 .expect(httpStatus.OK)
                 .then(res => expect(res.body.token).to.exist)
@@ -240,7 +240,7 @@ describe('Auth API:', () => {
                 .post(`${common.baseURL}/auth/reset-password`)
                 .send({
                     email: common.testUser.email,
-                    resetPageUrl: common.passwordResetPageUrl
+                    resetPageUrl: common.passwordResetPageUrl,
                 })
                 .expect(httpStatus.OK)
                 .then((res1) => {
@@ -257,8 +257,8 @@ describe('Auth API:', () => {
                 .post(`${common.baseURL}/auth/reset-password`)
                 .send({
                     email: common.testUser.email,
-                    resetPageUrl: common.passwordResetPageUrl
-                  })
+                    resetPageUrl: common.passwordResetPageUrl,
+                })
                 .expect(httpStatus.OK)
                 .then((res1) => {
                     resetToken = res1.body.token;

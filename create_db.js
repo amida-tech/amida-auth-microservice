@@ -15,7 +15,7 @@ pg.connect(conStringPri, (err, client, done) => { // eslint-disable-line no-unus
             console.log(`Database Creation Failed. Please check to see if the database "${config.postgres.db}" already exists if so please delete it`);
             process.exit(1);
         } else {
-            console.log('Database Creation Succeded');
+            console.log('Database Creation Succeeded.');
             process.exit(0);
         }
     });

@@ -8,6 +8,7 @@ COPY . /app/
 # Obtain ssh-keygen and patch for snyk
 RUN apk update && apk add --no-cache openssh-keygen && apk add --no-cache openssl && apk add --no-cache patch
 
+# Run yarn
 RUN yarn install --pure-lockfile
 RUN yarn build
 RUN yarn install --production --frozen-lockfile

@@ -55,8 +55,6 @@ const envVarsSchema = Joi.object({
         .description('Admin email for seeding only'),
     AUTH_SERVICE_PG_DB: Joi.string().required()
         .description('Postgres database name'),
-    AUTH_MICROSERVICE_URL: Joi.string()
-        .description('This is the base of the URL used for password reset links. Omit any trailing slash. e.g. https://the-auth-service.com/api/v1'),
     AUTH_SERVICE_PG_PORT: Joi.number()
         .default(5432),
     AUTH_SERVICE_PG_HOST: Joi.string(),
@@ -128,7 +126,6 @@ if (error) {
 module.exports = {
     env: envVars.NODE_ENV,
     logLevel: envVars.LOG_LEVEL,
-    authMicroserviceUrl: envVars.AUTH_MICROSERVICE_URL,
     port: envVars.AUTH_SERVICE_PORT,
     publicRegistration: envVars.AUTH_SERVICE_PUBLIC_REGISTRATION,
     registrarScopes: envVars.AUTH_SERVICE_REGISTRAR_SCOPES,

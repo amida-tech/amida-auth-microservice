@@ -32,8 +32,8 @@ module.exports = {
         }
     },
 
-    generateLink(token) {
-        return util.format('%s/reset-password/%s', config.authMicroserviceUrl, token);
+    generateLink(resetPageUrl, token) {
+        return util.format('%s/%s', resetPageUrl, token);
     },
 
 };

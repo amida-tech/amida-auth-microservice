@@ -18,12 +18,11 @@ pg.connect(conStringPri, (err, client, done) => { // eslint-disable-line no-unus
         if (err1) {
             logger.error({
                 message: `Database Creation Failed. Please check to see if the database "${config.postgres.db}" already exists if so please delete it`,
+                postgres_db_name: config.postgres.db
             });
             process.exit(1);
         } else {
-            logger.info({
-                message: 'Database Creation Succeded',
-            });
+            logger.info('Database Creation Succeded');
             process.exit(0);
         }
     });

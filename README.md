@@ -265,7 +265,7 @@ packer validate -var 'aws_access_key=myAWSAcessKey' \
 -var 'ami_name=api-auth-service-boilerplate' \
 -var 'node_env=development' \
 -var 'jwt_secret=0a6b944d-d2fb-46fc-a85e-0295c986cd9f' \
--var 'auth_service_only_admin_can_create_users=false' \
+-var 'auth_service_public_registration=true' \
 -var 'auth_service_jwt_mode=hmac' \
 -var 'auth_service_pg_host=amid-messages-packer-test.czgzedfwgy7z.us-west-2.rds.amazonaws.com' \
 -var 'auth_service_pg_db=amida_auth_microservice' \
@@ -330,18 +330,15 @@ A description of what the variable is or does.
 First, see description of `AUTH_SERVICE_JWT_MODE`. When `AUTH_SERVICE_JWT_MODE=hmac`, this is the shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.
 - In production, this should be set to a value different than the one in `.env.example`.
 
-##### `AUTH_MICROSERVICE_URL`
-
-URL of this service's API. It must be defined because this service uses it to generate its password reset link URLs.
-- `.env.production` sets this to to `https://amida-auth-microservice:4000/api/v1`, which assumes:
-  - `amida-auth-microservice` is the name of the docker container running the Auth Service.
-  - `4000` is the port the Auth Service is running on in its container.
-  - The Auth Service's docker container and this service's docker container are a part of the same docker network.
+##### `AUTH_MICROSERVICE_URL` (Deprecated)
 
 ##### `AUTH_SERVICE_PORT` (Required) [`4000`]
 
 The port this server will run on.
 - When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
+
+##### `AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS` (Deprecated)
+- This environment variable is no longer used. Use `AUTH_SERVICE_PUBLIC_REGISTRATION` instead.
 
 ##### `AUTH_SERVICE_PUBLIC_REGISTRATION` (Required) [`false`]
 - When `false`, only a user who has `admin` OR a scope defined in `AUTH_SERVICE_REGISTRAR_SCOPES` can create new users.
@@ -376,12 +373,7 @@ Not fully implemented yet.
 
 Not fully implemented yet.
 
-##### `AUTH_SERVICE_PASSWORD_RESET_PAGE_URL`
-The URL of the web page where the user will enter their new password, which then submits the updated password with the password reset token to the appropriate Auth Service endpoint.
-- Must not have a trailing slash.
-- That page must have the password reset token at the end if its path, as in `protocol://some-domain.com/some/path/the-token`
-
-Note: This is temporary, and this variable will be removed and replaced with a more elegant way of doing things. The more elegant way of doing this is documented in Jira ticket ORANGE-996.
+##### `AUTH_SERVICE_PASSWORD_RESET_PAGE_URL` (Deprecated)
 
 ##### `AUTH_SERVICE_PG_HOST`
 

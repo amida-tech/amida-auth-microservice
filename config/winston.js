@@ -2,7 +2,7 @@ const { configuredFormatter } = require('winston-json-formatter');
 
 const { createLogger, transports } = require('winston');
 const pjson = require('../package.json');
-const config = require('./config')
+const config = require('./config');
 
 const logger = createLogger({
     transports: [
@@ -13,8 +13,8 @@ const logger = createLogger({
 const options = {
     service: 'amida-auth-service',
     name: 'application-logger',
-    version: `${pjson.version}`,
-    typeFormat: 'json',
+    version: pjson.version,
+    typeFormat: config.logFormat,
 };
 
 logger.format = configuredFormatter(options);

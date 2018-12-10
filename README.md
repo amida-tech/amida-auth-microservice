@@ -103,7 +103,6 @@ yarn
 Set environment vars:
 ```sh
 cp .env.example .env
-cp .env .env.test
 ```
 
 Create the database:

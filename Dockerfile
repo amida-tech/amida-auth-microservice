@@ -5,6 +5,8 @@ FROM node:8.14.0-alpine as builder
 WORKDIR /app/
 COPY . /app/
 
+RUN apk apk update && apk add --no-cache patch
+
 # Run yarn
 RUN yarn install --pure-lockfile
 RUN yarn build
@@ -17,7 +19,7 @@ WORKDIR /app/
 COPY --from=builder /app/ /app/
 
 # Obtain ssh-keygen and patch for snyk
-RUN apk update && apk add --no-cache openssh-keygen && apk add --no-cache openssl && apk add --no-cache patch
+RUN apk update && apk add --no-cache openssh-keygen && apk add --no-cache openssl
 
 # set up public and private keys
 RUN echo -e 'y\n'|ssh-keygen -q -t rsa -b 4096 -N "" -f private.key && \

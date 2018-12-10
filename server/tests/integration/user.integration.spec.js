@@ -286,7 +286,7 @@ describe('User API:', () => {
                 .catch(done);
         });
 
-        it('should succeed with registrarUser token (AUTH_SERVICE_REGISTAR_SCOPES=["registrar"]', (done) => {
+        it('should succeed with registrarUser token (AUTH_SERVICE_REGISTRAR_SCOPES=["registrar"]', (done) => {
             request(app)
                 .post(`${common.baseURL}/user`)
                 .set('Authorization', registrarAuth)

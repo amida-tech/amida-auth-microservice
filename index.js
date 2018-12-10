@@ -29,8 +29,8 @@ db.User.count({ where: { scopes: { $contains: ['admin'] } } }).then((total) => {
         const adminUser = Object.assign({}, config.adminUser);
         if (adminUser.password === '' || adminUser.password === undefined) {
             adminUser.password = passGenerator();
+            logger.info(`Admin user password: ${adminUser.password}`);
         }
-        logger.info(`Admin user password: ${adminUser.password}`);
         db.User.build(adminUser).save();
     }
 })

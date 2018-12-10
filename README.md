@@ -103,7 +103,6 @@ yarn
 Set environment vars:
 ```sh
 cp .env.example .env
-cp .env .env.test
 ```
 
 Create the database:
@@ -375,6 +374,15 @@ Not fully implemented yet.
 
 ##### `AUTH_SERVICE_PASSWORD_RESET_PAGE_URL` (Deprecated)
 
+##### `AUTH_SERVICE_SEED_ADMIN_USERNAME`
+The username for an admin that will be place inside the user's table if none exist on startup.
+
+##### `AUTH_SERVICE_SEED_ADMIN_EMAIL`
+The email address of the admin created with `AUTH_SERVICE_SEED_ADMIN_USERNAME`.
+
+##### `AUTH_SERVICE_SEED_ADMIN_PASSWORD`
+A password to be used for `AUTH_SERVICE_SEED_ADMIN_USERNAME` in the database. This is not to be placed in any .env files but injected via the command line.
+
 ##### `AUTH_SERVICE_PG_HOST`
 
 Hostname of machine the postgres instance is running on.
@@ -387,12 +395,10 @@ Port on the machine the postgres instance is running on.
 ##### `AUTH_SERVICE_PG_DB`
 
 Postgres database name.
-- Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
 
 ##### `AUTH_SERVICE_PG_USER`
 
 Postgres user that will perform operations on behalf of this microservice. Therefore, this user must have permissions to modify the database specified by `AUTH_SERVICE_PG_DB`.
-- Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
 
 ##### `AUTH_SERVICE_PG_PASSWORD`
 

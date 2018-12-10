@@ -42,4 +42,4 @@ private.key
 private.key.pub
 
 # Environment variables files
-.env*
+.env

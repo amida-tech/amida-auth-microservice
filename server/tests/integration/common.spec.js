@@ -39,6 +39,8 @@ const validUserCredentials = {
     password: 'Testpass123',
 };
 
+const passwordResetPageUrl = 'http://test-url.com/reset-password';
+
 module.exports = {
 
     /**
@@ -126,4 +128,5 @@ module.exports = {
     missingUsername,
     validUserCredentials,
     baseURL,
+    passwordResetPageUrl,
 };

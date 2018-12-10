@@ -5,6 +5,7 @@ const pjson = require('../package.json');
 const config = require('./config');
 
 const logger = createLogger({
+    level: config.logLevel,
     transports: [
         new transports.Console(),
     ],
@@ -14,7 +15,6 @@ const options = {
     service: 'amida-auth-service',
     name: 'application-logger',
     version: pjson.version,
-    typeFormat: config.logFormat,
 };
 
 logger.format = configuredFormatter(options);

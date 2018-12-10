@@ -16,8 +16,6 @@ const envVarsSchema = Joi.object({
         .default('production'),
     LOG_LEVEL: Joi.string()
         .default('info'),
-    LOG_FORMAT: Joi.string()
-        .default('json'),
     AUTH_SERVICE_PORT: Joi.number()
         .default(4000),
     AUTH_SERVICE_PUBLIC_REGISTRATION: Joi.bool()
@@ -55,6 +53,10 @@ const envVarsSchema = Joi.object({
         .required()
         .default('admin@default.com')
         .description('Admin email for seeding only'),
+    AUTH_SERVICE_SEED_ADMIN_PASSWORD: Joi.string()
+        .min(3)
+        .max(30)
+        .description('Admin password for seeding only, do not include in .env'),
     AUTH_SERVICE_PG_DB: Joi.string().required()
         .description('Postgres database name'),
     AUTH_SERVICE_PG_PORT: Joi.number()
@@ -128,7 +130,6 @@ if (error) {
 module.exports = {
     env: envVars.NODE_ENV,
     logLevel: envVars.LOG_LEVEL,
-    logFormat: envVars.LOG_FORMAT,
     port: envVars.AUTH_SERVICE_PORT,
     publicRegistration: envVars.AUTH_SERVICE_PUBLIC_REGISTRATION,
     registrarScopes: envVars.AUTH_SERVICE_REGISTRAR_SCOPES,
@@ -164,7 +165,7 @@ module.exports = {
     adminUser: {
         username: envVars.AUTH_SERVICE_SEED_ADMIN_USERNAME,
         email: envVars.AUTH_SERVICE_SEED_ADMIN_EMAIL,
-        password: '',
+        password: envVars.AUTH_SERVICE_SEED_ADMIN_PASSWORD,
         scopes: ['admin'],
     },
 };

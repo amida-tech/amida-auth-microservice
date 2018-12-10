@@ -10,10 +10,10 @@ import * as common from './common.spec';
 import config from '../../../config/config';
 
 chai.config.includeStack = true;
+config.adminUser.password = 'example';
 
 describe('Auth API:', () => {
     let jwtToken;
-    before(() => User.destroy({ where: {}, logging: false }).catch(() => 1));
     // run health check to ensure sync runs
     before((done) => {
         request(app)
@@ -22,10 +22,18 @@ describe('Auth API:', () => {
             .then(setTimeout(done, 1000));
     });
 
-    describe('Seed', () => {
-        it('should seed with the config admin', () =>
+    describe('Seed with environmental password', () => {
+        after(() => {
+            config.adminUser.password = undefined;
+        });
+        it('should seed with the config admin with a environmentally derived password', () =>
             request(app)
-                .get('/api/health-check')
+                .post(`${common.baseURL}/auth/login`) // JAMES
+                .send({
+                    username: config.adminUser.username,
+                    password: 'example',
+                })
+                .expect(httpStatus.OK)
                 .then(User.count().then((total) => {
                     expect(total).to.equal(1);
                 }))

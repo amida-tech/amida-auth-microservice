@@ -53,6 +53,10 @@ const envVarsSchema = Joi.object({
         .required()
         .default('admin@default.com')
         .description('Admin email for seeding only'),
+    AUTH_SERVICE_SEED_ADMIN_PASSWORD: Joi.string()
+        .min(3)
+        .max(30)
+        .description('Admin password for seeding only, do not include in .env'),
     AUTH_SERVICE_PG_DB: Joi.string().required()
         .description('Postgres database name'),
     AUTH_SERVICE_PG_PORT: Joi.number()
@@ -161,7 +165,7 @@ module.exports = {
     adminUser: {
         username: envVars.AUTH_SERVICE_SEED_ADMIN_USERNAME,
         email: envVars.AUTH_SERVICE_SEED_ADMIN_EMAIL,
-        password: '',
+        password: envVars.AUTH_SERVICE_SEED_ADMIN_PASSWORD,
         scopes: ['admin'],
     },
 };

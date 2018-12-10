@@ -395,12 +395,10 @@ Port on the machine the postgres instance is running on.
 ##### `AUTH_SERVICE_PG_DB`
 
 Postgres database name.
-- Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
 
 ##### `AUTH_SERVICE_PG_USER`
 
 Postgres user that will perform operations on behalf of this microservice. Therefore, this user must have permissions to modify the database specified by `AUTH_SERVICE_PG_DB`.
-- Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
 
 ##### `AUTH_SERVICE_PG_PASSWORD`
 

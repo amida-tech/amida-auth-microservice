@@ -13,7 +13,7 @@ const logger = createLogger({
 
 const options = {
     service: 'amida-auth-service',
-    name: 'application-logger',
+    logger: 'application-logger',
     version: pjson.version,
 };
 

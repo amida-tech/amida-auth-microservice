@@ -16,7 +16,7 @@
     "delete_db": "sequelize db:drop",
     "clean": "rimraf coverage dist",
     "jenkins": "cross-env NODE_ENV=test yarn delete_db && cross-env NODE_ENV=test yarn create_db && cross-env NODE_ENV=test yarn migrate && cross-env NODE_ENV=test yarn test",
-    "lint": "esw -c .eslintrc src test --color --fix",
+    "lint": "esw src test --color --fix",
     "lint:watch": "yarn lint -- --watch",
     "migrate": "sequelize db:migrate",
     "migrate:undo": "sequelize db:migrate:undo:all",

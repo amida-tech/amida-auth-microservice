@@ -22,7 +22,6 @@
     "lint": "esw -c .eslintrc *.js server config . --color --fix",
     "lint:watch": "yarn lint -- --watch",
     "beautify": "esw -c .eslintrc *.js server config --color --fix",
-    "precommit": "yarn lint && yarn test",
     "test": "gulp && yarn create_db && cross-env NODE_ENV=test yarn migrate && cross-env NODE_ENV=test ./node_modules/.bin/mocha --ui bdd --reporter spec --colors --compilers js:babel-core/register server/tests --recursive -t 10000 && yarn delete_db",
     "jenkins": "gulp && yarn delete_db && yarn create_db && cross-env NODE_ENV=test yarn migrate && cross-env NODE_ENV=test ./node_modules/.bin/mocha --ui bdd --reporter spec --colors --compilers js:babel-core/register server/tests --recursive -t 10000",
     "test:watch": "yarn test -- --watch",
@@ -30,7 +29,6 @@
     "test:check-coverage": "yarn test:coverage && istanbul check-coverage",
     "report-coverage": "coveralls < ./coverage/lcov.info",
     "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect",
     "seed": "gulp && cross-env DEBUG=amida-auth-microservice:* node dist/config/seed.js && gulp clean"
   },
   "dependencies": {
@@ -95,7 +93,7 @@
     "gulp-nodemon": "^2.0.6",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
-    "husky": "^0.13.1",
+    "husky": "^1.2.0",
     "istanbul": "1.1.0-alpha.1",
     "mocha": "3.2.0"
   },

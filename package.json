@@ -23,7 +23,7 @@
     "precommit": "yarn lint && yarn test",
     "prepublish": "npm run snyk-protect",
     "report-coverage": "coveralls < ./coverage/lcov.info",
-    "seed": "yarn build && cross-env DEBUG=amida-auth-microservice:* node dist/config/seed.js",
+    "seed": "sequelize db:seed:all",
     "serve": "node dist/index.js",
     "snyk-protect": "snyk protect",
     "start": "nodemon --exec babel-node -- src/index.js",

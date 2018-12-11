@@ -1,8 +1,8 @@
+const { configuredFormatter } = require('winston-json-formatter');
+
+const { createLogger, transports } = require('winston');
+const pjson = require('../package.json');
 const config = require('./config');
-
-const { createLogger, transports, format } = require('winston');
-
-const { printf, timestamp, combine, colorize } = format;
 
 const logger = createLogger({
     level: config.logLevel,
@@ -11,14 +11,12 @@ const logger = createLogger({
     ],
 });
 
-const developmentFormat = printf(info => `${info.timestamp} ${info.level}: ${info.message}`);
+const options = {
+    service: 'amida-auth-service',
+    logger: 'application-logger',
+    version: pjson.version,
+};
 
-if (config.env !== 'production') {
-    logger.format = combine(
-        timestamp(),
-        colorize(),
-        developmentFormat
-    );
-}
+logger.format = configuredFormatter(options);
 
 module.exports = logger;

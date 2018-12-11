@@ -1,3 +1,5 @@
 {
-  "presets": ["@babel/preset-env"]
+  sourceMaps: 'inline',
+  plugins: ['source-map-support'],
+  presets: ['@babel/preset-env'],
 }

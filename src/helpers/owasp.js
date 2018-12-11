@@ -1,6 +1,6 @@
 import httpStatus from 'http-status';
 import owasp from 'owasp-password-strength-test';
-import APIError from '../helpers/APIError';
+import APIError from './APIError';
 
 owasp.config({
     allowPassphrases: true,

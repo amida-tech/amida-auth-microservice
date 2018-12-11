@@ -57,7 +57,7 @@ const authValidation = {
     },
 };
 
-export default {
+module.exports = {
     userValidation,
     authValidation,
 };

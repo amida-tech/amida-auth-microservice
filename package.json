@@ -15,7 +15,7 @@
     "create_db": "sequelize db:create",
     "delete_db": "sequelize db:drop",
     "clean": "rimraf coverage dist",
-    "jenkins": "NODE_ENV=test yarn delete_db && NODE_ENV=test yarn create_db && NODE_ENV=test yarn migrate && NODE_ENV=test yarn test",
+    "jenkins": "cross-env NODE_ENV=test yarn delete_db && cross-env NODE_ENV=test yarn create_db && cross-env NODE_ENV=test yarn migrate && cross-env NODE_ENV=test yarn test",
     "lint": "esw -c .eslintrc *.js server config . --color --fix",
     "lint:watch": "yarn lint -- --watch",
     "migrate": "sequelize db:migrate",
@@ -28,9 +28,9 @@
     "snyk-protect": "snyk protect",
     "start": "nodemon --exec babel-node -- src/index.js",
     "start:debug": "cross-env DEBUG=amida-auth-microservice:* yarn start",
-    "test": "NODE_ENV=test mocha --ui bdd --reporter spec --colors --compilers js:@babel/register tests --recursive -t 10000",
-    "test:check-coverage": "yarn test:coverage && istanbul check-coverage",
-    "test:coverage": "cross-env NODE_ENV=test istanbul cover _mocha -- --ui bdd --reporter spec --colors --compilers js:babel-core/register src/tests --recursive",
+    "test": "cross-env NODE_ENV=test mocha --opts .mocharc",
+    "test:check-coverage": "yarn test:coverage && nyc check-coverage",
+    "test:coverage": "cross-env NODE_ENV=test nyc mocha --opts .mocharc",
     "test:watch": "yarn test -- --watch"
   },
   "dependencies": {
@@ -95,9 +95,9 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
     "husky": "^0.13.1",
-    "istanbul": "1.1.0-alpha.1",
     "mocha": "3.2.0",
     "nodemon": "^1.18.0",
+    "nyc": "^13.0.0",
     "rimraf": "^2.6.0",
     "sequelize-cli": "^5.4.0"
   },

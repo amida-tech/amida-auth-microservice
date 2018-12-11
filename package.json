@@ -28,7 +28,6 @@
     "test:coverage": "cross-env NODE_ENV=test ./node_modules/.bin/istanbul cover _mocha -- --ui bdd --reporter spec --colors --compilers js:babel-core/register server/tests --recursive",
     "test:check-coverage": "yarn test:coverage && istanbul check-coverage",
     "report-coverage": "coveralls < ./coverage/lcov.info",
-    "snyk-protect": "snyk protect",
     "seed": "gulp && cross-env DEBUG=amida-auth-microservice:* node dist/config/seed.js && gulp clean"
   },
   "dependencies": {

@@ -5253,7 +5253,7 @@ passport-facebook@2.1.1:
   dependencies:
     passport-oauth2 "1.x.x"
 
-passport-jwt@false4.0.0:
+passport-jwt@4.0.0:
   version "4.0.0"
   resolved "http://registry.npmjs.org/passport-jwt/-/passport-jwt-4.0.0.tgz#7f0be7ba942e28b9f5d22c2ebbb8ce96ef7cf065"
   dependencies:

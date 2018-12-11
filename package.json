@@ -28,7 +28,8 @@
     "test:coverage": "cross-env NODE_ENV=test ./node_modules/.bin/istanbul cover _mocha -- --ui bdd --reporter spec --colors --compilers js:babel-core/register server/tests --recursive",
     "test:check-coverage": "yarn test:coverage && istanbul check-coverage",
     "report-coverage": "coveralls < ./coverage/lcov.info",
-    "seed": "gulp && cross-env DEBUG=amida-auth-microservice:* node dist/config/seed.js && gulp clean"
+    "seed": "gulp && cross-env DEBUG=amida-auth-microservice:* node dist/config/seed.js && gulp clean",
+    "prepublish": "snyk protect"
   },
   "dependencies": {
     "bluebird": "3.4.6",

@@ -1,6 +1,5 @@
 {
   "hooks": {
-    "pre-push": "yarn lint && yarn test",
-    "pre-publish": "snyk protect"
+    "pre-push": "yarn lint && yarn test"
   }
 }

@@ -1,16 +1,22 @@
-import winston from 'winston';
+const { configuredFormatter } = require('winston-json-formatter');
 
-const logger = new (winston.Logger)({
+const { createLogger, transports } = require('winston');
+const pjson = require('../package.json');
+const config = require('./config');
+
+const logger = createLogger({
+    level: config.logLevel,
     transports: [
-        new (winston.transports.Console)({
-            json: true,
-            colorize: true,
-        }),
-        // new winston.transports.File({
-        //    filename: 'combined.log',
-        //    level: 'info',
-        // }),
+        new transports.Console(),
     ],
 });
 
-export default logger;
+const options = {
+    service: 'amida-auth-service',
+    logger: 'application-logger',
+    version: pjson.version,
+};
+
+logger.format = configuredFormatter(options);
+
+module.exports = logger;

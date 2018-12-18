@@ -2,6 +2,8 @@
 import httpStatus from 'http-status';
 import db from '../../config/sequelize';
 import APIError from '../helpers/APIError';
+import { signJWT } from '../helpers/jwt';
+import config from '../../config/config';
 
 const User = db.User;
 
@@ -89,12 +91,32 @@ function create(req, res, next) {
         username: req.body.username,
         email: req.body.email,
         password: req.body.password,
-        scopes: req.body.scopes,
     });
+    const potentialScopes = req.body.scopes;
+    // if current user is admin or a registrar, allow them to include
+    // scopes on creation
+    // however, don't allow registrar to create more registrars, only admin can do that
+    if (potentialScopes && req.user) {
+        if (req.user.scopes.includes('admin')) {
+            // we are admin
+            user.scopes = potentialScopes;
+        } else if (req.user.scopes.some(scope => config.registrarScopes.includes(scope))) {
+            // we are not admin but are registrar
+            // if trying to create new registrar or admin, return forbidden
+            if (potentialScopes.some(scope => ['admin', ...config.registrarScopes].includes(scope))) {
+                const e = new APIError('Registrar not allowed to create new admin or registrar users', 'CANNOT_CREATE_ADMIN', httpStatus.FORBIDDEN, true);
+                return next(e);
+            }
+            // else go ahead
+            user.scopes = potentialScopes;
+        }
+    }
 
-    user.save()
-        .then(savedUser => res.json(savedUser.getBasicUserInfo()))
-        .catch(e => next(e));
+    return user.save().then((savedUser) => {
+        const userInfo = savedUser.getBasicUserInfo();
+        userInfo.jwtToken = signJWT(userInfo);
+        res.json(userInfo);
+    }).catch(e => next(e));
 }
 
 function update(req, res, next) {
@@ -137,7 +159,7 @@ function updateScopes(req, res, next) {
  */
 function list(req, res, next) {
     User.findAll({
-        attributes: ['id', 'username', 'email'],
+        attributes: ['id', 'uuid', 'username', 'email'],
     })
     .then(users => res.json(users))
     .catch(e => next(e));

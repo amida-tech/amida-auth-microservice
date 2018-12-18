@@ -7,7 +7,7 @@ import config from '../../config/config';
  * User Schema
  */
 module.exports = (sequelize, DataTypes) => {
-    const RefreshToken = sequelize.define('RefreshToken', {
+    const RefreshToken = sequelize.define('refreshToken', {
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
@@ -18,6 +18,17 @@ module.exports = (sequelize, DataTypes) => {
             unique: true,
             allowNull: false,
         },
+        userId: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: 'Users',
+                key: 'id',
+            },
+            onDelete: 'SET NULL',
+            onUpdate: 'CASCADE',
+        },
+    }, {
+        freezeTableName: true,
     });
 
     RefreshToken.createNewToken = function createNewToken(userId) {
@@ -30,11 +41,10 @@ module.exports = (sequelize, DataTypes) => {
                 userId,
             }));
         }
-
         return this.create({
             token: refreshToken,
             userId,
-        });
+        }).catch(err => err);
     };
 
     return RefreshToken;

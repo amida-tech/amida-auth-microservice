@@ -1,4 +1,4 @@
-import Joi from 'joi';
+const Joi = require('joi');
 
 // require and configure dotenv, will load vars in .env in PROCESS.ENV
 const dotenv = require('dotenv');
@@ -13,11 +13,20 @@ if (process.env.NODE_ENV === 'test') {
 const envVarsSchema = Joi.object({
     NODE_ENV: Joi.string()
         .allow(['development', 'production', 'test', 'provision'])
-        .default('development'),
+        .default('production'),
+    LOG_LEVEL: Joi.string()
+        .default('info'),
     AUTH_SERVICE_PORT: Joi.number()
         .default(4000),
-    AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS: Joi.bool()
-        .default(true),
+    AUTH_SERVICE_PUBLIC_REGISTRATION: Joi.bool()
+        .default(false),
+    AUTH_SERVICE_REGISTRAR_SCOPES: Joi.array()
+        .items(Joi.string())
+        .when('AUTH_SERVICE_PUBLIC_REGISTRATION', {
+            is: false,
+            then: Joi.required(),
+            otherwise: Joi.forbidden(),
+        }),
     AUTH_SERVICE_JWT_MODE: Joi.string().allow(['rsa', 'hmac']).default('hmac')
         .description('Signing algorithm for JWT'),
     JWT_SECRET: Joi.string()
@@ -44,6 +53,10 @@ const envVarsSchema = Joi.object({
         .required()
         .default('admin@default.com')
         .description('Admin email for seeding only'),
+    AUTH_SERVICE_SEED_ADMIN_PASSWORD: Joi.string()
+        .min(3)
+        .max(30)
+        .description('Admin password for seeding only, do not include in .env'),
     AUTH_SERVICE_PG_DB: Joi.string().required()
         .description('Postgres database name'),
     AUTH_SERVICE_PG_PORT: Joi.number()
@@ -114,10 +127,12 @@ if (error) {
     throw new Error(`Config validation error: ${error.message}`);
 }
 
-const config = {
+module.exports = {
     env: envVars.NODE_ENV,
+    logLevel: envVars.LOG_LEVEL,
     port: envVars.AUTH_SERVICE_PORT,
-    onlyAdminCanCreateUsers: envVars.AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS,
+    publicRegistration: envVars.AUTH_SERVICE_PUBLIC_REGISTRATION,
+    registrarScopes: envVars.AUTH_SERVICE_REGISTRAR_SCOPES,
     jwtMode: envVars.AUTH_SERVICE_JWT_MODE,
     jwtSecret: envVars.JWT_SECRET,
     jwtPrivateKeyPath: envVars.AUTH_SERVICE_JWT_PRIVATE_KEY_PATH,
@@ -150,9 +165,7 @@ const config = {
     adminUser: {
         username: envVars.AUTH_SERVICE_SEED_ADMIN_USERNAME,
         email: envVars.AUTH_SERVICE_SEED_ADMIN_EMAIL,
-        password: '',
+        password: envVars.AUTH_SERVICE_SEED_ADMIN_PASSWORD,
         scopes: ['admin'],
     },
 };
-
-export default config;

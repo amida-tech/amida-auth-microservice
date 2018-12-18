@@ -5,7 +5,6 @@ import db from './config/sequelize';
 import logger from './config/winston';
 import passGenerator from './config/password-generator';
 
-const debug = require('debug')('amida-auth-microservice:index');
 /* eslint-enable no-unused-vars */
 
 // make bluebird default Promise
@@ -16,28 +15,29 @@ function startServer() {
     if (!module.parent) {
     // listen on port config.port
         app.listen(config.port, () => {
-            debug(`server started on port ${config.port} (${config.env})`);
+            logger.info(`server started on port ${config.port} (${config.env})`, {
+                port: config.port,
+                node_env: config.env,
+            });
         });
     }
 }
 
-db.sequelize
-  .sync()
-  .then(() => {
-      db.User.count().then((total) => {
-          if (total === 0) {
-              logger.info('Admin user not found. Creating.');
-              const adminUser = Object.assign({}, config.adminUser);
-              adminUser.password = passGenerator();
-              logger.info(`Admin user password: ${adminUser.password}`);
-              db.User.build(adminUser).save();
-          }
-      });
-  })
+db.User.count({ where: { scopes: { $contains: ['admin'] } } }).then((total) => {
+    if (total === 0) {
+        logger.info('Admin user not found. Creating.');
+        const adminUser = Object.assign({}, config.adminUser);
+        if (adminUser.password === '' || adminUser.password === undefined) {
+            adminUser.password = passGenerator();
+            logger.info(`Admin user password: ${adminUser.password}`);
+        }
+        db.User.build(adminUser).save();
+    }
+})
   .then(startServer)
   .catch((err) => {
-      if (err) debug('An error occured %j', err);
-      else debug('Database synchronized');
+      if (err) logger.debug(err);
+      else logger.debug('Database synchronized');
   });
 
 export default app;

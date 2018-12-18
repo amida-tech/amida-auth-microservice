@@ -10,10 +10,10 @@ import * as common from './common.spec';
 import config from '../../../config/config';
 
 chai.config.includeStack = true;
+config.adminUser.password = 'example';
 
 describe('Auth API:', () => {
     let jwtToken;
-    before(() => User.destroy({ where: {}, logging: false }).catch(() => 1));
     // run health check to ensure sync runs
     before((done) => {
         request(app)
@@ -22,10 +22,18 @@ describe('Auth API:', () => {
             .then(setTimeout(done, 1000));
     });
 
-    describe('Seed', () => {
-        it('should seed with the config admin', () =>
+    describe('Seed with environmental password', () => {
+        after(() => {
+            config.adminUser.password = undefined;
+        });
+        it('should seed with the config admin with a environmentally derived password', () =>
             request(app)
-                .get('/api/health-check')
+                .post(`${common.baseURL}/auth/login`) // JAMES
+                .send({
+                    username: config.adminUser.username,
+                    password: 'example',
+                })
+                .expect(httpStatus.OK)
                 .then(User.count().then((total) => {
                     expect(total).to.equal(1);
                 }))
@@ -203,14 +211,17 @@ describe('Auth API:', () => {
             request(app)
                 .post(`${common.baseURL}/auth/reset-password`)
                 .expect(httpStatus.BAD_REQUEST)
-                .then(res => expect(JSON.parse(res.text).message).to.equal('"email" is required'))
+                .then(res => expect(JSON.parse(res.text).message).to.equal('"email" is required and "resetPageUrl" is required'))
         );
 
         it('should set the password to a random string', () =>
             User.find({ where: { username: common.testUser.username } })
                 .then(oldUser => request(app)
                     .post(`${common.baseURL}/auth/reset-password`)
-                    .send({ email: common.testUser.email })
+                    .send({
+                        email: common.testUser.email,
+                        resetPageUrl: common.passwordResetPageUrl,
+                    })
                     .expect(httpStatus.OK)
                     .then(() => User.find({ where: { username: common.testUser.username } }))
                     .then((user) => {
@@ -224,7 +235,10 @@ describe('Auth API:', () => {
         it('should generate a token (test env only)', () =>
             request(app)
                 .post(`${common.baseURL}/auth/reset-password`)
-                .send({ email: common.testUser.email })
+                .send({
+                    email: common.testUser.email,
+                    resetPageUrl: common.passwordResetPageUrl,
+                })
                 .expect(httpStatus.OK)
                 .then(res => expect(res.body.token).to.exist)
         );
@@ -232,7 +246,10 @@ describe('Auth API:', () => {
         it('should accept the reset token', () =>
             request(app)
                 .post(`${common.baseURL}/auth/reset-password`)
-                .send({ email: common.testUser.email })
+                .send({
+                    email: common.testUser.email,
+                    resetPageUrl: common.passwordResetPageUrl,
+                })
                 .expect(httpStatus.OK)
                 .then((res1) => {
                     resetToken = res1.body.token;
@@ -246,7 +263,10 @@ describe('Auth API:', () => {
         it('should update the password', () =>
             request(app)
                 .post(`${common.baseURL}/auth/reset-password`)
-                .send({ email: common.testUser.email })
+                .send({
+                    email: common.testUser.email,
+                    resetPageUrl: common.passwordResetPageUrl,
+                })
                 .expect(httpStatus.OK)
                 .then((res1) => {
                     resetToken = res1.body.token;
@@ -286,11 +306,11 @@ describe('Auth API:', () => {
             })
         );
 
-        it('should update user password when user is authenticated', () =>
+        it('should update user password when user is authenticated and oldPassword is correct', () =>
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
                 .set('Authorization', jwtToken)
-                .send({ password: 'Newerpass123' })
+                .send({ oldPassword: common.validUserCredentials.password, password: 'Newerpass123' })
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.text).to.equal('OK');
@@ -303,10 +323,23 @@ describe('Auth API:', () => {
                 })
         );
 
+        it('should return 403 when user is authenticated but oldPassword is incorrect', () =>
+            request(app)
+                .post(`${common.baseURL}/auth/update-password`)
+                .set('Authorization', jwtToken)
+                .send({ oldPassword: 'incorrect pass', password: 'Newerpass123' })
+                .expect(httpStatus.FORBIDDEN)
+                .then((res) => {
+                    expect(res.body.message).to.equal('Incorrect password');
+                    expect(res.body.code).to.equal('INCORRECT_PASSWORD');
+                    expect(res.body.status).to.equal('ERROR');
+                })
+        );
+
         it('should return 401 when user is not authenticated', () =>
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
-                .send({ password: 'Newerpass123' })
+                .send({ oldPassword: common.validUserCredentials.password, password: 'Newerpass123' })
                 .expect(httpStatus.UNAUTHORIZED)
                 .then(res => expect(res.text).to.equal('Unauthorized'))
         );
@@ -315,7 +348,7 @@ describe('Auth API:', () => {
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
                 .set('Authorization', 'Bearer BadJWT')
-                .send({ password: 'Newerpass123' })
+                .send({ oldPassword: common.validUserCredentials.password, password: 'Newerpass123' })
                 .expect(httpStatus.UNAUTHORIZED)
                 .then(res => expect(res.text).to.equal('Unauthorized'))
         );
@@ -324,7 +357,7 @@ describe('Auth API:', () => {
             request(app)
                 .post(`${common.baseURL}/auth/update-password`)
                 .set('Authorization', jwtToken)
-                .send({ password: 'badpass' })
+                .send({ oldPassword: common.validUserCredentials.password, password: 'badpass' })
                 .expect(httpStatus.BAD_REQUEST)
                 .then(res => expect(res.text).to.contain('must be at least 8 characters long'))
         );

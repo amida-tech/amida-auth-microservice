@@ -23,6 +23,7 @@ const userValidation = {
 const authValidation = {
     updatePassword: {
         body: {
+            oldPassword: Joi.string().required(),
             password: Joi.string().required(),
         },
     },
@@ -40,6 +41,7 @@ const authValidation = {
     resetToken: {
         body: {
             email: Joi.string().email().required(),
+            resetPageUrl: Joi.string().uri().required(),
         },
     },
     resetPassword: {

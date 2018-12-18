@@ -11,13 +11,23 @@ import config from '../../config/config';
 const router = express.Router(); // eslint-disable-line new-cap
 const permissions = guard({ permissionsProperty: 'scopes' });
 
-// This array will remain empty if admin user is not required
-// TODO: a more granular registrar role, rather than admin
+// This array will remain empty if public registration is allowed
+// if public registration is not allowed, only the scopes
+// specified in config AND 'admin' are allowed to create users
 let userAdminFunctions = [];
-if (config.onlyAdminCanCreateUsers) {
+if (!config.publicRegistration) {
+    // we want this to be an OR check for scopes and the api for
+    // express-jwt-permissions is such that we need to pass each
+    // OR option as its own list, as an item in a list.
+    // I.e. admin or master or overlord:
+    // check([['admin'], ['master'], ['overlord']])
+    const altAdminScopes = config.registrarScopes.map(scope => [scope]);
     userAdminFunctions = [
         passport.authenticate('jwt', { session: false }),
-        permissions.check('admin'),
+        permissions.check([
+            ['admin'],
+            ...altAdminScopes,
+        ]),
     ];
 }
 

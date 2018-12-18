@@ -103,7 +103,6 @@ yarn
 Set environment vars:
 ```sh
 cp .env.example .env
-cp .env .env.test
 ```
 
 Create the database:
@@ -119,11 +118,28 @@ Therefore, in your Postgres instance, create that user and database now.
 
 Start server:
 ```sh
+# Create initial tables and run migrations
+# Only needs to be run on clean builds  
+# or when new migrations are added
+yarn migrate
+
 # Start server
 yarn start
 
 # Selectively set DEBUG env var to get logs
 DEBUG=amida-auth-microservice:* yarn start
+```
+
+## Migrations
+
+```sh
+# Create tables and run migrations (migrations will
+# be run in chronological order, and only newly  
+# added migrations will be run)
+yarn migrate
+
+# Undo all migrations (will not undo table creation)
+yarn migrate:undo
 ```
 
 ## Tests
@@ -248,7 +264,7 @@ packer validate -var 'aws_access_key=myAWSAcessKey' \
 -var 'ami_name=api-auth-service-boilerplate' \
 -var 'node_env=development' \
 -var 'jwt_secret=0a6b944d-d2fb-46fc-a85e-0295c986cd9f' \
--var 'auth_service_only_admin_can_create_users=false' \
+-var 'auth_service_public_registration=true' \
 -var 'auth_service_jwt_mode=hmac' \
 -var 'auth_service_pg_host=amid-messages-packer-test.czgzedfwgy7z.us-west-2.rds.amazonaws.com' \
 -var 'auth_service_pg_db=amida_auth_microservice' \
@@ -304,19 +320,33 @@ A description of what the variable is or does.
 
 - Valid values are `development`, `production`, and `test`.
 
+##### `LOG_LEVEL` [`info`]
+
+- Valid values are [winston](https://github.com/winstonjs/winston) logging levels (`error`, `warn`, etc.).
+
 ##### `JWT_SECRET` (Required)
 
 First, see description of `AUTH_SERVICE_JWT_MODE`. When `AUTH_SERVICE_JWT_MODE=hmac`, this is the shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.
 - In production, this should be set to a value different than the one in `.env.example`.
+
+##### `AUTH_MICROSERVICE_URL` (Deprecated)
 
 ##### `AUTH_SERVICE_PORT` (Required) [`4000`]
 
 The port this server will run on.
 - When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
 
-##### `AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS` [`true`]
-- When `true`, only a user who has admin privileges/scope can create new users.
-- When `false`, anyone can sign up and create a new account.
+##### `AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS` (Deprecated)
+- This environment variable is no longer used. Use `AUTH_SERVICE_PUBLIC_REGISTRATION` instead.
+
+##### `AUTH_SERVICE_PUBLIC_REGISTRATION` (Required) [`false`]
+- When `false`, only a user who has `admin` OR a scope defined in `AUTH_SERVICE_REGISTRAR_SCOPES` can create new users.
+- When `true`, anyone can sign up and create a new account.
+
+##### `AUTH_SERVICE_REGISTRAR_SCOPES`
+- Can be undefined *iff* `AUTH_SERVICE_PUBLIC_REGISTRATION` is `true`.
+- Otherwise must be JSON array of strings (Use double quotes!) I.e. `["registrar"]`. Each string is a scope that will be allowed to create users.
+  - An empty array `[]` is acceptable and will allow only the `admin` scope to create users.
 
 ##### `AUTH_SERVICE_JWT_MODE` (Required) [`hmac`]
 - When set to `hmac`, json web tokens will use the shared-secret signing strategy, in which case `JWT_SECRET` needs to be specified on and match between this microservice and all other services that integrate with this microservice.
@@ -342,6 +372,17 @@ Not fully implemented yet.
 
 Not fully implemented yet.
 
+##### `AUTH_SERVICE_PASSWORD_RESET_PAGE_URL` (Deprecated)
+
+##### `AUTH_SERVICE_SEED_ADMIN_USERNAME`
+The username for an admin that will be place inside the user's table if none exist on startup.
+
+##### `AUTH_SERVICE_SEED_ADMIN_EMAIL`
+The email address of the admin created with `AUTH_SERVICE_SEED_ADMIN_USERNAME`.
+
+##### `AUTH_SERVICE_SEED_ADMIN_PASSWORD`
+A password to be used for `AUTH_SERVICE_SEED_ADMIN_USERNAME` in the database. This is not to be placed in any .env files but injected via the command line.
+
 ##### `AUTH_SERVICE_PG_HOST`
 
 Hostname of machine the postgres instance is running on.
@@ -354,12 +395,10 @@ Port on the machine the postgres instance is running on.
 ##### `AUTH_SERVICE_PG_DB`
 
 Postgres database name.
-- Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
 
 ##### `AUTH_SERVICE_PG_USER`
 
 Postgres user that will perform operations on behalf of this microservice. Therefore, this user must have permissions to modify the database specified by `AUTH_SERVICE_PG_DB`.
-- Setting to `amida_auth_microservice` is recommended because 3rd parties could be running Amida services using their Postgres instances--which is why the name begins with `amida_`.
 
 ##### `AUTH_SERVICE_PG_PASSWORD`
 
@@ -434,6 +473,8 @@ AUTH_SERVICE_MAILER_PASSWORD=your_SendGrid_password
 AUTH_SERVICE_MAILER_FROM_EMAIL_ADDRESS=anything_will_work
 AUTH_SERVICE_MAILER_SERVICE_PROVIDER=SendGrid
 ```
+
+Note: To implement this feature, this service uses the nodemailer npm package. The nodemailer documentation for SendGrid says to use a SendGrid API key. Amida has never been able to get this to work. Amida has only been able to get it to work by actually specifying, as suggested above, the SendGrid user ID and password.
 
 Mailgun:
 

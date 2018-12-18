@@ -32,8 +32,8 @@ module.exports = {
         }
     },
 
-    generateLink(req, token) {
-        return util.format('%s/reset-password/%s', req.headers.origin, token);
+    generateLink(resetPageUrl, token) {
+        return util.format('%s/%s', resetPageUrl, token);
     },
 
 };

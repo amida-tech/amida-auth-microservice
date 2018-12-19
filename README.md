@@ -170,6 +170,9 @@ yarn lint
 
 # Run lint on any file change
 yarn lint:watch
+
+# Run lint and fix
+yarn lint:fix
 ```
 
 ## Other tasks

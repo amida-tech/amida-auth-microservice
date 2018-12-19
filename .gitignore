@@ -43,6 +43,9 @@ build
 # Dependency directory
 node_modules
 
+# Use yarn instead of npm
+.package-lock.json
+
 # Optional npm cache directory
 .npm
 

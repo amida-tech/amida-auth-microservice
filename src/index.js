@@ -15,9 +15,9 @@ function startServer() {
     if (!module.parent) {
     // listen on port config.port
         app.listen(config.port, () => {
-            logger.info({
-                service: 'auth-service',
-                message: `server started on port ${config.port} (${config.env})`,
+            logger.info(`server started on port ${config.port} (${config.env})`, {
+                port: config.port,
+                node_env: config.env,
             });
         });
     }
@@ -36,7 +36,7 @@ db.User.count({ where: { scopes: { $contains: ['admin'] } } }).then((total) => {
 })
   .then(startServer)
   .catch((err) => {
-      if (err) logger.debug('An error occured', err);
+      if (err) logger.debug(err);
       else logger.debug('Database synchronized');
   });
 

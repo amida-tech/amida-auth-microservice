@@ -1,5 +1,4 @@
 import express from 'express';
-import logger from 'morgan';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import compress from 'compression';
@@ -19,10 +18,6 @@ import APIError from '../helpers/APIError';
 import passportConfig from './passport';
 
 const app = express();
-
-if (config.env === 'development') {
-    app.use(logger('dev'));
-}
 
 // parse body params and attache them to req.body
 app.use(bodyParser.json());

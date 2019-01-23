@@ -2,8 +2,11 @@
 
 ## [Unreleased]
 ### Changed
+- **`yarn test` command changed**
+  * `yarn test` command now *only* runs tests. 
+  * `yarn jenkins` continues to DB drop and DB create.
+  * `.env.test` is now used by Jenkins test (`yarn jenkins`). Previously, config was stored on Jenkins server.
 - Babel6 --> 7
-- `.env.test` used by Jenkins test. Previously, config was stoed on Jenkins server.
 
 ### Deprecated
 - Env vars 

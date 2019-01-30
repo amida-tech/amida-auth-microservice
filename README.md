@@ -118,12 +118,15 @@ Therefore, in your Postgres instance, create that user and database now.
 
 Start server:
 ```sh
+# Create database
+yarn create_db
+
 # Create initial tables and run migrations
 # Only needs to be run on clean builds  
 # or when new migrations are added
 yarn migrate
 
-# Start server
+# Start server (uses nodemon)
 yarn start
 
 # Selectively set DEBUG env var to get logs
@@ -172,13 +175,10 @@ yarn lint:watch
 yarn lint:fix
 ```
 
-## Other gulp tasks
+## Other tasks
 ```sh
-# Wipe out dist and coverage directory
-gulp clean
-
-# Default task: Wipes out dist and coverage directory. Compiles using babel.
-gulp
+# Wipe out `./dist/`` and `./coverage/` directory
+yarn clean
 ```
 
 ## Unit testing against auth

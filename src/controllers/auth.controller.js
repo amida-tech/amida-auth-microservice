@@ -2,14 +2,14 @@ import _ from 'lodash';
 import util from 'util';
 import httpStatus from 'http-status';
 
-import db from '../../config/sequelize';
+import db from '../config/sequelize';
 import { signJWT } from '../helpers/jwt';
 import APIError from '../helpers/APIError';
 import {
     sendEmail,
     generateLink,
 } from '../helpers/mailer';
-import config from '../../config/config';
+import config from '../config/config';
 
 const User = db.User;
 const RefreshToken = db.RefreshToken;

@@ -1,5 +1,25 @@
 # Changelog
 
+## [Unreleased]
+### Changed
+- `yarn test` command changed to _only_ run tests
+  * `yarn jenkins` continues to DB drop and DB create
+  * `.env.test` is now used by Jenkins test (`yarn jenkins`). Previously, config was stored on Jenkins server.
+- Refactor sequelize in `./src/db/`
+- Babel6 --> 7
+
+### Deprecated
+- Env vars 
+  * `AUTH_MICROSERVICE_URL`
+  * `AUTH_SERVICE_PASSWORD_RESET_PAGE_URL`
+  * `AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS`
+
+### Removed
+- gulp3
+  * ~5x faster `yarn build` 
+  * Identical functionality (`yarn start` for `nodemon`, `yarn clean`, sourcemaps)
+
+
 ## [2.6.0] -- 2018-12-12
 ### Added
 - Consolidated logging with `npm:winston-json-formatter`.

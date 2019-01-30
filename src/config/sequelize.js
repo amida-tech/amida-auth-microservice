@@ -43,8 +43,8 @@ if (config.postgres.sslEnabled) {
     ensureConnectionIsEncrypted(sequelize);
 }
 
-db.User = sequelize.import('../server/models/user.model');
-db.RefreshToken = sequelize.import('../server/models/refreshToken.model');
+db.User = sequelize.import('../db/models/user.model');
+db.RefreshToken = sequelize.import('../db/models/refreshToken.model');
 
 // assign the sequelize variables to the db object and returning the db.
 module.exports = _.extend({

@@ -1,0 +1,1 @@
+--ui bdd --reporter spec --colors --compilers js:@babel/register --recursive -t 10000

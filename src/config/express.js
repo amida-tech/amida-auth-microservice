@@ -12,9 +12,9 @@ import passport from 'passport';
 import Sequelize from 'sequelize';
 import actuator from 'express-actuator';
 import winstonInstance from './winston';
-import routes from '../server/routes/index.route';
+import routes from '../routes/index.route';
 import config from './config';
-import APIError from '../server/helpers/APIError';
+import APIError from '../helpers/APIError';
 import passportConfig from './passport';
 
 const app = express();

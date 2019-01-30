@@ -9,7 +9,7 @@ import fs from 'fs';
 import httpStatus from 'http-status';
 import { User } from './sequelize';
 import config from './config';
-import APIError from '../server/helpers/APIError';
+import APIError from '../helpers/APIError';
 
 let key;
 if (config.jwtMode === 'rsa') {

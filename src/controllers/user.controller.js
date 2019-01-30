@@ -1,9 +1,9 @@
 
 import httpStatus from 'http-status';
-import db from '../../config/sequelize';
+import db from '../config/sequelize';
 import APIError from '../helpers/APIError';
 import { signJWT } from '../helpers/jwt';
-import config from '../../config/config';
+import config from '../config/config';
 
 const User = db.User;
 

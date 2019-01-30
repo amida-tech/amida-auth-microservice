@@ -3,7 +3,7 @@
 import request from 'supertest';
 import httpStatus from 'http-status';
 import chai, { expect } from 'chai';
-import app from '../../index';
+import app from '../src/index';
 
 chai.config.includeStack = true;
 

@@ -9,8 +9,8 @@
 import request from 'supertest';
 import httpStatus from 'http-status';
 import chai, { expect } from 'chai';
-import app from '../../../index';
-import { User } from '../../../config/sequelize';
+import app from '../../src/index';
+import { User } from '../../src/config/sequelize';
 import * as common from './common.spec';
 
 chai.config.includeStack = true;

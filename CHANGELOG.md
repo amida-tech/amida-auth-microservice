@@ -1,7 +1,11 @@
 # Changelog
 
 ## [Unreleased]
+
+
+## [2.7.0] -- 2019-02-04
 ### Changed
+- Version bump node/yarn
 - `yarn test` command changed to _only_ run tests
   * `yarn jenkins` continues to DB drop and DB create
   * `.env.test` is now used by Jenkins test (`yarn jenkins`). Previously, config was stored on Jenkins server.

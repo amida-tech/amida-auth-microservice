@@ -1,14 +1,14 @@
 {
   "name": "amida-auth-microservice",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "description": "Microservice for a lightweight auth application using JWT",
   "author": "Jacob Sachs <jacob@amida.com>",
-  "main": "index.js",
+  "main": "dist/index.js",
   "private": false,
   "engines": {
-    "node": ">=6.9.1",
-    "npm": ">=2.15.11",
-    "yarn": ">=0.20.3"
+    "node": ">=8.14.0",
+    "npm": ">=6.4.0",
+    "yarn": ">=1.12.0"
   },
   "scripts": {
     "build": "babel src --out-dir dist",
@@ -20,7 +20,8 @@
     "lint:fix": "yarn lint --fix",
     "lint:watch": "yarn lint --watch",
     "migrate": "sequelize db:migrate",
-    "migrate:undo": "sequelize db:migrate:undo:all",
+    "migrate:undo": "sequelize db:migrate:undo",
+    "migrate:undo:all": "sequelize db:migrate:undo:all",
     "prepublish": "snyk protect",
     "report-coverage": "coveralls < ./coverage/lcov.info",
     "seed": "sequelize db:seed:all",

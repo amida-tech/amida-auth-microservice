@@ -148,8 +148,11 @@ yarn migrate:undo
 ## Tests
 
 ```sh
-# Run tests written in ES6
 # Make sure .env.test exists
+# deletes db, creates db, runs migrations and then tests
+yarn jenkins
+
+# Only run the tests (assumes migrations have been run)
 yarn test
 
 # Run test along with code coverage
@@ -332,8 +335,6 @@ A description of what the variable is or does.
 First, see description of `AUTH_SERVICE_JWT_MODE`. When `AUTH_SERVICE_JWT_MODE=hmac`, this is the shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.
 - In production, this should be set to a value different than the one in `.env.example`.
 
-##### `AUTH_MICROSERVICE_URL` (Deprecated)
-
 ##### `AUTH_SERVICE_PORT` (Required) [`4000`]
 
 The port this server will run on.
@@ -374,8 +375,6 @@ Not fully implemented yet.
 ##### `AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES` [`false`]
 
 Not fully implemented yet.
-
-##### `AUTH_SERVICE_PASSWORD_RESET_PAGE_URL` (Deprecated)
 
 ##### `AUTH_SERVICE_SEED_ADMIN_USERNAME`
 The username for an admin that will be place inside the user's table if none exist on startup.

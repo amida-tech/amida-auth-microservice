@@ -3,9 +3,9 @@ import fs from 'fs';
 import httpStatus from 'http-status';
 import { expect } from 'chai';
 import jwt from 'jsonwebtoken';
-import p from '../../../package';
-import config from '../../../config/config';
-import { User } from '../../../config/sequelize';
+import p from '../../package';
+import config from '../../src/config/config';
+import { User } from '../../src/config/sequelize';
 
 const version = p.version.split('.').shift();
 const baseURL = `/api/v${version}`;

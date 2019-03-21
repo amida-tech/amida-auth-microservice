@@ -1,9 +1,30 @@
 version: '2'
-
 services:
   amida-api:
     build:
       context: .
+    # Set environment variables from this file
+    env_file:
+    - .env
+
+    # Overwrite any env var defined in .env file (if required)
+    environment:
+    - AUTH_SERVICE_PG_DB=amida_auth_microservice
+    - AUTH_SERVICE_PG_HOST=postgres
+    - AUTH_SERVICE_PG_PASSWORD=admin
+    - AUTH_SERVICE_PG_PORT=5432
+    - AUTH_SERVICE_PG_USER=postgres
+    - DEBUG=amida-api-boilerplate:*
+
+    # Link to containers in another service.
+    # Links also express dependency between services in the same way as depends_on,
+    # so they determine the order of service startup.
+    links:
+    - postgres
+
+    # Expose ports [HOST:CONTAINER}
+    ports:
+    - 4000:4000
     volumes:
       # Mounts the project directory on the host to /app inside the container,
       # allowing you to modify the code without having to rebuild the image.
@@ -14,33 +35,12 @@ services:
       # node_modules from this new volume will be used and not from your local dev env.
       # - /app/node_modules/
 
-    # Expose ports [HOST:CONTAINER}
-    ports:
-      - "4000:4000"
-
-    # Set environment variables from this file
-    env_file:
-      - .env
-
-    # Overwrite any env var defined in .env file (if required)
-    environment:
-      - AUTH_SERVICE_PG_HOST=postgres
-      - AUTH_SERVICE_PG_PORT=5432
-      - AUTH_SERVICE_PG_DB=amida_auth_microservice
-      - AUTH_SERVICE_PG_USER=amida_auth_microservice
-      - AUTH_SERVICE_PG_PASSWORD=boilerplate
-      - DEBUG=amida-api-boilerplate:*
-
-    # Link to containers in another service.
-    # Links also express dependency between services in the same way as depends_on,
-    # so they determine the order of service startup.
-    links:
-      - postgres
-
   postgres:
-    image: "postgres:9.4.11"
+    image: postgres:9.6
     ports:
-      - "5432:5432"
+    - 5432:5432
     environment:
-      - POSTGRES_USER=amida_auth_microservice
-      - POSTGRES_PASSWORD=boilerplate
+    - POSTGRES_DB=${AUTH_SERVICE_PG_DB}
+    - POSTGRES_PASSWORD=${AUTH_SERVICE_PG_PASSWORD}
+    - POSTGRES_USER=${AUTH_SERVICE_PG_USER}
+

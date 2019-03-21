@@ -1,6 +1,6 @@
 import util from 'util';
 import nodemailer from 'nodemailer';
-import config from '../../config/config';
+import config from '../config/config';
 
 module.exports = {
 

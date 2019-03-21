@@ -4,7 +4,7 @@
 /* eslint new-cap: 0 */
 
 import chai, { expect } from 'chai';
-import { User } from '../../../config/sequelize';
+import { User } from '../../src/config/sequelize';
 
 chai.config.includeStack = true;
 

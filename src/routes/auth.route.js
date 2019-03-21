@@ -2,7 +2,7 @@ import express from 'express';
 import validate from 'express-validation';
 import passport from 'passport';
 import authCtrl from '../controllers/auth.controller';
-import { authValidation } from '../../config/param-validation';
+import { authValidation } from '../config/param-validation';
 import { checkExternalProvider, signJWT } from '../helpers/jwt';
 import { checkPassword } from '../helpers/owasp';
 

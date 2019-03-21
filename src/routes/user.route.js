@@ -2,11 +2,11 @@ import express from 'express';
 import validate from 'express-validation';
 import guard from 'express-jwt-permissions';
 import passport from 'passport';
-import { userValidation } from '../../config/param-validation';
+import { userValidation } from '../config/param-validation';
 import userCtrl from '../controllers/user.controller';
 import { checkExternalProvider } from '../helpers/jwt';
 import { checkPassword } from '../helpers/owasp';
-import config from '../../config/config';
+import config from '../config/config';
 
 const router = express.Router(); // eslint-disable-line new-cap
 const permissions = guard({ permissionsProperty: 'scopes' });

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import httpStatus from 'http-status';
 import jwt from 'jsonwebtoken';
-import config from '../../config/config';
+import config from '../config/config';
 import APIError from '../helpers/APIError';
 
 module.exports = {

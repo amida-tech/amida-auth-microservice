@@ -4,10 +4,10 @@
 import request from 'supertest';
 import httpStatus from 'http-status';
 import chai, { expect } from 'chai';
-import app from '../../../index';
-import { User } from '../../../config/sequelize';
+import app from '../../src/index';
+import { User } from '../../src/config/sequelize';
 import * as common from './common.spec';
-import config from '../../../config/config';
+import config from '../../src/config/config';
 
 chai.config.includeStack = true;
 config.adminUser.password = 'example';
@@ -37,7 +37,7 @@ describe('Auth API:', () => {
                 .then(User.count().then((total) => {
                     expect(total).to.equal(1);
                 }))
-                .then(User.find({ where: { email: config.adminUser.email } }).then(user =>
+                .then(User.findOne({ where: { email: config.adminUser.email } }).then(user =>
                     expect(user.username).to.equal(config.adminUser.username)
                 ))
         );

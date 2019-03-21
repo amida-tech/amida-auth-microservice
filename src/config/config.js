@@ -55,7 +55,7 @@ const envVarsSchema = Joi.object({
         .description('Admin email for seeding only'),
     AUTH_SERVICE_SEED_ADMIN_PASSWORD: Joi.string()
         .min(3)
-        .max(30)
+        .max(512)
         .description('Admin password for seeding only, do not include in .env'),
     AUTH_SERVICE_PG_DB: Joi.string().required()
         .description('Postgres database name'),

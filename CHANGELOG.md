@@ -1,23 +1,29 @@
 # Changelog
 
 ## [Unreleased]
+
+
+## [2.7.0] -- 2019-02-04
+### Added
+- Prepush githook for `yarn lint` and `yarn test` with `npm:husky`
+
 ### Changed
 - `yarn test` command changed to _only_ run tests
-  * `yarn jenkins` continues to DB drop and DB create
-  * `.env.test` is now used by Jenkins test (`yarn jenkins`). Previously, config was stored on Jenkins server.
+  * `yarn jenkins` includes DB creation, migrations, etc.
+- ENV `AUTH_SERVICE_SEED_ADMIN_PASSWORD`, max char 30 --> 512 (DB constraint from `src/db/migrations/20180904132710-create-user.js`)
 - Refactor sequelize in `./src/db/`
 - Babel6 --> 7
-
-### Deprecated
-- Env vars 
-  * `AUTH_MICROSERVICE_URL`
-  * `AUTH_SERVICE_PASSWORD_RESET_PAGE_URL`
-  * `AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS`
+- Update `package.json:engines`
+- Update `docker-compose.yml` including postgres 9.4.11 --> 9.6
 
 ### Removed
 - gulp3
   * ~5x faster `yarn build` 
   * Identical functionality (`yarn start` for `nodemon`, `yarn clean`, sourcemaps)
+- ENV vars
+  * `AUTH_MICROSERVICE_URL`
+  * `AUTH_SERVICE_PASSWORD_RESET_PAGE_URL`
+  * `AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS`
 
 
 ## [2.6.0] -- 2018-12-12

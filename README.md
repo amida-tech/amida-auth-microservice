@@ -1,4 +1,5 @@
 # Amida Auth Microservice
+[![Known Vulnerabilities](https://snyk.io/test/github/amida-tech/amida-auth-microservice/badge.svg)](https://snyk.io/test/github/amida-tech/amida-auth-microservice)
 [![dependencies Status](https://david-dm.org/amida-tech/amida-auth-microservice/status.svg)](https://david-dm.org/amida-tech/amida-auth-microservice)
 [![devDependencies Status](https://david-dm.org/amida-tech/amida-auth-microservice/dev-status.svg)](https://david-dm.org/amida-tech/amida-auth-microservice?type=dev)
 [![Jenkins CI](https://jenkins.amida.com/buildStatus/icon?job=Auth%20Microservice%20Unit%20Test/)](https://jenkins.amida.com/job/Auth%20Microservice%20Unit%20Test/)

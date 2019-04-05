@@ -68,13 +68,18 @@ app.use('/api', routes);
 app.use((err, req, res, next) => {
     if (err instanceof Sequelize.ValidationError) {
         const status = err.errors[0].type === 'unique violation' ? httpStatus.CONFLICT : httpStatus.BAD_REQUEST;
-        const unifiedErrors = JSON.stringify(err.errors);
-        const error = new APIError(unifiedErrors, 'GENERIC_ERROR', status, true);
+        // err.errors[0].message has the most useful information from Sequelize, so we want it to
+        // end up in the nested message of the APIError. However, it could have PHI or PII, so it
+        // must be within the causal error message and must not be passed directly into APIError's
+        // message argument.
+        // eslint-disable-next-line no-param-reassign
+        err.message = `${err.message}: ${err.errors[0].message}`;
+        const error = new APIError(err, 'Sequelize Validation Error', 'GENERIC_ERROR', status);
         return next(error);
     } else if (err instanceof expressValidation.ValidationError) {
         // validation error contains errors which is an array of error each containing message[]
         const unifiedErrorMessage = err.errors.map(error => error.messages.join('. ')).join(' and ');
-        const error = new APIError(unifiedErrorMessage, 'GENERIC_ERROR', err.status, true);
+        const error = new APIError(unifiedErrorMessage, 'GENERIC_ERROR', err.status);
         return next(error);
     }
     return next(err);
@@ -82,7 +87,7 @@ app.use((err, req, res, next) => {
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-    const err = new APIError('API not found', 'UNKNOWN_API', httpStatus.NOT_FOUND);
+    const err = new APIError('API not found', 'UNKNOWN_API', httpStatus.NOT_FOUND, { isPublic: false });
     return next(err);
 });
 
@@ -97,9 +102,9 @@ if (config.env !== 'test') {
 // error handler, send stacktrace only during development
 app.use((err, req, res, next) => // eslint-disable-line no-unused-vars
     res.status(err.status || 500).json({
-        code: err.isPublic ? err.message.code : 'UNKNOWN_ERROR',
+        code: (err.options && err.isPublic) ? err.code : 'UNKNOWN_ERROR',
         status: 'ERROR',
-        message: err.isPublic ? err.message.message : httpStatus[err.status],
+        message: (err.options && err.isPublic) ? err.message : httpStatus[err.status],
         stack: config.env === 'development' ? err.stack : {},
     })
 );

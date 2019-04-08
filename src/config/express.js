@@ -86,6 +86,14 @@ app.use((req, res, next) => {
     return next(err);
 });
 
+// Log errors.
+if (config.env !== 'test') {
+    app.use((err, req, res, next) => {
+        winstonInstance.warn(err);
+        return next(err);
+    });
+}
+
 // error handler, send stacktrace only during development
 app.use((err, req, res, next) => // eslint-disable-line no-unused-vars
     res.status(err.status || 500).json({
@@ -95,13 +103,5 @@ app.use((err, req, res, next) => // eslint-disable-line no-unused-vars
         stack: config.env === 'development' ? err.stack : {},
     })
 );
-
-
-// log error in winston transports except when executing test suite
-if (config.env !== 'test') {
-    app.use(expressWinston.errorLogger({
-        winstonInstance,
-    }));
-}
 
 export default app;

@@ -207,6 +207,33 @@ function resetPassword(req, res, next) {
         .catch(error => next(error));
 }
 
+/**
+ * Sends back 200 OK if password was reset successfully
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function verifyMessagingProtocol(req, res, next) {
+    const userLine = 'An account has been created.';
+    const clickLine = 'Please click on the following link to verify your account.';
+    const ifNotLine = 'If you or your admin did not request a reset, please ignore this email.';
+
+    const email = _.get(req, 'body.email');
+    const messagingProtocolVerifyPageUrl = _.get(req, 'body.messagingProtocolVerifyPageUrl');
+    if (!email) {
+        const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
+        return next(err);
+    }
+    return User.verifyMessagingProtocolToken('email', email, 3600)
+        .then((token) => {
+            const link = generateLink(messagingProtocolVerifyPageUrl, token);
+            const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);
+            sendEmail(res, email, text, token, next);
+        })
+        .catch(error => next(error));
+}
+
 export default {
     login,
     submitRefreshToken,
@@ -214,4 +241,5 @@ export default {
     updatePassword,
     resetToken,
     resetPassword,
+    verifyMessagingProtocol
 };

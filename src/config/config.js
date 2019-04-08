@@ -41,6 +41,8 @@ const envVarsSchema = Joi.object({
         .default(false),
     AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES: Joi.bool()
         .default(false),
+    AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION: Joi.bool()
+        .default(false),
     AUTH_SERVICE_SEED_ADMIN_USERNAME: Joi.string()
         .alphanum()
         .min(3)

@@ -71,6 +71,20 @@ module.exports = (sequelize, DataTypes) => {
         resetExpires: {
             type: DataTypes.DATE,
         },
+        messagingProtocolToken: {
+            type: DataTypes.STRING,
+        },
+        messagingProtocolAuthorizationExpires: {
+            type: DataTypes.DATE,
+        },
+        messagingProtocolProvider: {
+            type: DataTypes.STRING,
+        },
+        
+        authorizedMessagingProviders: {
+            type: DataTypes.ARRAY(DataTypes.STRING),
+            defaultValue: [''],
+        },
         provider: {
             type: DataTypes.STRING,
             allowNull: true,
@@ -129,6 +143,46 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
+    User.verifyMessagingProtocolToken = function verifyMessagingProtocolToken(protocol, email, expTime) {
+        return this.find({
+            where: {
+                email,
+            },
+        })
+        .then((user) => {
+            if (!user) {
+                const err = new Error('Email not found');
+                return sequelize.Promise.reject(err);
+            }
+            // JRB removed protocol, because we can confirm this. Put back it leads to errors.
+            // JRB: This is new
+            return user.updateMessagingProtocolToken(expTime);
+        });
+    };
+
+    User.verifyMessagingProtocol = function verifyMessagingProtocol(token) {
+        const rejection = () => {
+            const err = new Error(`Verification token for ${str(protocol)} is invalid or has expired.`);
+            return sequelize.Promise.reject(err);
+        };
+        return this.find({
+            where: {
+                messagingProtocolToken: token,
+            },
+        }).then((user) => {
+            if (!user) {
+                return rejection();
+            }
+            const expires = user.resetExpires;
+            const mExpires = moment.utc(expires);
+            if (moment.utc().isAfter(mExpires)) {
+                return rejection();
+            }
+            user.authorizedMessagingProviders = user.authorizedMessagingProviders.push('email');
+            return user.save();
+        });
+    };
+
     // Instance methods
     User.prototype.isAdmin = function isAdmin() {
         return this.scopes.includes('admin');
@@ -169,6 +223,21 @@ module.exports = (sequelize, DataTypes) => {
                 m.add(expTime, 'seconds');
                 this.resetExpires = m.format();
                 return this.save().then(() => tokens.token);
+            });
+    };
+
+    User.prototype.updateMessagingProtocolToken = function updateMessagingProtocolToken(expTime, protocol) {
+        return randomBytes(20)
+            .then((buf) => {
+                const token = buf.toString('hex');
+                return token;
+            }).then((token) => {
+                this.messagingProtocolToken = token;
+                this.messagingProtocolProvider = 'email';
+                const m = moment.utc();
+                m.add(expTime, 'seconds');
+                this.messagingProtocolAuthorizationExpires = m.format();
+                return this.save().then(() => token);
             });
     };
 

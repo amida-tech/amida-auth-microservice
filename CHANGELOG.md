@@ -1,7 +1,8 @@
 # Changelog
 
 ## [Unreleased]
-
+### Changed
+- `auth.controller.js` `login()` no longer throws duplicate errors for incorrect username or password.
 
 ## [2.7.0] -- 2019-02-04
 ### Added

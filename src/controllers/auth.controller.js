@@ -23,34 +23,27 @@ const RefreshToken = db.RefreshToken;
  */
 function login(req, res, next) {
     const params = _.pick(req.body, 'username', 'password');
-    const user = User.findOne({ where: { username: params.username } });
-    const passwordMatch = user.then((userResult) => {
-        if (_.isNull(userResult)) {
-            const err = new APIError('Incorrect username or password', 'INCORRECT_USERNAME_OR_PASSWORD', httpStatus.NOT_FOUND, true);
-            return next(err);
-        }
-        return userResult.testPassword(params.password);
-    });
 
-    // once the user and password promises resolve, send the token or an error
-    Promise.join(user, passwordMatch, (userResult, passwordMatchResult) => {
-        if (!passwordMatchResult) {
+    User.findOne({ where: { username: params.username } }).then((user) => {
+        const validUserAndPassword = !_.isNull(user) && user.testPassword(params.password);
+
+        if (!validUserAndPassword) {
             const err = new APIError('Incorrect username or password', 'INCORRECT_USERNAME_OR_PASSWORD', httpStatus.NOT_FOUND, true);
             return next(err);
         }
 
         const userInfo = {
-            id: userResult.id,
-            uuid: userResult.uuid,
-            username: userResult.username,
-            email: userResult.email,
-            scopes: userResult.scopes,
+            id: user.id,
+            uuid: user.uuid,
+            username: user.username,
+            email: user.email,
+            scopes: user.scopes,
         };
 
         const jwtToken = signJWT(userInfo);
 
         if (config.refreshToken.enabled) {
-            return RefreshToken.createNewToken(userResult.id)
+            return RefreshToken.createNewToken(user.id)
             .then(token => res.json({
                 token: jwtToken,
                 uuid: user.uuid,

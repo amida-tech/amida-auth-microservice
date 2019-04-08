@@ -225,7 +225,7 @@ function verifyMessagingProtocol(req, res, next) {
         const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
         return next(err);
     }
-    return User.verifyMessagingProtocolToken('email', email, 3600)
+    return User.verifyMessagingProtocolToken(email, 3600)
         .then((token) => {
             const link = generateLink(messagingProtocolVerifyPageUrl, token);
             const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);

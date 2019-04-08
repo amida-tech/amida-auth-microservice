@@ -143,7 +143,7 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
-    User.verifyMessagingProtocolToken = function verifyMessagingProtocolToken(protocol, email, expTime) {
+    User.verifyMessagingProtocolToken = function verifyMessagingProtocolToken(email, expTime) {
         return this.find({
             where: {
                 email,
@@ -156,7 +156,7 @@ module.exports = (sequelize, DataTypes) => {
             }
             // JRB removed protocol, because we can confirm this. Put back it leads to errors.
             // JRB: This is new
-            return user.updateMessagingProtocolToken(expTime);
+            return user.updateMessagingProtocolToken(email, expTime);
         });
     };
 
@@ -226,14 +226,14 @@ module.exports = (sequelize, DataTypes) => {
             });
     };
 
-    User.prototype.updateMessagingProtocolToken = function updateMessagingProtocolToken(expTime, protocol) {
+    User.prototype.updateMessagingProtocolToken = function updateMessagingProtocolToken(messagingProtocol, expTime, protocol) {
         return randomBytes(20)
             .then((buf) => {
                 const token = buf.toString('hex');
                 return token;
             }).then((token) => {
                 this.messagingProtocolToken = token;
-                this.messagingProtocolProvider = 'email';
+                this.messagingProtocolProvider = messagingProtocol;
                 const m = moment.utc();
                 m.add(expTime, 'seconds');
                 this.messagingProtocolAuthorizationExpires = m.format();

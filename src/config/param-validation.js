@@ -44,11 +44,17 @@ const authValidation = {
             resetPageUrl: Joi.string().uri().required(),
         },
     },
-    verifyMessagingProtocolToken: {
+    verifyMessagingProtocol: {
         body: {
             email: Joi.string().email().required(),
             messagingProtocolVerifyPageUrl: Joi.string().uri().required(),
         },
+    },
+    confirmMessagingProtocol: {
+        body: {
+            token: Joi.string().required(),
+            password: Joi.string().allow(null),
+        }
     },
     resetPassword: {
         body: {

@@ -80,7 +80,6 @@ module.exports = (sequelize, DataTypes) => {
         messagingProtocolProvider: {
             type: DataTypes.STRING,
         },
-        
         authorizedMessagingProviders: {
             type: DataTypes.ARRAY(DataTypes.STRING),
             defaultValue: [''],
@@ -143,7 +142,7 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
-    User.verifyMessagingProtocolToken = function verifyMessagingProtocolToken(email, expTime) {
+    User.generateMessagingProtocolToken = function generateMessagingProtocolToken(email, expTime) {
         return this.find({
             where: {
                 email,
@@ -160,26 +159,39 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
-    User.verifyMessagingProtocol = function verifyMessagingProtocol(token) {
-        const rejection = () => {
-            const err = new Error(`Verification token for ${str(protocol)} is invalid or has expired.`);
-            return sequelize.Promise.reject(err);
-        };
+    User.verifyMessagingProtocolToken = function verifyMessagingProtocolToken(token) {
         return this.find({
             where: {
                 messagingProtocolToken: token,
             },
-        }).then((user) => {
+        })
+        .then((user) => {
             if (!user) {
-                return rejection();
+                const err = new Error('Token not found');
+                return sequelize.Promise.reject(err);
             }
-            const expires = user.resetExpires;
-            const mExpires = moment.utc(expires);
-            if (moment.utc().isAfter(mExpires)) {
-                return rejection();
+            console.log('sure. anyone can confirm this.')
+        });
+    };
+
+    User.verifyMessagingProtocolTokenWithCredentials = function verifyMessagingProtocolTokenWithCredentials(token, password) {
+        return this.find({
+            where: {
+                messagingProtocolToken: token,
+            },
+        })
+        .then((user) => {
+            if (!user) {
+                const err = new Error('Token not found');
+                return sequelize.Promise.reject(err);
             }
-            user.authorizedMessagingProviders = user.authorizedMessagingProviders.push('email');
-            return user.save();
+            let verificationPassword = crypto.pbkdf2Sync(password, Buffer.from(user.salt), 100000, 128, 'sha256').toString('hex')
+            if(user.password === verificationPassword) {
+                console.log('these match!')
+            } else {
+                const err = new Error('Password does not match.');
+                return sequelize.Promise.reject(err);
+            }
         });
     };
 
@@ -226,7 +238,7 @@ module.exports = (sequelize, DataTypes) => {
             });
     };
 
-    User.prototype.updateMessagingProtocolToken = function updateMessagingProtocolToken(messagingProtocol, expTime, protocol) {
+    User.prototype.updateMessagingProtocolToken = function updateMessagingProtocolToken(messagingProtocol, expTime) {
         return randomBytes(20)
             .then((buf) => {
                 const token = buf.toString('hex');

@@ -34,8 +34,12 @@ router.route('/reset-password/:token')
           authCtrl.resetPassword);
 
 router.route('/verify-messaging-protocol')
-    .post(validate(authValidation.verifyMessagingProtocolToken),
+    .post(validate(authValidation.verifyMessagingProtocol),
           authCtrl.verifyMessagingProtocol);
+
+router.route('/confirm-messaging-protocol')
+    .post(validate(authValidation.confirmMessagingProtocol),
+          authCtrl.confirmMessagingProtocol);
 
 router.route('/facebook')
     .get(passport.authenticate('facebook', {

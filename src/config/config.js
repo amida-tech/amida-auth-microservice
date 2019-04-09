@@ -43,6 +43,8 @@ const envVarsSchema = Joi.object({
         .default(false),
     AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION: Joi.bool()
         .default(false),
+    AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION: Joi.bool()
+        .default(false),
     AUTH_SERVICE_SEED_ADMIN_USERNAME: Joi.string()
         .alphanum()
         .min(3)
@@ -140,6 +142,8 @@ module.exports = {
     jwtPrivateKeyPath: envVars.AUTH_SERVICE_JWT_PRIVATE_KEY_PATH,
     jwtPublicKeyPath: envVars.AUTH_SERVICE_JWT_PUBLIC_KEY_PATH,
     jwtExpiresIn: envVars.AUTH_SERVICE_JWT_TTL,
+    requireSecureVerificaiton: envVars.AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION,
+    requireVerificaiton: envVars.AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION,
     refreshToken: {
         enabled: envVars.AUTH_SERVICE_REFRESH_TOKEN_ENABLED,
         multipleDevices: envVars.AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES,

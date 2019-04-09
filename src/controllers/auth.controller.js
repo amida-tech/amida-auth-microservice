@@ -208,13 +208,21 @@ function resetPassword(req, res, next) {
 }
 
 /**
- * Sends back 200 OK if password was reset successfully
+ * Sends back 200 OK if a messagingProtocolToken is created
  * @param req
  * @param res
  * @param next
  * @returns {*}
  */
 function verifyMessagingProtocol(req, res, next) {
+    // This expects an email, and a page url to construct the verification link. It
+    // uses `generateMessagingProtocolToken` to populate `messagingProtocol` token,
+    // auth expiration, and provider for a user (unless an invalid email is
+    // provided). Finally it uses nodemailer to dispatch an email with a
+    // verification link to the user.
+
+    // TODO: Better handle email construction.
+    // TODO: Explore notification-microservice based dispatcing of messages.
     const userLine = 'An account has been created.';
     const clickLine = 'Please click on the following link to verify your account.';
     const ifNotLine = 'If you or your admin did not request a reset, please ignore this email.';
@@ -225,13 +233,50 @@ function verifyMessagingProtocol(req, res, next) {
         const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
         return next(err);
     }
-    return User.verifyMessagingProtocolToken(email, 3600)
+    return User.generateMessagingProtocolToken(email, 3600)
         .then((token) => {
             const link = generateLink(messagingProtocolVerifyPageUrl, token);
             const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);
             sendEmail(res, email, text, token, next);
         })
         .catch(error => next(error));
+}
+
+/**
+ * Sends back 200 OK if a messagingProtocolToken is created
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function confirmMessagingProtocol(req, res, next) {
+    // This expects a token, and password to verifiy that a user is authorized to
+    // access their account. If `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION` is set
+    // to true, this will need to occur before a user can sign in normally. If 
+    // `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION` is true, the user's
+    // password will be required. Success results in a user having the contents of
+    // `messagingProtocolProvider` written into the `authorizedMessagingProviders`
+    // array.
+
+    const token = _.get(req, 'body.token');
+    if (config.requireSecureVerificaiton) {
+        const password = _.get(req, 'body.password');
+        if (!password) {
+            const err = new APIError('No Password provided', 'NO_PASSWORD', httpStatus.BAD_REQUEST, true);
+            return next(err);
+        }
+        User.verifyMessagingProtocolTokenWithCredentials(token, password)
+        .then(() => {
+            res.sendStatus(httpStatus.OK);
+        })
+        .catch(error => next(error));
+    } else {
+        User.verifyMessagingProtocolToken(token)
+        .then(() => {
+            res.sendStatus(httpStatus.OK);
+        })
+        .catch(error => next(error));
+    }
 }
 
 export default {
@@ -241,5 +286,6 @@ export default {
     updatePassword,
     resetToken,
     resetPassword,
-    verifyMessagingProtocol
+    verifyMessagingProtocol,
+    confirmMessagingProtocol
 };

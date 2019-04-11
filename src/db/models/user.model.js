@@ -82,7 +82,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         authorizedMessagingProviders: {
             type: DataTypes.ARRAY(DataTypes.STRING),
-            defaultValue: [''],
+            defaultValue: [],
         },
         provider: {
             type: DataTypes.STRING,
@@ -167,21 +167,7 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     User.getUsernameByMessagingProtocolToken = function getUsernameByMessagingProtocolToken(token) {
-        // // This expects a `messagingProtocolToken`, and provides a user's username.
-        // console.log('starting getUsernameByMessagingProtocolToken')
-        // return this.findOne({
-        //     where: {
-        //         messagingProtocolToken: token,
-        //     },
-        // })
-        // .then((user) => {
-        //     if (!user) {
-        //         const err = new Error('No Username found for token');
-        //         return sequelize.Promise.reject(err);
-        //     }
-        //     console.log(user.username)
-        // });
-
+        // This expects a `messagingProtocolToken`, and provides a user's username.
         return this.findOne({
             where: {
                 messagingProtocolToken: token,
@@ -192,8 +178,6 @@ module.exports = (sequelize, DataTypes) => {
                 const err = new Error('Token not found');
                 return sequelize.Promise.reject(err);
             }
-            console.log('user')
-            console.log(user.username)
             return user.username
         });
     };
@@ -210,7 +194,7 @@ module.exports = (sequelize, DataTypes) => {
                 const err = new Error('Token not found');
                 return sequelize.Promise.reject(err);
             }
-            console.log('sure. anyone can confirm this.')
+            return user.updateVerifiedMessagingProtocolList(user.messagingProtocolProvider);
         });
     };
 
@@ -227,7 +211,7 @@ module.exports = (sequelize, DataTypes) => {
             }
             let verificationPassword = crypto.pbkdf2Sync(password, Buffer.from(user.salt), 100000, 128, 'sha256').toString('hex')
             if(user.password === verificationPassword) {
-                console.log('these match!')
+                return user.updateVerifiedMessagingProtocolList(user.messagingProtocolProvider)
             } else {
                 const err = new Error('Password does not match.');
                 return sequelize.Promise.reject(err);
@@ -291,6 +275,23 @@ module.exports = (sequelize, DataTypes) => {
                 this.messagingProtocolAuthorizationExpires = m.format();
                 return this.save().then(() => token);
             });
+    };
+
+    User.prototype.updateVerifiedMessagingProtocolList = function updateVerifiedMessagingProtocolList(messagingProtocolProvider) {
+        if (this.authorizedMessagingProviders.includes(messagingProtocolProvider)) {
+            this.messagingProtocolToken = null
+            this.messagingProtocolAuthorizationExpires = null
+            this.messagingProtocolProvider = null
+            return this.save();
+        } else {
+            const authorizedUsers = this.authorizedMessagingProviders
+            const authorizedUsersLength = authorizedUsers.push(messagingProtocolProvider.toString());
+            this.authorizedMessagingProviders = authorizedUsers
+            this.messagingProtocolToken = null
+            this.messagingProtocolAuthorizationExpires = null
+            this.messagingProtocolProvider = null
+            return this.save();
+        }
     };
 
     return User;

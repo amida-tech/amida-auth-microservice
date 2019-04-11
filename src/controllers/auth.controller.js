@@ -45,7 +45,13 @@ function login(req, res, next) {
             username: userResult.username,
             email: userResult.email,
             scopes: userResult.scopes,
+            authorizedMessagingProviders: userResult.authorizedMessagingProviders
         };
+
+        if((config.requireVerificaiton || config.requireSecureVerificaiton) && !userInfo.authorizedMessagingProviders.includes(userInfo.email)) {
+            const err = new APIError('Incorrect username or password', 'INCORRECT_USERNAME_OR_PASSWORD', httpStatus.NOT_FOUND, true);
+            return next(err);
+        }
 
         const jwtToken = signJWT(userInfo);
 

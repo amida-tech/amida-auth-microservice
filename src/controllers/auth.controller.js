@@ -51,13 +51,13 @@ function login(req, res, next) {
 
         if (config.refreshToken.enabled) {
             return RefreshToken.createNewToken(userResult.id)
-            .then(token => res.json({
-                token: jwtToken,
-                uuid: user.uuid,
-                username: user.username,
-                refreshToken: token.token,
-                ttl: config.jwtExpiresIn,
-            }));
+                .then(token => res.json({
+                    token: jwtToken,
+                    uuid: user.uuid,
+                    username: user.username,
+                    refreshToken: token.token,
+                    ttl: config.jwtExpiresIn,
+                }));
         }
         return res.json({
             token: jwtToken,
@@ -66,7 +66,7 @@ function login(req, res, next) {
             ttl: config.jwtExpiresIn,
         });
     })
-    .catch(error => next(error));
+        .catch(error => next(error));
 }
 
 /**
@@ -83,34 +83,34 @@ function submitRefreshToken(req, res, next) {
 
     const params = _.pick(req.body, 'username', 'refreshToken');
     return User
-    .findOne({ where: { username: params.username } })
-    .then(userResult =>
-        RefreshToken
-        .findOne({ where: { token: params.refreshToken, userId: userResult.id } })
-        .then((tokenResult) => {
-            if (_.isNull(tokenResult)) {
-                const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
-                return next(err);
-            }
-            const userInfo = {
-                id: userResult.id,
-                uuid: userResult.uuid,
-                username: userResult.username,
-                email: userResult.email,
-                scopes: userResult.scopes,
-            };
+        .findOne({ where: { username: params.username } })
+        .then(userResult =>
+            RefreshToken
+                .findOne({ where: { token: params.refreshToken, userId: userResult.id } })
+                .then((tokenResult) => {
+                    if (_.isNull(tokenResult)) {
+                        const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
+                        return next(err);
+                    }
+                    const userInfo = {
+                        id: userResult.id,
+                        uuid: userResult.uuid,
+                        username: userResult.username,
+                        email: userResult.email,
+                        scopes: userResult.scopes,
+                    };
 
-            const jwtToken = signJWT(userInfo);
+                    const jwtToken = signJWT(userInfo);
 
-            return res.json({
-                token: jwtToken,
-                uuid: userResult.uuid,
-                username: userResult.username,
-                ttl: config.jwtExpiresIn,
-            });
-        }).catch(error => next(error))
-    )
-    .catch(error => next(error));
+                    return res.json({
+                        token: jwtToken,
+                        uuid: userResult.uuid,
+                        username: userResult.username,
+                        ttl: config.jwtExpiresIn,
+                    });
+                }).catch(error => next(error))
+        )
+        .catch(error => next(error));
 }
 
 /**
@@ -127,17 +127,17 @@ function rejectRefreshToken(req, res, next) {
 
     const params = _.pick(req.body, 'refreshToken');
     return RefreshToken.findOne({ where: { token: params.refreshToken } })
-    .then((tokenResult) => {
-        if (_.isNull(tokenResult)) {
-            const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
-            return next(err);
-        }
-        // delete the refresh token
-        tokenResult.destroy();
+        .then((tokenResult) => {
+            if (_.isNull(tokenResult)) {
+                const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
+                return next(err);
+            }
+            // delete the refresh token
+            tokenResult.destroy();
 
-        return res.sendStatus(httpStatus.NO_CONTENT);
-    })
-    .catch(error => next(error));
+            return res.sendStatus(httpStatus.NO_CONTENT);
+        })
+        .catch(error => next(error));
 }
 
 /**
@@ -249,14 +249,47 @@ function verifyMessagingProtocol(req, res, next) {
  * @param next
  * @returns {*}
  */
+function provideVerifyingUser(req, res, next) {
+    // This expects a `messagingProtocolToken` token, and returns the username of
+    // the identifying user. Only required if auth-micrservice is configured to 
+    // only accept conformMessaingProtocol tokens if they are provided with a
+    // user's login credentials.
+
+    const token = _.get(req, 'body.token');
+    if (!token) {
+        const err = new APIError('Invalid Token', 'INVALID_TOKEN', httpStatus.BAD_REQUEST, true);
+        return next(err);
+    }
+
+    return User.getUsernameByMessagingProtocolToken(token)
+        .then((usernameResult) => {
+            if (_.isNull(usernameResult)) {
+                const err = new APIError('User not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
+                return next(err);
+            }
+            return res.json({
+                username: usernameResult
+            })
+        })
+        .catch(error => next(error));
+}
+
+/**
+ * Sends back 200 OK if a messagingProtocolToken is created
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
 function confirmMessagingProtocol(req, res, next) {
-    // This expects a token, and password to verifiy that a user is authorized to
-    // access their account. If `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION` is set
-    // to true, this will need to occur before a user can sign in normally. If 
-    // `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION` is true, the user's
-    // password will be required. Success results in a user having the contents of
-    // `messagingProtocolProvider` written into the `authorizedMessagingProviders`
-    // array.
+    // This expects a token, and optional password to verifiy that a user is 
+    // authorized to access their account. If 
+    // `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION` is set to true, verification
+    // will need to occur before a user can sign authenticate normally. If 
+    // `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION` is true, the user's 
+    // password will be handeled as a required param. Success results in a user 
+    // having the contents of `messagingProtocolProvider` written into the 
+    // `authorizedMessagingProviders` array.
 
     const token = _.get(req, 'body.token');
     if (config.requireSecureVerificaiton) {
@@ -265,18 +298,17 @@ function confirmMessagingProtocol(req, res, next) {
             const err = new APIError('No Password provided', 'NO_PASSWORD', httpStatus.BAD_REQUEST, true);
             return next(err);
         }
-        User.verifyMessagingProtocolTokenWithCredentials(token, password)
-        .then(() => {
-            res.sendStatus(httpStatus.OK);
-        })
-        .catch(error => next(error));
-    } else {
-        User.verifyMessagingProtocolToken(token)
-        .then(() => {
-            res.sendStatus(httpStatus.OK);
-        })
-        .catch(error => next(error));
+        return User.verifyMessagingProtocolTokenWithCredentials(token, password)
+            .then(() => {
+                res.sendStatus(httpStatus.OK);
+            })
+            .catch(error => next(error));
     }
+    return User.verifyMessagingProtocolToken(token)
+        .then(() => {
+            res.sendStatus(httpStatus.OK);
+        })
+        .catch(error => next(error));
 }
 
 export default {
@@ -287,5 +319,6 @@ export default {
     resetToken,
     resetPassword,
     verifyMessagingProtocol,
-    confirmMessagingProtocol
+    provideVerifyingUser,
+    confirmMessagingProtocol,
 };

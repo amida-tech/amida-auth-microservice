@@ -37,6 +37,10 @@ router.route('/verify-messaging-protocol')
     .post(validate(authValidation.verifyMessagingProtocol),
           authCtrl.verifyMessagingProtocol);
 
+router.route('/provide-verifying-user')
+    .post(validate(authValidation.provideVerifyingUser),
+           authCtrl.provideVerifyingUser);
+
 router.route('/confirm-messaging-protocol')
     .post(validate(authValidation.confirmMessagingProtocol),
           authCtrl.confirmMessagingProtocol);

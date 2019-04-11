@@ -143,6 +143,13 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     User.generateMessagingProtocolToken = function generateMessagingProtocolToken(email, expTime) {
+        // This expects and email, and an expiration time window for storing a
+        // messaging protocol `messagingProtocol` token, auth expiration, and 
+        // provider for a user. Users will be asked to validate this token against
+        // the submission of `verifyMessagingProtcolToken` (With or without 
+        // credentials)
+
+        // QUESTION: Do we want to add some form of rate limiting in this flow?
         return this.find({
             where: {
                 email,
@@ -158,6 +165,39 @@ module.exports = (sequelize, DataTypes) => {
             return user.updateMessagingProtocolToken(email, expTime);
         });
     };
+
+    User.getUsernameByMessagingProtocolToken = function getUsernameByMessagingProtocolToken(token) {
+        // // This expects a `messagingProtocolToken`, and provides a user's username.
+        // console.log('starting getUsernameByMessagingProtocolToken')
+        // return this.findOne({
+        //     where: {
+        //         messagingProtocolToken: token,
+        //     },
+        // })
+        // .then((user) => {
+        //     if (!user) {
+        //         const err = new Error('No Username found for token');
+        //         return sequelize.Promise.reject(err);
+        //     }
+        //     console.log(user.username)
+        // });
+
+        return this.findOne({
+            where: {
+                messagingProtocolToken: token,
+            },
+        })
+        .then((user) => {
+            if (!user) {
+                const err = new Error('Token not found');
+                return sequelize.Promise.reject(err);
+            }
+            console.log('user')
+            console.log(user.username)
+            return user.username
+        });
+    };
+    
 
     User.verifyMessagingProtocolToken = function verifyMessagingProtocolToken(token) {
         return this.find({

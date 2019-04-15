@@ -189,7 +189,7 @@ function resetToken(req, res, next) {
     }
     // once the user promise resolves, send the token or an error
     Promise.join(user, (userResult) => {
-        if(config.requireVerificaiton || config.requireSecureVerificaiton && !userResult.isVerified()) {
+        if((config.requireVerificaiton || config.requireSecureVerificaiton) && !userResult.isVerified()) {
             const err = new APIError('User Not Verified', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
             return next(err);
         }

@@ -207,6 +207,7 @@ module.exports = (sequelize, DataTypes) => {
         .then((user) => {
             if (!user) {
                 const err = new Error('Token not found');
+                console.log(err)
                 return sequelize.Promise.reject(err);
             }
             let verificationPassword = crypto.pbkdf2Sync(password, Buffer.from(user.salt), 100000, 128, 'sha256').toString('hex')
@@ -214,6 +215,7 @@ module.exports = (sequelize, DataTypes) => {
                 return user.updateVerifiedMessagingProtocolList(user.messagingProtocolProvider)
             } else {
                 const err = new Error('Password does not match.');
+                console.log(err)
                 return sequelize.Promise.reject(err);
             }
         });
@@ -222,6 +224,11 @@ module.exports = (sequelize, DataTypes) => {
     // Instance methods
     User.prototype.isAdmin = function isAdmin() {
         return this.scopes.includes('admin');
+    };
+
+    User.prototype.isVerified = function isVerified() {
+        console.log('checking if user email is verified')
+        return this.authorizedMessagingProviders.includes(this.email);
     };
 
     User.prototype.getBasicUserInfo = function getBasicUserInfo() {

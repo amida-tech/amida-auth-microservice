@@ -25,7 +25,7 @@ module.exports = {
     },
     down(queryInterface) {
         /*
-      TODO: JRB THIS IS NOT RIGHT AND I KNOW IT
+      TODO: JRB THIS IS NOT RIGHT AND I KNOW IT. Or is it @Ryan?
       */
         return queryInterface.removeColumn('Users', 'messagingProtocolToken', {
             type: Sequelize.STRING,

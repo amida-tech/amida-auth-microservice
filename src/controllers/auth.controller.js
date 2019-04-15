@@ -48,8 +48,9 @@ function login(req, res, next) {
             authorizedMessagingProviders: userResult.authorizedMessagingProviders
         };
 
+        // check to see if the user needs to be verified to sign in, and if they are verified
         if((config.requireVerificaiton || config.requireSecureVerificaiton) && !userInfo.authorizedMessagingProviders.includes(userInfo.email)) {
-            const err = new APIError('Incorrect username or password', 'INCORRECT_USERNAME_OR_PASSWORD', httpStatus.NOT_FOUND, true);
+            const err = new APIError('User is not Verified', 'USER_IS_NOT_VERIFIED', httpStatus.NOT_FOUND, true);
             return next(err);
         }
 
@@ -177,23 +178,37 @@ function updatePassword(req, res, next) {
  * @returns {*}
  */
 function resetToken(req, res, next) {
-    const userLine = 'You have requested the reset of the password for your account';
-    const clickLine = 'Please click on the following link, or paste into your browser:';
-    const ifNotLine = 'If you or your admin did not request a reset, please ignore this email.';
-
     const email = _.get(req, 'body.email');
+    const user = User.findOne({ where: { username: email } });
+    
     const resetPageUrl = _.get(req, 'body.resetPageUrl');
+
     if (!email) {
         const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
         return next(err);
     }
-    return User.resetPasswordToken(email, 3600)
-        .then((token) => {
-            const link = generateLink(resetPageUrl, token);
-            const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);
-            sendEmail(res, email, text, token, next);
-        })
+    // once the user promise resolves, send the token or an error
+    Promise.join(user, (userResult) => {
+        if(config.requireVerificaiton || config.requireSecureVerificaiton && !userResult.isVerified()) {
+            const err = new APIError('User Not Verified', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
+            return next(err);
+        }
+        return User.resetPasswordToken(email, 3600)
+            .then((token) => {
+                const resetLink = generateLink(resetPageUrl, token);
+                const resetDomain = resetPageUrl.replace(/(^\w+:|^)\/\//, '').split('/')[0];
+                const subject = `Reset your password for ${resetDomain}`
+                const body = [
+                    `${email},`,
+                    `A request to reset your password on ${resetDomain} was recieved.`,
+                    `You can reset your account password using the following link: ${resetLink}`,
+                    `If you believe this message was sent in error, please disregard this message.`
+                ]
+                const text = util.format('%s\n\n%s\n\n%s\n\n%s', ...body);
+                sendEmail(res, email, subject, text, token, next);
+            })
         .catch(error => next(error));
+    })
 }
 
 /**
@@ -220,7 +235,7 @@ function resetPassword(req, res, next) {
  * @param next
  * @returns {*}
  */
-function verifyMessagingProtocol(req, res, next) {
+function dispatchVerificaitonRequest(req, res, next) {
     // This expects an email, and a page url to construct the verification link. It
     // uses `generateMessagingProtocolToken` to populate `messagingProtocol` token,
     // auth expiration, and provider for a user (unless an invalid email is
@@ -229,21 +244,30 @@ function verifyMessagingProtocol(req, res, next) {
 
     // TODO: Better handle email construction.
     // TODO: Explore notification-microservice based dispatcing of messages.
-    const userLine = 'An account has been created.';
-    const clickLine = 'Please click on the following link to verify your account.';
-    const ifNotLine = 'If you or your admin did not request a reset, please ignore this email.';
-
+    //       * JRB: This probably helps us verify via more protocols, such as SMS or 
+    //              push notification.
     const email = _.get(req, 'body.email');
     const messagingProtocolVerifyPageUrl = _.get(req, 'body.messagingProtocolVerifyPageUrl');
+
     if (!email) {
         const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
         return next(err);
     }
     return User.generateMessagingProtocolToken(email, 3600)
         .then((token) => {
-            const link = generateLink(messagingProtocolVerifyPageUrl, token);
-            const text = util.format('%s\n%s\n%s\n\n%s\n', userLine, clickLine, link, ifNotLine);
-            sendEmail(res, email, text, token, next);
+            const verificationLink = generateLink(messagingProtocolVerifyPageUrl, token);
+            const verificationDomain = messagingProtocolVerifyPageUrl.replace(/(^\w+:|^)\/\//, '').split('/')[0];
+            const subject = `Verify your email address for ${verificationDomain}`
+            const body = [
+                `${email},`,
+                `An account has been created for you on ${verificationDomain}.`,
+                `You ${config.requireVerificaiton || config.requireSecureVerificaiton ? 'are required' : 'are recommened' } to verify your email address${config.requireSecureVerificaiton && ' (using your password) in order to continue'}.`,
+                `Please verify your email address by going to the following link: ${verificationLink}`,
+                `If you believe this message was sent in error, please disregard this message.`
+            ]
+            const text = util.format('%s\n\n%s\n\n%s\n\n%s\n\n%s', ...body);
+            // Format doesn't seem like the best solution here...
+            sendEmail(res, email, subject, text, next);
         })
         .catch(error => next(error));
 }
@@ -287,7 +311,7 @@ function provideVerifyingUser(req, res, next) {
  * @param next
  * @returns {*}
  */
-function confirmMessagingProtocol(req, res, next) {
+function verifyMessagingProtocol(req, res, next) {
     // This expects a token, and optional password to verifiy that a user is 
     // authorized to access their account. If 
     // `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION` is set to true, verification
@@ -324,7 +348,7 @@ export default {
     updatePassword,
     resetToken,
     resetPassword,
-    verifyMessagingProtocol,
+    dispatchVerificaitonRequest,
     provideVerifyingUser,
-    confirmMessagingProtocol,
+    verifyMessagingProtocol,
 };

@@ -4,22 +4,22 @@ module.exports = {
       Add altering commands here.
       Return a promise to correctly handle asynchronicity.
       */
-        return queryInterface.addColumn('Users', 'messagingProtocolToken', {
+        return queryInterface.addColumn('Users', 'contactMethodVerificationToken', {
             type: Sequelize.STRING,
             unique: true,
         }).then( function () {
-            return queryInterface.addColumn('Users', 'messagingProtocolAuthorizationExpires', {
+            return queryInterface.addColumn('Users', 'contactMethodVerificationTokenExpires', {
                 type: Sequelize.DATE,
             })
         }).then( function () {
-            return queryInterface.addColumn('Users', 'messagingProtocolProvider', {
+            return queryInterface.addColumn('Users', 'contactMethodToVerify', {
                 type: Sequelize.STRING, // eslint-disable-line new-cap
                 defaultValue: '',
             })
         }).then( function () {
-            return queryInterface.addColumn('Users', 'authorizedMessagingProviders', {
+            return queryInterface.addColumn('Users', 'verifiedContactMethods', {
                 type: Sequelize.ARRAY(Sequelize.STRING), // eslint-disable-line new-cap
-                defaultValue: [''],
+                defaultValue: [],
             })
         })
     },
@@ -27,20 +27,20 @@ module.exports = {
         /*
       TODO: JRB THIS IS NOT RIGHT AND I KNOW IT. Or is it @Ryan?
       */
-        return queryInterface.removeColumn('Users', 'messagingProtocolToken', {
+        return queryInterface.removeColumn('Users', 'contactMethodVerificationToken', {
             type: Sequelize.STRING,
             unique: true,
         }).then( function () {
-            return queryInterface.removeColumn('Users', 'messagingProtocolAuthorizationExpires', {
+            return queryInterface.removeColumn('Users', 'contactMethodVerificationTokenExpires', {
                 type: Sequelize.DATE,
             })
         }).then( function () {
-            return queryInterface.removeColumn('Users', 'messagingProtocolProvider', {
+            return queryInterface.removeColumn('Users', 'contactMethodToVerify', {
                 type: Sequelize.STRING, // eslint-disable-line new-cap
                 defaultValue: '',
             })
         }).then( function () {
-            return queryInterface.removeColumn('Users', 'authorizedMessagingProviders', {
+            return queryInterface.removeColumn('Users', 'verifiedContactMethods', {
                 type: Sequelize.ARRAY(Sequelize.STRING), // eslint-disable-line new-cap
                 defaultValue: [''],
             })

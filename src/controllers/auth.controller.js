@@ -45,11 +45,11 @@ function login(req, res, next) {
             username: userResult.username,
             email: userResult.email,
             scopes: userResult.scopes,
-            authorizedMessagingProviders: userResult.authorizedMessagingProviders
+            verifiedContactMethods: userResult.verifiedContactMethods
         };
 
         // check to see if the user needs to be verified to sign in, and if they are verified
-        if((config.requireVerificaiton || config.requireSecureVerificaiton) && !userInfo.authorizedMessagingProviders.includes(userInfo.email)) {
+        if((config.requireVerificaiton || config.requireSecureVerificaiton) && !userInfo.verifiedContactMethods.includes(userInfo.email)) {
             const err = new APIError('User is not Verified', 'USER_IS_NOT_VERIFIED', httpStatus.NOT_FOUND, true);
             return next(err);
         }
@@ -229,7 +229,7 @@ function resetPassword(req, res, next) {
 }
 
 /**
- * Sends back 200 OK if a messagingProtocolToken is created
+ * Sends back 200 OK if a contactMethodVerificationToken is created
  * @param req
  * @param res
  * @param next
@@ -237,7 +237,7 @@ function resetPassword(req, res, next) {
  */
 function dispatchVerificaitonRequest(req, res, next) {
     // This expects an email, and a page url to construct the verification link. It
-    // uses `generateMessagingProtocolToken` to populate `messagingProtocol` token,
+    // uses `generatecontactMethodVerificationToken` to populate `messagingProtocol` token,
     // auth expiration, and provider for a user (unless an invalid email is
     // provided). Finally it uses nodemailer to dispatch an email with a
     // verification link to the user.
@@ -253,7 +253,7 @@ function dispatchVerificaitonRequest(req, res, next) {
         const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
         return next(err);
     }
-    return User.generateMessagingProtocolToken(email, 3600)
+    return User.generatecontactMethodVerificationToken(email, 3600)
         .then((token) => {
             const verificationLink = generateLink(messagingProtocolVerifyPageUrl, token);
             const verificationDomain = messagingProtocolVerifyPageUrl.replace(/(^\w+:|^)\/\//, '').split('/')[0];
@@ -273,14 +273,14 @@ function dispatchVerificaitonRequest(req, res, next) {
 }
 
 /**
- * Sends back 200 OK if a messagingProtocolToken is created
+ * Sends back 200 OK if a contactMethodVerificationToken is created
  * @param req
  * @param res
  * @param next
  * @returns {*}
  */
 function provideVerifyingUser(req, res, next) {
-    // This expects a `messagingProtocolToken` token, and returns the username of
+    // This expects a `contactMethodVerificationToken` token, and returns the username of
     // the identifying user. Only required if auth-micrservice is configured to 
     // only accept conformMessaingProtocol tokens if they are provided with a
     // user's login credentials.
@@ -291,7 +291,7 @@ function provideVerifyingUser(req, res, next) {
         return next(err);
     }
 
-    return User.getUsernameByMessagingProtocolToken(token)
+    return User.getUsernameBycontactMethodVerificationToken(token)
         .then((usernameResult) => {
             if (_.isNull(usernameResult)) {
                 const err = new APIError('User not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
@@ -305,7 +305,7 @@ function provideVerifyingUser(req, res, next) {
 }
 
 /**
- * Sends back 200 OK if a messagingProtocolToken is created
+ * Sends back 200 OK if a contactMethodVerificationToken is created
  * @param req
  * @param res
  * @param next
@@ -318,8 +318,8 @@ function verifyMessagingProtocol(req, res, next) {
     // will need to occur before a user can sign authenticate normally. If 
     // `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION` is true, the user's 
     // password will be handeled as a required param. Success results in a user 
-    // having the contents of `messagingProtocolProvider` written into the 
-    // `authorizedMessagingProviders` array.
+    // having the contents of `contactMethodToVerify` written into the 
+    // `verifiedContactMethods` array.
 
     const token = _.get(req, 'body.token');
     if (config.requireSecureVerificaiton) {
@@ -328,13 +328,13 @@ function verifyMessagingProtocol(req, res, next) {
             const err = new APIError('No Password provided', 'NO_PASSWORD', httpStatus.BAD_REQUEST, true);
             return next(err);
         }
-        return User.verifyMessagingProtocolTokenWithCredentials(token, password)
+        return User.verifycontactMethodVerificationTokenWithCredentials(token, password)
             .then(() => {
                 res.sendStatus(httpStatus.OK);
             })
             .catch(error => next(error));
     }
-    return User.verifyMessagingProtocolToken(token)
+    return User.verifycontactMethodVerificationToken(token)
         .then(() => {
             res.sendStatus(httpStatus.OK);
         })

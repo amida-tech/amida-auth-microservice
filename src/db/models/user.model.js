@@ -71,16 +71,16 @@ module.exports = (sequelize, DataTypes) => {
         resetExpires: {
             type: DataTypes.DATE,
         },
-        messagingProtocolToken: {
+        contactMethodVerificationToken: {
             type: DataTypes.STRING,
         },
-        messagingProtocolAuthorizationExpires: {
+        contactMethodVerificationTokenExpires: {
             type: DataTypes.DATE,
         },
-        messagingProtocolProvider: {
+        contactMethodToVerify: {
             type: DataTypes.STRING,
         },
-        authorizedMessagingProviders: {
+        verifiedContactMethods: {
             type: DataTypes.ARRAY(DataTypes.STRING),
             defaultValue: [],
         },
@@ -142,7 +142,7 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
-    User.generateMessagingProtocolToken = function generateMessagingProtocolToken(email, expTime) {
+    User.generatecontactMethodVerificationToken = function generatecontactMethodVerificationToken(email, expTime) {
         // This expects and email, and an expiration time window for storing a
         // messaging protocol `messagingProtocol` token, auth expiration, and 
         // provider for a user. Users will be asked to validate this token against
@@ -162,15 +162,15 @@ module.exports = (sequelize, DataTypes) => {
             }
             // JRB removed protocol, because we can confirm this. Put back it leads to errors.
             // JRB: This is new
-            return user.updateMessagingProtocolToken(email, expTime);
+            return user.updatecontactMethodVerificationToken(email, expTime);
         });
     };
 
-    User.getUsernameByMessagingProtocolToken = function getUsernameByMessagingProtocolToken(token) {
-        // This expects a `messagingProtocolToken`, and provides a user's username.
+    User.getUsernameBycontactMethodVerificationToken = function getUsernameBycontactMethodVerificationToken(token) {
+        // This expects a `contactMethodVerificationToken`, and provides a user's username.
         return this.findOne({
             where: {
-                messagingProtocolToken: token,
+                contactMethodVerificationToken: token,
             },
         })
         .then((user) => {
@@ -183,10 +183,10 @@ module.exports = (sequelize, DataTypes) => {
     };
     
 
-    User.verifyMessagingProtocolToken = function verifyMessagingProtocolToken(token) {
+    User.verifycontactMethodVerificationToken = function verifycontactMethodVerificationToken(token) {
         return this.find({
             where: {
-                messagingProtocolToken: token,
+                contactMethodVerificationToken: token,
             },
         })
         .then((user) => {
@@ -194,14 +194,14 @@ module.exports = (sequelize, DataTypes) => {
                 const err = new Error('Token not found');
                 return sequelize.Promise.reject(err);
             }
-            return user.updateVerifiedMessagingProtocolList(user.messagingProtocolProvider);
+            return user.updateVerifiedMessagingProtocolList(user.contactMethodToVerify);
         });
     };
 
-    User.verifyMessagingProtocolTokenWithCredentials = function verifyMessagingProtocolTokenWithCredentials(token, password) {
+    User.verifycontactMethodVerificationTokenWithCredentials = function verifycontactMethodVerificationTokenWithCredentials(token, password) {
         return this.find({
             where: {
-                messagingProtocolToken: token,
+                contactMethodVerificationToken: token,
             },
         })
         .then((user) => {
@@ -212,7 +212,7 @@ module.exports = (sequelize, DataTypes) => {
             }
             let verificationPassword = crypto.pbkdf2Sync(password, Buffer.from(user.salt), 100000, 128, 'sha256').toString('hex')
             if(user.password === verificationPassword) {
-                return user.updateVerifiedMessagingProtocolList(user.messagingProtocolProvider)
+                return user.updateVerifiedMessagingProtocolList(user.contactMethodToVerify)
             } else {
                 const err = new Error('Password does not match.');
                 console.log(err)
@@ -228,7 +228,7 @@ module.exports = (sequelize, DataTypes) => {
 
     User.prototype.isVerified = function isVerified() {
         console.log('checking if user email is verified')
-        return this.authorizedMessagingProviders.includes(this.email);
+        return this.verifiedContactMethods.includes(this.email);
     };
 
     User.prototype.getBasicUserInfo = function getBasicUserInfo() {
@@ -269,34 +269,34 @@ module.exports = (sequelize, DataTypes) => {
             });
     };
 
-    User.prototype.updateMessagingProtocolToken = function updateMessagingProtocolToken(messagingProtocol, expTime) {
+    User.prototype.updatecontactMethodVerificationToken = function updatecontactMethodVerificationToken(messagingProtocol, expTime) {
         return randomBytes(20)
             .then((buf) => {
                 const token = buf.toString('hex');
                 return token;
             }).then((token) => {
-                this.messagingProtocolToken = token;
-                this.messagingProtocolProvider = messagingProtocol;
+                this.contactMethodVerificationToken = token;
+                this.contactMethodToVerify = messagingProtocol;
                 const m = moment.utc();
                 m.add(expTime, 'seconds');
-                this.messagingProtocolAuthorizationExpires = m.format();
+                this.contactMethodVerificationTokenExpires = m.format();
                 return this.save().then(() => token);
             });
     };
 
-    User.prototype.updateVerifiedMessagingProtocolList = function updateVerifiedMessagingProtocolList(messagingProtocolProvider) {
-        if (this.authorizedMessagingProviders.includes(messagingProtocolProvider)) {
-            this.messagingProtocolToken = null
-            this.messagingProtocolAuthorizationExpires = null
-            this.messagingProtocolProvider = null
+    User.prototype.updateVerifiedMessagingProtocolList = function updateVerifiedMessagingProtocolList(contactMethodToVerify) {
+        if (this.verifiedContactMethods.includes(contactMethodToVerify)) {
+            this.contactMethodVerificationToken = null
+            this.contactMethodVerificationTokenExpires = null
+            this.contactMethodToVerify = null
             return this.save();
         } else {
-            const authorizedUsers = this.authorizedMessagingProviders
-            const authorizedUsersLength = authorizedUsers.push(messagingProtocolProvider.toString());
-            this.authorizedMessagingProviders = authorizedUsers
-            this.messagingProtocolToken = null
-            this.messagingProtocolAuthorizationExpires = null
-            this.messagingProtocolProvider = null
+            const authorizedUsers = this.verifiedContactMethods
+            const authorizedUsersLength = authorizedUsers.push(contactMethodToVerify.toString());
+            this.verifiedContactMethods = authorizedUsers
+            this.contactMethodVerificationToken = null
+            this.contactMethodVerificationTokenExpires = null
+            this.contactMethodToVerify = null
             return this.save();
         }
     };

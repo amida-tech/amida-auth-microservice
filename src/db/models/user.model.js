@@ -142,7 +142,7 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
-    User.generatecontactMethodVerificationToken = function generatecontactMethodVerificationToken(email, expTime) {
+    User.verifyAccountToken = function verifyAccountToken(email, expTime) {
         // This expects and email, and an expiration time window for storing a
         // messaging protocol `messagingProtocol` token, auth expiration, and
         // provider for a user. Users will be asked to validate this token against
@@ -162,11 +162,11 @@ module.exports = (sequelize, DataTypes) => {
             }
             // JRB removed protocol, because we can confirm this. Put back it leads to errors.
             // JRB: This is new
-            return user.updatecontactMethodVerificationToken(email, expTime);
+            return user.updateVerifyAccountToken(email, expTime);
         });
     };
 
-    User.getUsernameBycontactMethodVerificationToken = function getUsernameBycontactMethodVerificationToken(token) {
+    User.getVerifyingUser = function getVerifyingUser(token) {
         // This expects a `contactMethodVerificationToken`, and provides a user's username.
         return this.findOne({
             where: {
@@ -182,7 +182,7 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
-    User.verifycontactMethodVerificationToken = function verifycontactMethodVerificationToken(token) {
+    User.verifyUserAccount = function verifyUserAccount(token) {
         return this.find({
             where: {
                 contactMethodVerificationToken: token,
@@ -193,11 +193,11 @@ module.exports = (sequelize, DataTypes) => {
                 const err = new Error('Token not found');
                 return sequelize.Promise.reject(err);
             }
-            return user.updateVerifiedMessagingProtocolList(user.contactMethodToVerify);
+            return user.addVerifiedContact(user.contactMethodToVerify);
         });
     };
 
-    User.verifycontactMethodVerificationTokenWithCredentials = function verifycontactMethodVerificationTokenWithCredentials(token, password) {
+    User.secureVerifyUserAccount = function secureVerifyUserAccount(token, password) {
         return this.find({
             where: {
                 contactMethodVerificationToken: token,
@@ -210,7 +210,7 @@ module.exports = (sequelize, DataTypes) => {
             }
             const verificationPassword = crypto.pbkdf2Sync(password, Buffer.from(user.salt), 100000, 128, 'sha256').toString('hex');
             if (user.password === verificationPassword) {
-                return user.updateVerifiedMessagingProtocolList(user.contactMethodToVerify);
+                return user.addVerifiedContact(user.contactMethodToVerify);
             }
             const err = new Error('Password does not match.');
             return sequelize.Promise.reject(err);
@@ -264,14 +264,14 @@ module.exports = (sequelize, DataTypes) => {
             });
     };
 
-    User.prototype.updatecontactMethodVerificationToken = function updatecontactMethodVerificationToken(messagingProtocol, expTime) {
+    User.prototype.updateVerifyAccountToken = function updateVerifyAccountToken(email, expTime) {
         return randomBytes(20)
             .then((buf) => {
                 const token = buf.toString('hex');
                 return token;
             }).then((token) => {
                 this.contactMethodVerificationToken = token;
-                this.contactMethodToVerify = messagingProtocol;
+                this.contactMethodToVerify = email;
                 const m = moment.utc();
                 m.add(expTime, 'seconds');
                 this.contactMethodVerificationTokenExpires = m.format();
@@ -279,20 +279,23 @@ module.exports = (sequelize, DataTypes) => {
             });
     };
 
-    User.prototype.updateVerifiedMessagingProtocolList = function updateVerifiedMessagingProtocolList(contactMethodToVerify) {
+    User.prototype.addVerifiedContact = function addVerifiedContact(contactMethodToVerify) {
         if (this.verifiedContactMethods.includes(contactMethodToVerify)) {
-            // Handle instances where the user contact already exsits in the list of verified contact methods
+            // Handle instances where the user contact already exsits in the list of verified
+            // contact methods
             this.contactMethodVerificationToken = null;
             this.contactMethodVerificationTokenExpires = null;
             this.contactMethodToVerify = null;
             return this.save();
         }
         const authorizedUsers = this.verifiedContactMethods;
-        const aULength = authorizedUsers.push(contactMethodToVerify.toString()); // eslint-disable-line no-unused-vars
-        this.verifiedContactMethods = authorizedUsers;
-        this.contactMethodVerificationToken = null;
-        this.contactMethodVerificationTokenExpires = null;
-        this.contactMethodToVerify = null;
+        const authorizedUsersLength = authorizedUsers.push(contactMethodToVerify.toString());
+        if (authorizedUsersLength > 0) {
+            this.verifiedContactMethods = authorizedUsers;
+            this.contactMethodVerificationToken = null;
+            this.contactMethodVerificationTokenExpires = null;
+            this.contactMethodToVerify = null;
+        }
         return this.save();
     };
 

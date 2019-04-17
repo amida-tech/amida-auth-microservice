@@ -234,7 +234,7 @@ function resetPassword(req, res, next) {
  */
 function dispatchVerificaitonRequest(req, res, next) {
     // This expects an email, and a page url to construct the verification link. It
-    // uses `generatecontactMethodVerificationToken` to populate `messagingProtocol` token,
+    // uses `verifyAccountToken` to populate `messagingProtocol` token,
     // auth expiration, and provider for a user (unless an invalid email is
     // provided). Finally it uses nodemailer to dispatch an email with a
     // verification link to the user.
@@ -250,7 +250,7 @@ function dispatchVerificaitonRequest(req, res, next) {
         const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
         return next(err);
     }
-    return User.generatecontactMethodVerificationToken(email, 3600)
+    return User.verifyAccountToken(email, 3600)
         .then((token) => {
             const verificationLink = generateLink(messagingProtocolVerifyPageUrl, token);
             const verificationDomain = messagingProtocolVerifyPageUrl.replace(/(^\w+:|^)\/\//, '').split('/')[0];
@@ -288,7 +288,7 @@ function provideVerifyingUser(req, res, next) {
         return next(err);
     }
 
-    return User.getUsernameBycontactMethodVerificationToken(token)
+    return User.getVerifyingUser(token)
         .then((usernameResult) => {
             if (_.isNull(usernameResult)) {
                 const err = new APIError('User not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
@@ -325,13 +325,13 @@ function verifyMessagingProtocol(req, res, next) {
             const err = new APIError('No Password provided', 'NO_PASSWORD', httpStatus.BAD_REQUEST, true);
             return next(err);
         }
-        return User.verifycontactMethodVerificationTokenWithCredentials(token, password)
+        return User.secureVerifyUserAccount(token, password)
             .then(() => {
                 res.sendStatus(httpStatus.OK);
             })
             .catch(error => next(error));
     }
-    return User.verifycontactMethodVerificationToken(token)
+    return User.verifyUserAccount(token)
         .then(() => {
             res.sendStatus(httpStatus.OK);
         })

@@ -200,7 +200,7 @@ function resetToken(req, res, next) {
                     'If you believe this message was sent in error, please disregard this message.',
                 ];
                 const text = util.format('%s\n\n%s\n\n%s\n\n%s', ...body);
-                sendEmail(res, email, subject, text, token, next);
+                sendEmail(res, email, subject, text, {token: token}, next);
             })
         .catch(error => next(error));
     });
@@ -264,7 +264,7 @@ function dispatchVerificaitonRequest(req, res, next) {
             ];
             const text = util.format('%s\n\n%s\n\n%s\n\n%s\n\n%s', ...body);
             // Format doesn't seem like the best solution here...
-            sendEmail(res, email, subject, text, next);
+            sendEmail(res, email, subject, text, {token: token}, next);
         })
         .catch(error => next(error));
 }

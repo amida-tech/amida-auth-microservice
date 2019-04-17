@@ -356,6 +356,12 @@ The port this server will run on.
 - Otherwise must be JSON array of strings (Use double quotes!) I.e. `["registrar"]`. Each string is a scope that will be allowed to create users.
   - An empty array `[]` is acceptable and will allow only the `admin` scope to create users.
 
+##### `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION [`false`]
+- When `true`, a user cannot sign-in without email verification
+
+##### `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION` [false`]
+- When `true`, a user password is required for email verification
+
 ##### `AUTH_SERVICE_JWT_MODE` (Required) [`hmac`]
 - When set to `hmac`, json web tokens will use the shared-secret signing strategy, in which case `JWT_SECRET` needs to be specified on and match between this microservice and all other services that integrate with this microservice.
 - When set to `rsa`, json web tokens will use the public/private key pair signing strategy, in which case `JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY` need to be defined.

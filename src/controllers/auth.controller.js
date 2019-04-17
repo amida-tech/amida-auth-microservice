@@ -312,11 +312,11 @@ function provideVerifyingUser(req, res, next) {
  */
 function verifyMessagingProtocol(req, res, next) {
     // This expects a token, and optional password to verifiy that a user is
-    // authorized to access their account. If
-    // `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION` is set to true, verification
-    // will need to occur before a user can sign authenticate normally. If
-    // `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION` is true, the user's
-    // password will be handeled as a required param. Success results in a user
+    // authorized to access their account.
+    // If `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION` is set to true, verification
+    // will need to occur before a user can sign authenticate normally.
+    // If `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION` is true, the user's
+    // password will be handled as a required param. Success results in a user
     // having the contents of `contactMethodToVerify` written into the
     // `verifiedContactMethods` array.
 

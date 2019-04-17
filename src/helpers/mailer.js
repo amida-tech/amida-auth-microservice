@@ -13,7 +13,7 @@ module.exports = {
         };
         if (config.env === 'test') {
             res.status(200).json({
-                token,
+                text,
             });
         } else {
             const transporter = nodemailer.createTransport({

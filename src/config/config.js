@@ -25,7 +25,6 @@ const envVarsSchema = Joi.object({
         .when('AUTH_SERVICE_PUBLIC_REGISTRATION', {
             is: false,
             then: Joi.required(),
-            otherwise: Joi.forbidden(),
         }),
     AUTH_SERVICE_JWT_MODE: Joi.string().allow(['rsa', 'hmac']).default('hmac')
         .description('Signing algorithm for JWT'),

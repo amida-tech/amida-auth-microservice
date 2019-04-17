@@ -240,7 +240,7 @@ describe('Auth API:', () => {
                     resetPageUrl: common.passwordResetPageUrl,
                 })
                 .expect(httpStatus.OK)
-                .then(res => expect(res.body.token).to.exist)
+                .then(res => expect(res.body.text).to.exist)
         );
 
         it('should accept the reset token', () =>

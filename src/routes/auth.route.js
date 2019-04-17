@@ -49,12 +49,12 @@ router.route('/dispatch-verification-request')
 
 router.route('/provide-verifying-user')
 // Returns the username of a user when provided with a non-epxired
-// `contactMethodVerificationToken`. 
+// `contactMethodVerificationToken`.
     .post(validate(authValidation.provideVerifyingUser),
            authCtrl.provideVerifyingUser);
 
 router.route('/verify-messaging-protocol')
-// Adds a user's messaging protocol identity to `verifiedContactMethods` 
+// Adds a user's messaging protocol identity to `verifiedContactMethods`
     .post(validate(authValidation.verifyMessagingProtocol),
           authCtrl.verifyMessagingProtocol);
 

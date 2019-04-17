@@ -38,11 +38,12 @@ function login(req, res, next) {
             username: user.username,
             email: user.email,
             scopes: user.scopes,
-            verifiedContactMethods: user.verifiedContactMethods
+            verifiedContactMethods: user.verifiedContactMethods,
         };
 
         // check to see if the user needs to be verified to sign in, and if they are verified
-        if((config.requireVerificaiton || config.requireSecureVerificaiton) && !userInfo.verifiedContactMethods.includes(userInfo.email)) {
+        if ((config.requireVerificaiton || config.requireSecureVerificaiton) &&
+            !userInfo.verifiedContactMethods.includes(userInfo.email)) {
             const err = new APIError('User is not Verified', 'USER_IS_NOT_VERIFIED', httpStatus.NOT_FOUND, true);
             return next(err);
         }
@@ -173,7 +174,6 @@ function updatePassword(req, res, next) {
 function resetToken(req, res, next) {
     const email = _.get(req, 'body.email');
     const user = User.findOne({ where: { username: email } });
-    
     const resetPageUrl = _.get(req, 'body.resetPageUrl');
 
     if (!email) {
@@ -182,7 +182,9 @@ function resetToken(req, res, next) {
     }
     // once the user promise resolves, send the token or an error
     Promise.join(user, (userResult) => {
-        if(userResult && (config.requireVerificaiton || config.requireSecureVerificaiton) && !userResult.isVerified()) {
+        if (userResult &&
+            (config.requireVerificaiton || config.requireSecureVerificaiton) &&
+            !userResult.isVerified()) {
             const err = new APIError('User Not Verified or does not exist.', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
             return next(err);
         }
@@ -190,18 +192,20 @@ function resetToken(req, res, next) {
             .then((token) => {
                 const resetLink = generateLink(resetPageUrl, token);
                 const resetDomain = resetPageUrl.replace(/(^\w+:|^)\/\//, '').split('/')[0];
-                const subject = `Reset your password for ${resetDomain}`
+                const subject = `Reset your password for ${resetDomain}`;
                 const body = [
                     `${email},`,
                     `A request to reset your password on ${resetDomain} was recieved.`,
                     `You can reset your account password using the following link: ${resetLink}`,
-                    `If you believe this message was sent in error, please disregard this message.`
-                ]
+                    'If you believe this message was sent in error, please disregard this message.',
+                ];
                 const text = util.format('%s\n\n%s\n\n%s\n\n%s', ...body);
                 sendEmail(res, email, subject, text, token, next);
             })
         .catch(error => next(error));
-    })
+    });
+
+    return true;
 }
 
 /**
@@ -237,7 +241,7 @@ function dispatchVerificaitonRequest(req, res, next) {
 
     // TODO: Better handle email construction.
     // TODO: Explore notification-microservice based dispatcing of messages.
-    //       * JRB: This probably helps us verify via more protocols, such as SMS or 
+    //       * JRB: This probably helps us verify via more protocols, such as SMS or
     //              push notification.
     const email = _.get(req, 'body.email');
     const messagingProtocolVerifyPageUrl = _.get(req, 'body.messagingProtocolVerifyPageUrl');
@@ -250,14 +254,14 @@ function dispatchVerificaitonRequest(req, res, next) {
         .then((token) => {
             const verificationLink = generateLink(messagingProtocolVerifyPageUrl, token);
             const verificationDomain = messagingProtocolVerifyPageUrl.replace(/(^\w+:|^)\/\//, '').split('/')[0];
-            const subject = `Verify your email address for ${verificationDomain}`
+            const subject = `Verify your email address for ${verificationDomain}`;
             const body = [
                 `${email},`,
                 `An account has been created for you on ${verificationDomain}.`,
-                `You ${config.requireVerificaiton || config.requireSecureVerificaiton ? 'are required' : 'are recommened' } to verify your email address${config.requireSecureVerificaiton && ' (using your password) in order to continue'}.`,
+                `You ${config.requireVerificaiton || config.requireSecureVerificaiton ? 'are required' : 'are recommened'} to verify your email address${config.requireSecureVerificaiton && ' (using your password) in order to continue'}.`,
                 `Please verify your email address by going to the following link: ${verificationLink}`,
-                `If you believe this message was sent in error, please disregard this message.`
-            ]
+                'If you believe this message was sent in error, please disregard this message.',
+            ];
             const text = util.format('%s\n\n%s\n\n%s\n\n%s\n\n%s', ...body);
             // Format doesn't seem like the best solution here...
             sendEmail(res, email, subject, text, next);
@@ -274,7 +278,7 @@ function dispatchVerificaitonRequest(req, res, next) {
  */
 function provideVerifyingUser(req, res, next) {
     // This expects a `contactMethodVerificationToken` token, and returns the username of
-    // the identifying user. Only required if auth-micrservice is configured to 
+    // the identifying user. Only required if auth-micrservice is configured to
     // only accept conformMessaingProtocol tokens if they are provided with a
     // user's login credentials.
 
@@ -291,8 +295,8 @@ function provideVerifyingUser(req, res, next) {
                 return next(err);
             }
             return res.json({
-                username: usernameResult
-            })
+                username: usernameResult,
+            });
         })
         .catch(error => next(error));
 }
@@ -305,13 +309,13 @@ function provideVerifyingUser(req, res, next) {
  * @returns {*}
  */
 function verifyMessagingProtocol(req, res, next) {
-    // This expects a token, and optional password to verifiy that a user is 
-    // authorized to access their account. If 
+    // This expects a token, and optional password to verifiy that a user is
+    // authorized to access their account. If
     // `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION` is set to true, verification
-    // will need to occur before a user can sign authenticate normally. If 
-    // `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION` is true, the user's 
-    // password will be handeled as a required param. Success results in a user 
-    // having the contents of `contactMethodToVerify` written into the 
+    // will need to occur before a user can sign authenticate normally. If
+    // `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION` is true, the user's
+    // password will be handeled as a required param. Success results in a user
+    // having the contents of `contactMethodToVerify` written into the
     // `verifiedContactMethods` array.
 
     const token = _.get(req, 'body.token');

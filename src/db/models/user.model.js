@@ -144,9 +144,9 @@ module.exports = (sequelize, DataTypes) => {
 
     User.generatecontactMethodVerificationToken = function generatecontactMethodVerificationToken(email, expTime) {
         // This expects and email, and an expiration time window for storing a
-        // messaging protocol `messagingProtocol` token, auth expiration, and 
+        // messaging protocol `messagingProtocol` token, auth expiration, and
         // provider for a user. Users will be asked to validate this token against
-        // the submission of `verifyMessagingProtcolToken` (With or without 
+        // the submission of `verifyMessagingProtcolToken` (With or without
         // credentials)
 
         // QUESTION: Do we want to add some form of rate limiting in this flow?
@@ -178,10 +178,9 @@ module.exports = (sequelize, DataTypes) => {
                 const err = new Error('Token not found');
                 return sequelize.Promise.reject(err);
             }
-            return user.username
+            return user.username;
         });
     };
-    
 
     User.verifycontactMethodVerificationToken = function verifycontactMethodVerificationToken(token) {
         return this.find({
@@ -207,17 +206,14 @@ module.exports = (sequelize, DataTypes) => {
         .then((user) => {
             if (!user) {
                 const err = new Error('Token not found');
-                console.log(err)
                 return sequelize.Promise.reject(err);
             }
-            let verificationPassword = crypto.pbkdf2Sync(password, Buffer.from(user.salt), 100000, 128, 'sha256').toString('hex')
-            if(user.password === verificationPassword) {
-                return user.updateVerifiedMessagingProtocolList(user.contactMethodToVerify)
-            } else {
-                const err = new Error('Password does not match.');
-                console.log(err)
-                return sequelize.Promise.reject(err);
+            const verificationPassword = crypto.pbkdf2Sync(password, Buffer.from(user.salt), 100000, 128, 'sha256').toString('hex');
+            if (user.password === verificationPassword) {
+                return user.updateVerifiedMessagingProtocolList(user.contactMethodToVerify);
             }
+            const err = new Error('Password does not match.');
+            return sequelize.Promise.reject(err);
         });
     };
 
@@ -227,7 +223,6 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     User.prototype.isVerified = function isVerified() {
-        console.log('checking if user email is verified')
         return this.verifiedContactMethods.includes(this.email);
     };
 
@@ -286,19 +281,19 @@ module.exports = (sequelize, DataTypes) => {
 
     User.prototype.updateVerifiedMessagingProtocolList = function updateVerifiedMessagingProtocolList(contactMethodToVerify) {
         if (this.verifiedContactMethods.includes(contactMethodToVerify)) {
-            this.contactMethodVerificationToken = null
-            this.contactMethodVerificationTokenExpires = null
-            this.contactMethodToVerify = null
-            return this.save();
-        } else {
-            const authorizedUsers = this.verifiedContactMethods
-            const authorizedUsersLength = authorizedUsers.push(contactMethodToVerify.toString());
-            this.verifiedContactMethods = authorizedUsers
-            this.contactMethodVerificationToken = null
-            this.contactMethodVerificationTokenExpires = null
-            this.contactMethodToVerify = null
+            // Handle instances where the user contact already exsits in the list of verified contact methods
+            this.contactMethodVerificationToken = null;
+            this.contactMethodVerificationTokenExpires = null;
+            this.contactMethodToVerify = null;
             return this.save();
         }
+        const authorizedUsers = this.verifiedContactMethods;
+        const aULength = authorizedUsers.push(contactMethodToVerify.toString()); // eslint-disable-line no-unused-vars
+        this.verifiedContactMethods = authorizedUsers;
+        this.contactMethodVerificationToken = null;
+        this.contactMethodVerificationTokenExpires = null;
+        this.contactMethodToVerify = null;
+        return this.save();
     };
 
     return User;

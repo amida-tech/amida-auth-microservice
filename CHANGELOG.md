@@ -1,6 +1,10 @@
 # Changelog
 
 ## [Unreleased]
+### Fixed
+- `auth.controller.js:login()` no longer throws duplicate errors for incorrect username or password
+- Use error handling middlware `winstonInstance.info(err)`
+  * Previously, `winstonInstance.errorLogger()` always threw a `TypeError`, meaning the underlying error didn't actually show in the logs
 
 
 ## [2.7.0] -- 2019-02-04

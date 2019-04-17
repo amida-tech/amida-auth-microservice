@@ -260,7 +260,8 @@ module.exports = (sequelize, DataTypes) => {
                 const m = moment.utc();
                 m.add(expTime, 'seconds');
                 this.resetExpires = m.format();
-                return this.save().then(() => tokens.token);
+                this.save();
+                return tokens.token;
             });
     };
 

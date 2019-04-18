@@ -40,8 +40,8 @@ describe('APIError:', () => {
             });
         });
 
-        // // TODO: This requires mocking `logLevelGte()` because APIError.js has
-        // // `const includeCausalError = logLevelGte('debug')`.
+        // // TODO: This requires mocking `initLogLevelGte()` because APIError.js has
+        // const logLevelGte = initLogLevelGte(config.logLevel);
         // describe('When includeCausalError is falsy', () => {
         //     it('myAPIError.cause is undefined', () => {
         //         const causalError = new Error(causalErrorMessage);

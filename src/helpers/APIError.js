@@ -1,8 +1,13 @@
-import logLevelGte from './logLevelGte';
+import { initLogLevelGte } from 'winston-json-formatter';
 import config from '../config/config';
 
-const includeCausalError = logLevelGte('debug');
 const alwaysIncludeErrorStacks = config.alwaysIncludeErrorStacks;
+
+// Errors thrown by 3rd party libraries might log data that we pass into them, such as PHI or PII.
+// And, devs might pass those errors as the causalError arg into APIError. So, to prevent accidental
+// logging of PHI/PII, only include and thus log causal errors if your config.logLevel is >= debug.
+const logLevelGte = initLogLevelGte(config.logLevel);
+const includeCausalError = logLevelGte('debug');
 
 /**
  * @extends Error

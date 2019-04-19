@@ -94,7 +94,12 @@ app.use((req, res, next) => {
 // Log errors.
 if (config.env !== 'test') {
     app.use((err, req, res, next) => {
-        winstonInstance.warn(err);
+        if (err.isOperational) {
+            winstonInstance.warn(err);
+        } else {
+            winstonInstance.error(err);
+        }
+
         return next(err);
     });
 }

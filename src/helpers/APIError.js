@@ -1,6 +1,12 @@
 import { initLogLevelGte } from 'winston-json-formatter';
 import config from '../config/config';
 
+// TODO: Document this with the auto-documentation tool properly.
+// Read https://www.joyent.com/node-js/production/design/errors to understand the difference between
+// "programmer errors" (i.e. bugs) and "operational errors" (i.e. not actual bugs).
+// The APIError class assumes that if it was instantiated without a causal error, then it is being
+// used to define an "operational error", and there is no actual "programmer error"/bug.
+
 const alwaysIncludeErrorStacks = config.alwaysIncludeErrorStacks;
 
 // Errors thrown by 3rd party libraries might log data that we pass into them, such as PHI or PII.
@@ -36,12 +42,27 @@ class APIError extends Error {
             options = arg5;
         }
 
-        // Errors thrown by libraries we use might accidentally log data we pass into them,
-        // such as PHI or PII. Therefore, when the log level is less than debug, don't
-        // prepend this error's message with the causal/root error's message.
+        // Default to empty object to prevent "Cannot read property 'X' of undefined" errors.
+        if (!options) {
+            options = {};
+        }
+
+        // If there is no causal error, assume this is an "operational error" (see comment above).
+        // (Define isOperational here because it must be used before the constructor, and therefore
+        // before this.isOperational is available for use.)
+        let isOperational = !causalError;
+
+        // `options.isOperational` can override the default isOperational behavior.
+        if (options.isOperational !== undefined) {
+            isOperational = options.isOperational;
+        }
+
+        // eslint-disable-next-line no-underscore-dangle
+        const _includeCausalError = includeCausalError || options.includeCausalError;
+
         // eslint-disable-next-line no-underscore-dangle
         let _message;
-        if (includeCausalError && causalError && causalError.message) {
+        if (_includeCausalError && causalError && causalError.message) {
             _message = `${message}: ${causalError.message}`;
         } else {
             _message = message;
@@ -52,19 +73,8 @@ class APIError extends Error {
         this.message = _message;
         this.code = code;
         this.status = status;
-
-        // Default to empty object in order to prevent "Cannot access X of undefined" errors.
-        if (!options) {
-            options = {};
-        }
-
-        // This class assumes that IF it was instantiated without a causal error, THEN this class is
-        // being used to define an "operational error", and there is no actual "programmer error",
-        // AKA bug (https://www.joyent.com/node-js/production/design/errors).
-        this.isOperational = !causalError;
-        if (options.isOperational !== undefined) {
-            this.isOperational = options.isOperational;
-        }
+        this.options = options;
+        this.isOperational = isOperational;
 
         // When this.isPublic is truthy, the server's response body will include the error "code"
         // and "message".
@@ -72,27 +82,20 @@ class APIError extends Error {
         // code and message to be returned to the client rather than hidden, and we don't want to
         // have to specify isPublic every time we create a new error. In fact, the primary purpose
         // of the "code" is to support the front end's needs.
-        if (options.isPublic !== false) {
-            options.isPublic = true;
-        }
-        this.isPublic = options.isPublic;
-        this.options = options;
+        this.isPublic = (options.isPublic === undefined ? true : options.isPublic);
 
-        // Errors thrown by various libraries we use might accidentally log data we pass into them
-        // when we call them, such as PHI or PII. Therefore, for example, you can set the value of
-        // includeCausalError based on log level. For example, when log level is less than debug,
-        // don't nest the causal error inside this error.
-        if (this.isOperational || includeCausalError) {
+        // See comments at top of file about logging of causal errors.
+        if (_includeCausalError) {
             this.cause = causalError;
         }
 
-        // This class extends Error, so this.stack gets automatically generated; we don't always
-        // want a stack, so we have to do something with it.
+        // This class extends Error, so this.stack gets automatically generated; however we don't
+        // always want a stack, so we have to do something with it.
         // We don't want a stack trace when there is an operational error because we don't want to
-        // mislead future developer maintainers into thinking there's a bug, when there isn't.
+        // mislead future developer maintainers into thinking there's a bug when there isn't.
         // We only want this.stack when this class is being used for a "programmer error" OR if we
         // override this behavior and always have stacks.
-        if (!(!this.isOperational || alwaysIncludeErrorStacks || options.includeStack)) {
+        if (!(alwaysIncludeErrorStacks || options.includeStack || !this.isOperational)) {
             delete this.stack;
         }
     }

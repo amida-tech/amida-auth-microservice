@@ -74,7 +74,7 @@ app.use((err, req, res, next) => {
         // message argument.
         // eslint-disable-next-line no-param-reassign
         err.message = `${err.message}: ${err.errors[0].message}`;
-        const error = new APIError(err, 'Sequelize Validation Error', 'GENERIC_ERROR', status);
+        const error = new APIError(err, 'Sequelize Validation Error', 'GENERIC_ERROR', status, { isOperational: true });
         return next(error);
     } else if (err instanceof expressValidation.ValidationError) {
         // validation error contains errors which is an array of error each containing message[]

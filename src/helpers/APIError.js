@@ -1,7 +1,6 @@
 import { initLogLevelGte } from 'winston-json-formatter';
 import config from '../config/config';
 
-// TODO: Document this with the auto-documentation tool properly.
 // Read https://www.joyent.com/node-js/production/design/errors to understand the difference between
 // "programmer errors" (i.e. bugs) and "operational errors" (i.e. not actual bugs).
 // The APIError class assumes that if it was instantiated without a causal error, then it is being
@@ -19,6 +18,19 @@ const includeCausalError = logLevelGte('debug');
  * @extends Error
  */
 class APIError extends Error {
+    /* eslint-disable max-len */
+    /**
+     * Create an APIError.
+     * @param {Error | string} arg1 - Either JS Error (the causal error) (optional), or error message (required).
+     * @param {string} arg2 - Either error message (required) or error code (required).
+     * @param {string | Number} arg3 - Either error code (required) or HTTP status (required)
+     * @param {Number | Object} arg4 - Either HTTP status (required) or options object (optional)
+     * @param {Object} arg5 - Options object (optional)
+     * @returns APIError
+     * @example new APIError('Create user failed. Please provide a username.', 'CREATE_USER_FAILED', 400, { includeStack: true })
+     * @example if (err) { new APIError(err, 'Create user failed. User already exists.', 'CREATE_USER_FAILED', 409, { isPublic: false }) }
+     */
+    /* eslint-enable max-len */
     constructor(arg1, arg2, arg3, arg4, arg5) {
         if (!(typeof arg1 === 'string' || arg1 instanceof String || arg1 instanceof Error)) {
             // eslint-disable-next-line max-len

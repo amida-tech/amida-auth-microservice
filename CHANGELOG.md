@@ -5,7 +5,10 @@
 - `auth.controller.js:login()` no longer throws duplicate errors for incorrect username or password
 - Use error handling middlware `winstonInstance.info(err)`
   * Previously, `winstonInstance.errorLogger()` always threw a `TypeError`, meaning the underlying error didn't actually show in the logs
-- APIError now supports all 10 features in https://jira.amida.com/browse/SER-279
+- [SER-279]
+  - APIError now supports all 10 features in https://jira.amida.com/browse/SER-279
+  - Updates `winston` to `^3.2.1` and `winston-json-formatter` to `^0.10.0` to get great new logging bug fixes and formatting features (see https://github.com/amida-tech/winston-json-formatter/pull/5).
+  - Logs "operational errors" at the `warn` level and "programmer errors" at the `error` level.
 
 ## [2.7.0] -- 2019-02-04
 ### Added

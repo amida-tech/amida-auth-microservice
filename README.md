@@ -337,8 +337,8 @@ A description of what the variable is or does.
 ##### `ALWAYS_INCLUDE_ERROR_STACKS` [`false`]
 
 The `APIError` class acts like a call-stackless "operational error" (https://www.joyent.com/node-js/production/design/errors) when called without a causal error as the first argument.
-- When false, `APIError`s without a cuasal error will not have call stacks.
-- When true, all `APIError`s will have call stacks.
+- When `false`, `APIError`s without a causal error will not have call stacks.
+- When `true`, all `APIError`s will have call stacks.
 
 ##### `JWT_SECRET` (Required)
 

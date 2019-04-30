@@ -7337,14 +7337,14 @@ windows-release@^3.1.0:
   dependencies:
     execa "^0.10.0"
 
-winston-json-formatter@^0.9.2:
-  version "0.9.2"
-  resolved "https://registry.yarnpkg.com/winston-json-formatter/-/winston-json-formatter-0.9.2.tgz#cb2adad2596a11c19d3ac5a454756712a2aacf98"
-  integrity sha512-IeWNsy/VzsZDXjXNrdxvw9MvCQ28QBSw6zgCkTLS2av28wJnScGDpq97ys7X9ZWygpEGZrsGXJxyWk3bBsqhZg==
+winston-json-formatter@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/winston-json-formatter/-/winston-json-formatter-0.10.0.tgz#4e777023e4416e16740734e1b7b50c5e72dfd4fd"
+  integrity sha512-4K9rFgawAOBsKbC5D5QvxiZccbuBR+xvPY+PAm6rTDtfaA5bwUjpFKW0YRexcrFlJzV/6ExtfUBgYpDXAm4NSA==
   dependencies:
     lodash "^4.17.11"
     os "^0.1.1"
-    winston "^3.1.0"
+    winston "^3.2.1"
 
 winston-transport@^4.3.0:
   version "4.3.0"
@@ -7354,7 +7354,7 @@ winston-transport@^4.3.0:
     readable-stream "^2.3.6"
     triple-beam "^1.2.0"
 
-winston@^3.0.0, winston@^3.1.0:
+winston@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/winston/-/winston-3.2.1.tgz#63061377976c73584028be2490a1846055f77f07"
   integrity sha512-zU6vgnS9dAWCEKg/QYigd6cgMVVNwyTzKs81XZtTFuRwJOcDdBg7AU0mXVyNbs7O5RH2zdv+BdNZUlx7mXPuOw==

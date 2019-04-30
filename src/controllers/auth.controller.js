@@ -28,7 +28,7 @@ function login(req, res, next) {
         const validUserAndPassword = !_.isNull(user) && user.testPassword(params.password);
 
         if (!validUserAndPassword) {
-            const err = new APIError('Incorrect username or password', 'INCORRECT_USERNAME_OR_PASSWORD', httpStatus.NOT_FOUND, true);
+            const err = new APIError('Incorrect username or password', 'INCORRECT_USERNAME_OR_PASSWORD', httpStatus.UNAUTHORIZED);
             return next(err);
         }
 
@@ -82,7 +82,7 @@ function submitRefreshToken(req, res, next) {
         .findOne({ where: { token: params.refreshToken, userId: userResult.id } })
         .then((tokenResult) => {
             if (_.isNull(tokenResult)) {
-                const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
+                const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND);
                 return next(err);
             }
             const userInfo = {
@@ -122,7 +122,7 @@ function rejectRefreshToken(req, res, next) {
     return RefreshToken.findOne({ where: { token: params.refreshToken } })
     .then((tokenResult) => {
         if (_.isNull(tokenResult)) {
-            const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
+            const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND);
             return next(err);
         }
         // delete the refresh token
@@ -146,7 +146,7 @@ function updatePassword(req, res, next) {
     const params = _.pick(req.body, 'oldPassword', 'password');
 
     if (!user.testPassword(params.oldPassword)) {
-        const err = new APIError('Incorrect password', 'INCORRECT_PASSWORD', httpStatus.FORBIDDEN, true);
+        const err = new APIError('Incorrect password', 'INCORRECT_PASSWORD', httpStatus.FORBIDDEN);
         return next(err);
     }
 
@@ -171,7 +171,7 @@ function resetToken(req, res, next) {
     const email = _.get(req, 'body.email');
     const resetPageUrl = _.get(req, 'body.resetPageUrl');
     if (!email) {
-        const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
+        const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST);
         return next(err);
     }
     return User.resetPasswordToken(email, 3600)

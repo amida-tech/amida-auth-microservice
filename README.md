@@ -334,6 +334,12 @@ A description of what the variable is or does.
 
 - Valid values are [winston](https://github.com/winstonjs/winston) logging levels (`error`, `warn`, etc.).
 
+##### `ALWAYS_INCLUDE_ERROR_STACKS` [`false`]
+
+The `APIError` class acts like a call-stackless "operational error" (https://www.joyent.com/node-js/production/design/errors) when called without a causal error as the first argument.
+- When `false`, `APIError`s without a causal error will not have call stacks.
+- When `true`, all `APIError`s will have call stacks.
+
 ##### `JWT_SECRET` (Required)
 
 First, see description of `AUTH_SERVICE_JWT_MODE`. When `AUTH_SERVICE_JWT_MODE=hmac`, this is the shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.

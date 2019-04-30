@@ -22,7 +22,7 @@ function load(req, res, next, id) {
     User.findById(id)
         .then((user) => {
             if (!user) {
-                const e = new APIError('User does not exist', 'UNKNOWN_USERNAME', httpStatus.NOT_FOUND, true);
+                const e = new APIError('User does not exist', 'UNKNOWN_USERNAME', httpStatus.NOT_FOUND);
                 return next(e);
             }
             req.user = user; // eslint-disable-line no-param-reassign
@@ -44,7 +44,7 @@ function get(req, res, next) {
     User.findById(req.params.userId)
         .then((user) => {
             if (req.user.username !== user.username && !req.user.isAdmin()) {
-                const e = new APIError('Cannot get another user\'s information', 'UNAUTHORIZED_REQUEST', httpStatus.FORBIDDEN, true);
+                const e = new APIError('Cannot get another user\'s information', 'UNAUTHORIZED_REQUEST', httpStatus.FORBIDDEN);
                 return next(e);
             }
             return res.json(user.getBasicUserInfo());
@@ -70,7 +70,7 @@ function getByEmail(req, res, next) {
                 return next(e);
             }
             if (req.user.username !== user.username && !req.user.isAdmin()) {
-                const e = new APIError('Cannot get another user\'s information', 'UNAUTHORIZED_REQUEST', httpStatus.FORBIDDEN, true);
+                const e = new APIError('Cannot get another user\'s information', 'UNAUTHORIZED_REQUEST', httpStatus.FORBIDDEN);
                 return next(e);
             }
             return res.json(user.getBasicUserInfo());
@@ -104,7 +104,7 @@ function create(req, res, next) {
             // we are not admin but are registrar
             // if trying to create new registrar or admin, return forbidden
             if (potentialScopes.some(scope => ['admin', ...config.registrarScopes].includes(scope))) {
-                const e = new APIError('Registrar not allowed to create new admin or registrar users', 'CANNOT_CREATE_ADMIN', httpStatus.FORBIDDEN, true);
+                const e = new APIError('Registrar not allowed to create new admin or registrar users', 'CANNOT_CREATE_ADMIN', httpStatus.FORBIDDEN);
                 return next(e);
             }
             // else go ahead
@@ -123,7 +123,7 @@ function update(req, res, next) {
     User.findById(req.params.userId)
         .then((user) => {
             if (req.user.username !== user.username && !req.user.isAdmin()) {
-                const e = new APIError('User not allowed to update email', 'CANNOT_UPDATE_EMAIL', httpStatus.FORBIDDEN, true);
+                const e = new APIError('User not allowed to update email', 'CANNOT_UPDATE_EMAIL', httpStatus.FORBIDDEN);
                 return next(e);
             }
             return user.update({ email: req.body.email });

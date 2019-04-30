@@ -10,9 +10,9 @@ const alwaysIncludeErrorStacks = config.alwaysIncludeErrorStacks;
 
 // Errors thrown by 3rd party libraries might log data that we pass into them, such as PHI or PII.
 // And, devs might pass those errors as the causalError arg into APIError. So, to prevent accidental
-// logging of PHI/PII, only include and thus log causal errors if your config.logLevel is >= debug.
-const logLevelGte = initLogLevelGte(config.logLevel);
-const includeCausalError = logLevelGte('debug');
+// logging of PHI/PII, only include and thus log causal errors if your config.logLevel is >= debug,
+// i.e. silly or debug.
+const includeCausalError = initLogLevelGte(config.logLevel)('debug');
 
 /**
  * @extends Error
@@ -28,7 +28,7 @@ class APIError extends Error {
      * @param {Object} arg5 - Options object (optional)
      * @returns APIError
      * @example new APIError('Create user failed. Please provide a username.', 'CREATE_USER_FAILED', 400, { includeStack: true })
-     * @example if (err) { new APIError(err, 'Create user failed. User already exists.', 'CREATE_USER_FAILED', 409, { isPublic: false }) }
+     * @example if (err) { throw new APIError(err, 'Create user failed. User already exists.', 'CREATE_USER_FAILED', 409, { isPublic: false }) }
      */
     /* eslint-enable max-len */
     constructor(arg1, arg2, arg3, arg4, arg5) {

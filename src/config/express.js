@@ -87,7 +87,7 @@ app.use((err, req, res, next) => {
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-    const err = new APIError('API not found', 'UNKNOWN_API', httpStatus.NOT_FOUND, { isPublic: false });
+    const err = new APIError('Not Found', 'NOT_FOUND', httpStatus.NOT_FOUND, { isPublic: true });
     return next(err);
 });
 

@@ -63,7 +63,7 @@ describe('APIError:', () => {
                 expect(err.cause).to.deep.equal(causalError);
             });
 
-            it('"concatonate" messages of APIError and the causal errror', () => {
+            it('Concatenate messages of APIError and the causal errror', () => {
                 const causalError = new Error(causalErrorMessage);
                 const err = new APIError(causalError, apiErrorMessage);
 

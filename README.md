@@ -150,7 +150,12 @@ yarn migrate:undo
 ```
 
 ## Tests
+### docker-compose
+```sh
+yarn test:docker
+```
 
+### local
 ```sh
 # Make sure .env.test exists
 # deletes db, creates db, runs migrations and then tests

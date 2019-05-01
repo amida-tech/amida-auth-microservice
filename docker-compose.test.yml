@@ -1,0 +1,32 @@
+version: '3'
+services:
+  sut:
+    image: auth-service:test
+
+    command:
+    - /bin/sh
+    - -c
+    - yarn install --frozen-lockfile && yarn jenkins
+    depends_on:
+    - postgres
+
+    build:
+      context: .
+
+    environment:
+    - AUTH_SERVICE_PG_DB=amida_auth_microservice
+    - AUTH_SERVICE_PG_HOST=postgres
+    - AUTH_SERVICE_PG_PASSWORD=admin
+    - AUTH_SERVICE_PG_PORT=5432
+    - AUTH_SERVICE_PG_USER=postgres
+    - DEBUG=amida-api-boilerplate:*
+
+  postgres:
+    image: postgres:9.6
+    ports:
+    - 5432:5432
+    environment:
+    - POSTGRES_DB=${AUTH_SERVICE_PG_DB}
+    - POSTGRES_PASSWORD=${AUTH_SERVICE_PG_PASSWORD}
+    - POSTGRES_USER=${AUTH_SERVICE_PG_USER}
+

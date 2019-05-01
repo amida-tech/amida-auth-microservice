@@ -13,6 +13,12 @@
 - Update `npm:winston` to `^3.2.1` and `npm:winston-json-formatter` to `^0.10.0` for logging bug fixes and formatting features (see https://github.com/amida-tech/winston-json-formatter/pull/5).
   * Logs "operational errors" at the `warn` level and "programmer errors" at the `error` level.
 
+
+## [2.7.1] -- 2019-05-01
+### Fixed
+- `docker run amidatech/auth-service` threw `Error: Cannot find module 'source-map-support/register'`
+
+
 ## [2.7.0] -- 2019-02-04
 ### Added
 - Prepush githook for `yarn lint` and `yarn test` with `npm:husky`

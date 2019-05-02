@@ -385,11 +385,13 @@ Time To Live, in seconds, of the JSON web token.
 
 ##### `AUTH_SERVICE_REFRESH_TOKEN_ENABLED` [`false`]
 
+When `false`, only an access token jwt with a set expiration date will be returned from the login endpoint.
 When `true`, refresh tokens will be returned on successful login (in addition to the access token jwt). The refresh token can be used to request a new access token at any time as long as the refresh token being used has not been explicitly rejected. There is an endpoint available to reject existing refresh tokens.
 
 ##### `AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES` [`false`]
 
-Not fully implemented yet.
+When `false`, then when a user logs in, causing a refresh token to be created, all other existing refresh tokens tied to the user's account will be rejected.
+When `true`, creating a new refresh token will not cause all other refresh tokens to be rejected. In practice, this allows a user to have refresh tokens active, potentially on multiple browsers or devices.
 
 ##### `AUTH_SERVICE_SEED_ADMIN_USERNAME`
 The username for an admin that will be place inside the user's table if none exist on startup.

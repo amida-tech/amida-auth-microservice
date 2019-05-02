@@ -44,7 +44,7 @@ const authValidation = {
             resetPageUrl: Joi.string().uri().required(),
         },
     },
-    dispatchVerificaitonRequest: {
+    displatchVerificationRequest: {
         body: {
             email: Joi.string().email().required(),
             contactMethodVerifyPageUrl: Joi.string().uri().required(),

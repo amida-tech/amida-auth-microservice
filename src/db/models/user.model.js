@@ -162,7 +162,7 @@ module.exports = (sequelize, DataTypes) => {
             }
             // JRB removed protocol, because we can confirm this. Put back it leads to errors.
             // JRB: This is new
-            return user.updateVerifyAccountToken(email, expTime);
+            return user.generateVerifyAccountToken(email, expTime);
         });
     };
 
@@ -264,7 +264,7 @@ module.exports = (sequelize, DataTypes) => {
             });
     };
 
-    User.prototype.updateVerifyAccountToken = function updateVerifyAccountToken(email, expTime) {
+    User.prototype.generateVerifyAccountToken = function generateVerifyAccountToken(email, expTime) {
         return randomBytes(20)
             .then((buf) => {
                 const token = buf.toString('hex');

@@ -42,7 +42,7 @@ function login(req, res, next) {
         };
 
         // check to see if the user needs to be verified to sign in, and if they are verified
-        if ((config.requireVerificaiton || config.requireSecureVerificaiton) &&
+        if ((config.requireAccountVerification || config.requireSecureAccountVerification) &&
             !userInfo.verifiedContactMethods.includes(userInfo.email)) {
             const err = new APIError('User is not Verified', 'USER_IS_NOT_VERIFIED', httpStatus.FORBIDDEN, true);
             return next(err);
@@ -173,17 +173,16 @@ function updatePassword(req, res, next) {
  */
 function resetToken(req, res, next) {
     const email = _.get(req, 'body.email');
-    const user = User.findOne({ where: { username: email } });
     const resetPageUrl = _.get(req, 'body.resetPageUrl');
+    const {requireAccountVerification, requireSecureAccountVerification}= config
 
     if (!email) {
         const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
         return next(err);
     }
-    // once the user promise resolves, send the token or an error
-    Promise.join(user, (userResult) => {
+    User.findOne({ where: { username: email } }).then(userResult => {
         if (userResult &&
-            (config.requireVerificaiton || config.requireSecureVerificaiton) &&
+            (requireAccountVerification || requireSecureAccountVerification) &&
             !userResult.isVerified()) {
             const err = new APIError('User Not Verified or does not exist.', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
             return next(err);
@@ -233,7 +232,7 @@ function resetPassword(req, res, next) {
  * @param next
  * @returns {*}
  */
-function dispatchVerificaitonRequest(req, res, next) {
+function displatchVerificationRequest(req, res, next) {
     // This expects an email, and a page url to construct the verification link. It
     // uses `verifyAccountToken` to populate `messagingProtocol` token,
     // auth expiration, and provider for a user (unless an invalid email is
@@ -259,7 +258,7 @@ function dispatchVerificaitonRequest(req, res, next) {
             const body = [
                 `${email},`,
                 `An account has been created for you on ${verificationDomain}.`,
-                `You ${config.requireVerificaiton || config.requireSecureVerificaiton ? 'are required' : 'are recommened'} to verify your email address${config.requireSecureVerificaiton && ' (using your password) in order to continue'}.`,
+                `You ${config.requireAccountVerification || config.requireSecureAccountVerification ? 'are required' : 'are recommened'} to verify your email address${config.requireSecureAccountVerification && ' (using your password) in order to continue'}.`,
                 `Please verify your email address by going to the following link: ${verificationLink}`,
                 'If you believe this message was sent in error, please disregard this message.',
             ];
@@ -321,7 +320,7 @@ function verifyMessagingProtocol(req, res, next) {
     // `verifiedContactMethods` array.
 
     const token = _.get(req, 'body.token');
-    if (config.requireSecureVerificaiton) {
+    if (config.requireSecureAccountVerification) {
         const password = _.get(req, 'body.password');
         if (!password) {
             const err = new APIError('No Password provided', 'NO_PASSWORD', httpStatus.BAD_REQUEST, true);
@@ -347,7 +346,7 @@ export default {
     updatePassword,
     resetToken,
     resetPassword,
-    dispatchVerificaitonRequest,
+    displatchVerificationRequest,
     getVerifyingUser,
     verifyMessagingProtocol,
 };

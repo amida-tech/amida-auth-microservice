@@ -9,9 +9,6 @@ import { checkPassword } from '../helpers/owasp';
 const router = express.Router(); // eslint-disable-line new-cap
 
 router.route('/login')
-// Setting `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION` or
-// `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION` to `true` will force a
-// user to verify their email address before this endpoint will 200.
     .post(validate(authValidation.login), authCtrl.login);
 
 router.route('/logout');
@@ -29,32 +26,22 @@ router.route('/update-password')
           authCtrl.updatePassword);
 
 router.route('/reset-password')
-// Setting `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION` or
-// `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION` to `true` will force a
-// user to verify their email address before this endpoint will 200.
     .post(validate(authValidation.resetToken),
           authCtrl.resetToken);
 
 router.route('/reset-password/:token')
-// This endpoint specifically does not require email verification.
     .post(validate(authValidation.resetPassword), checkPassword,
           authCtrl.resetPassword);
 
 router.route('/dispatch-verification-request')
-// Triggers the dispatching of a verification request for a messaging protocol.
-// Currently only supports sending a verification email for the email address
-// provided in the User's email column.
-    .post(validate(authValidation.dispatchVerificaitonRequest),
-          authCtrl.dispatchVerificaitonRequest);
+    .post(validate(authValidation.displatchVerificationRequest),
+          authCtrl.displatchVerificationRequest);
 
 router.route('/get-verifying-user')
-// Returns the username of a user when provided with a non-epxired
-// `contactMethodVerificationToken`.
     .post(validate(authValidation.getVerifyingUser),
            authCtrl.getVerifyingUser);
 
 router.route('/verify-messaging-protocol')
-// Adds a user's messaging protocol identity to `verifiedContactMethods`
     .post(validate(authValidation.verifyMessagingProtocol),
           authCtrl.verifyMessagingProtocol);
 

@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 
+## [2.7.1] -- 2019-05-01
+### Fixed
+- `docker run amidatech/auth-service` threw `Error: Cannot find module 'source-map-support/register'`
+
+
 ## [2.7.0] -- 2019-02-04
 ### Added
 - Prepush githook for `yarn lint` and `yarn test` with `npm:husky`

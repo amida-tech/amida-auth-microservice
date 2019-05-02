@@ -44,7 +44,7 @@ function login(req, res, next) {
         // check to see if the user needs to be verified to sign in, and if they are verified
         if ((config.requireVerificaiton || config.requireSecureVerificaiton) &&
             !userInfo.verifiedContactMethods.includes(userInfo.email)) {
-            const err = new APIError('User is not Verified', 'USER_IS_NOT_VERIFIED', httpStatus.NOT_FOUND, true);
+            const err = new APIError('User is not Verified', 'USER_IS_NOT_VERIFIED', httpStatus.FORBIDDEN, true);
             return next(err);
         }
 

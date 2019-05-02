@@ -47,7 +47,7 @@ router.route('/dispatch-verification-request')
     .post(validate(authValidation.dispatchVerificaitonRequest),
           authCtrl.dispatchVerificaitonRequest);
 
-router.route('/provide-verifying-user')
+router.route('/get-verifying-user')
 // Returns the username of a user when provided with a non-epxired
 // `contactMethodVerificationToken`.
     .post(validate(authValidation.getVerifyingUser),

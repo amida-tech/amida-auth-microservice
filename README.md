@@ -150,7 +150,12 @@ yarn migrate:undo
 ```
 
 ## Tests
+### docker-compose
+```sh
+yarn test:docker
+```
 
+### local
 ```sh
 # Make sure .env.test exists
 # deletes db, creates db, runs migrations and then tests
@@ -333,6 +338,12 @@ A description of what the variable is or does.
 ##### `LOG_LEVEL` [`info`]
 
 - Valid values are [winston](https://github.com/winstonjs/winston) logging levels (`error`, `warn`, etc.).
+
+##### `ALWAYS_INCLUDE_ERROR_STACKS` [`false`]
+
+The `APIError` class acts like a call-stackless "operational error" (https://www.joyent.com/node-js/production/design/errors) when called without a causal error as the first argument.
+- When `false`, `APIError`s without a causal error will not have call stacks.
+- When `true`, all `APIError`s will have call stacks.
 
 ##### `JWT_SECRET` (Required)
 

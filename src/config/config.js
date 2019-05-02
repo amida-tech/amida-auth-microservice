@@ -16,6 +16,8 @@ const envVarsSchema = Joi.object({
         .default('production'),
     LOG_LEVEL: Joi.string()
         .default('info'),
+    ALWAYS_INCLUDE_ERROR_STACKS: Joi.bool()
+        .default(false),
     AUTH_SERVICE_PORT: Joi.number()
         .default(4000),
     AUTH_SERVICE_PUBLIC_REGISTRATION: Joi.bool()
@@ -130,9 +132,10 @@ if (error) {
     throw new Error(`Config validation error: ${error.message}`);
 }
 
-module.exports = {
+const config = {
     env: envVars.NODE_ENV,
     logLevel: envVars.LOG_LEVEL,
+    alwaysIncludeErrorStacks: envVars.ALWAYS_INCLUDE_ERROR_STACKS,
     port: envVars.AUTH_SERVICE_PORT,
     publicRegistration: envVars.AUTH_SERVICE_PUBLIC_REGISTRATION,
     registrarScopes: envVars.AUTH_SERVICE_REGISTRAR_SCOPES,
@@ -174,3 +177,5 @@ module.exports = {
         scopes: ['admin'],
     },
 };
+
+module.exports = config;

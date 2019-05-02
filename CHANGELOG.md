@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 ### Added
+- ENV `ALWAYS_INCLUDE_ERROR_STACKS` to include full error stack, including any causal errors.
+  * Use with caution in production, because the full stack could leak sensitive information.
 - Optional email verification for users
   * When `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION=true`, a user cannot sign-in without email verification
   * When `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION=true`, a user password is required for email verification
@@ -10,6 +12,14 @@
 - `auth.controller.js:login()` no longer throws duplicate errors for incorrect username or password
 - Use error handling middlware `winstonInstance.info(err)`
   * Previously, `winstonInstance.errorLogger()` always threw a `TypeError`, meaning the underlying error didn't actually show in the logs
+- `class:APIError` supports full stack traces, including causal errors.
+- Update `npm:winston` to `^3.2.1` and `npm:winston-json-formatter` to `^0.10.0` for logging bug fixes and formatting features (see https://github.com/amida-tech/winston-json-formatter/pull/5).
+  * Logs "operational errors" at the `warn` level and "programmer errors" at the `error` level.
+
+
+## [2.7.1] -- 2019-05-01
+### Fixed
+- `docker run amidatech/auth-service` threw `Error: Cannot find module 'source-map-support/register'`
 
 
 ## [2.7.0] -- 2019-02-04

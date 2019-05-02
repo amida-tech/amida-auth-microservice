@@ -31,6 +31,7 @@
     "test": "cross-env NODE_ENV=test mocha --opts .mocharc",
     "test:check-coverage": "yarn test:coverage && nyc check-coverage",
     "test:coverage": "cross-env NODE_ENV=test nyc mocha --opts .mocharc",
+    "test:docker": "docker-compose -f docker-compose.test.yml up --abort-on-container-exit",
     "test:watch": "yarn test --watch"
   },
   "dependencies": {
@@ -61,10 +62,11 @@
     "pg-hstore": "2.3.2",
     "rand-token": "^0.4.0",
     "sequelize": "^4.40.0",
+    "source-map-support": "^0.5.12",
     "swagger-stats": "^0.95.6",
     "uuid": "3.1.0",
-    "winston": "^3.0.0",
-    "winston-json-formatter": "^0.9.2"
+    "winston": "^3.2.1",
+    "winston-json-formatter": "^0.10.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",
@@ -88,7 +90,6 @@
     "rimraf": "^2.6.0",
     "sequelize-cli": "^5.4.0",
     "snyk": "^1.73.0",
-    "source-map-support": "0.5.9",
     "supertest": "^3.0.0"
   },
   "snyk": true

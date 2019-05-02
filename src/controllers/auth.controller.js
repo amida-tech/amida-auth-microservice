@@ -28,7 +28,7 @@ function login(req, res, next) {
         const validUserAndPassword = !_.isNull(user) && user.testPassword(params.password);
 
         if (!validUserAndPassword) {
-            const err = new APIError('Incorrect username or password', 'INCORRECT_USERNAME_OR_PASSWORD', httpStatus.NOT_FOUND, true);
+            const err = new APIError('Incorrect username or password', 'INCORRECT_USERNAME_OR_PASSWORD', httpStatus.UNAUTHORIZED);
             return next(err);
         }
 
@@ -84,22 +84,22 @@ function submitRefreshToken(req, res, next) {
 
     const params = _.pick(req.body, 'username', 'refreshToken');
     return User
-        .findOne({ where: { username: params.username } })
-        .then(userResult =>
-            RefreshToken
-                .findOne({ where: { token: params.refreshToken, userId: userResult.id } })
-                .then((tokenResult) => {
-                    if (_.isNull(tokenResult)) {
-                        const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
-                        return next(err);
-                    }
-                    const userInfo = {
-                        id: userResult.id,
-                        uuid: userResult.uuid,
-                        username: userResult.username,
-                        email: userResult.email,
-                        scopes: userResult.scopes,
-                    };
+    .findOne({ where: { username: params.username } })
+    .then(userResult =>
+        RefreshToken
+        .findOne({ where: { token: params.refreshToken, userId: userResult.id } })
+        .then((tokenResult) => {
+            if (_.isNull(tokenResult)) {
+                const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND);
+                return next(err);
+            }
+            const userInfo = {
+                id: userResult.id,
+                uuid: userResult.uuid,
+                username: userResult.username,
+                email: userResult.email,
+                scopes: userResult.scopes,
+            };
 
                     const jwtToken = signJWT(userInfo);
 
@@ -128,13 +128,13 @@ function rejectRefreshToken(req, res, next) {
 
     const params = _.pick(req.body, 'refreshToken');
     return RefreshToken.findOne({ where: { token: params.refreshToken } })
-        .then((tokenResult) => {
-            if (_.isNull(tokenResult)) {
-                const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
-                return next(err);
-            }
-            // delete the refresh token
-            tokenResult.destroy();
+    .then((tokenResult) => {
+        if (_.isNull(tokenResult)) {
+            const err = new APIError('Refresh token not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND);
+            return next(err);
+        }
+        // delete the refresh token
+        tokenResult.destroy();
 
             return res.sendStatus(httpStatus.NO_CONTENT);
         })
@@ -154,7 +154,7 @@ function updatePassword(req, res, next) {
     const params = _.pick(req.body, 'oldPassword', 'password');
 
     if (!user.testPassword(params.oldPassword)) {
-        const err = new APIError('Incorrect password', 'INCORRECT_PASSWORD', httpStatus.FORBIDDEN, true);
+        const err = new APIError('Incorrect password', 'INCORRECT_PASSWORD', httpStatus.FORBIDDEN);
         return next(err);
     }
 
@@ -177,7 +177,7 @@ function resetToken(req, res, next) {
     const {requireAccountVerification, requireSecureAccountVerification}= config
 
     if (!email) {
-        const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
+        const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST);
         return next(err);
     }
     User.findOne({ where: { username: email } }).then(userResult => {

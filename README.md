@@ -126,7 +126,7 @@ Start server:
 yarn create_db
 
 # Create initial tables and run migrations
-# Only needs to be run on clean builds  
+# Only needs to be run on clean builds
 # or when new migrations are added
 yarn migrate
 
@@ -141,7 +141,7 @@ DEBUG=amida-auth-microservice:* yarn start
 
 ```sh
 # Create tables and run migrations (migrations will
-# be run in chronological order, and only newly  
+# be run in chronological order, and only newly
 # added migrations will be run)
 yarn migrate
 
@@ -385,7 +385,7 @@ Time To Live, in seconds, of the JSON web token.
 
 ##### `AUTH_SERVICE_REFRESH_TOKEN_ENABLED` [`false`]
 
-Not fully implemented yet.
+When `true`, refresh tokens will be returned on successful login (in addition to the access token jwt). The refresh token can be used to request a new access token at any time as long as the refresh token being used has not been explicitly rejected. There is an endpoint available to reject existing refresh tokens.
 
 ##### `AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES` [`false`]
 

@@ -50,8 +50,8 @@ router.route('/dispatch-verification-request')
 router.route('/provide-verifying-user')
 // Returns the username of a user when provided with a non-epxired
 // `contactMethodVerificationToken`.
-    .post(validate(authValidation.provideVerifyingUser),
-           authCtrl.provideVerifyingUser);
+    .post(validate(authValidation.getVerifyingUser),
+           authCtrl.getVerifyingUser);
 
 router.route('/verify-messaging-protocol')
 // Adds a user's messaging protocol identity to `verifiedContactMethods`

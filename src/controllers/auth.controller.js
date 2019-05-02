@@ -245,7 +245,7 @@ function dispatchVerificaitonRequest(req, res, next) {
     //       * JRB: This probably helps us verify via more protocols, such as SMS or
     //              push notification.
     const email = _.get(req, 'body.email');
-    const messagingProtocolVerifyPageUrl = _.get(req, 'body.messagingProtocolVerifyPageUrl');
+    const contactMethodVerifyPageUrl = _.get(req, 'body.contactMethodVerifyPageUrl');
 
     if (!email) {
         const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
@@ -253,8 +253,8 @@ function dispatchVerificaitonRequest(req, res, next) {
     }
     return User.verifyAccountToken(email, 3600)
         .then((token) => {
-            const verificationLink = generateLink(messagingProtocolVerifyPageUrl, token);
-            const verificationDomain = messagingProtocolVerifyPageUrl.replace(/(^\w+:|^)\/\//, '').split('/')[0];
+            const verificationLink = generateLink(contactMethodVerifyPageUrl, token);
+            const verificationDomain = contactMethodVerifyPageUrl.replace(/(^\w+:|^)\/\//, '').split('/')[0];
             const subject = `Verify your email address for ${verificationDomain}`;
             const body = [
                 `${email},`,
@@ -278,7 +278,7 @@ function dispatchVerificaitonRequest(req, res, next) {
  * @param next
  * @returns {*}
  */
-function provideVerifyingUser(req, res, next) {
+function getVerifyingUser(req, res, next) {
     // This expects a `contactMethodVerificationToken` token, and returns the username of
     // the identifying user. Only required if auth-micrservice is configured to
     // only accept conformMessaingProtocol tokens if they are provided with a
@@ -348,6 +348,6 @@ export default {
     resetToken,
     resetPassword,
     dispatchVerificaitonRequest,
-    provideVerifyingUser,
+    getVerifyingUser,
     verifyMessagingProtocol,
 };

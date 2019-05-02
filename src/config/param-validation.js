@@ -47,10 +47,10 @@ const authValidation = {
     dispatchVerificaitonRequest: {
         body: {
             email: Joi.string().email().required(),
-            messagingProtocolVerifyPageUrl: Joi.string().uri().required(),
+            contactMethodVerifyPageUrl: Joi.string().uri().required(),
         },
     },
-    provideVerifyingUser: {
+    getVerifyingUser: {
         body: {
             token: Joi.string().required(),
         },

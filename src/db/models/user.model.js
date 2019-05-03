@@ -142,7 +142,7 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
-    User.verifyAccountToken = function verifyAccountToken(email, expTime) {
+    User.createVerifyAccountToken = function createVerifyAccountToken(email, expTime) {
         // This expects and email, and an expiration time window for storing a
         // messaging protocol `messagingProtocol` token, auth expiration, and
         // provider for a user. Users will be asked to validate this token against

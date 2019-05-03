@@ -234,7 +234,7 @@ function resetPassword(req, res, next) {
  */
 function displatchVerificationRequest(req, res, next) {
     // This expects an email, and a page url to construct the verification link. It
-    // uses `verifyAccountToken` to populate `messagingProtocol` token,
+    // uses `createVerifyAccountToken` to populate `messagingProtocol` token,
     // auth expiration, and provider for a user (unless an invalid email is
     // provided). Finally it uses nodemailer to dispatch an email with a
     // verification link to the user.
@@ -250,7 +250,7 @@ function displatchVerificationRequest(req, res, next) {
         const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
         return next(err);
     }
-    return User.verifyAccountToken(email, 3600)
+    return User.createVerifyAccountToken(email, 3600)
         .then((token) => {
             const verificationLink = generateLink(contactMethodVerifyPageUrl, token);
             const verificationDomain = contactMethodVerifyPageUrl.replace(/(^\w+:|^)\/\//, '').split('/')[0];

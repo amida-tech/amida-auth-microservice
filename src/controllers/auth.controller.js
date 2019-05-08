@@ -44,7 +44,7 @@ function login(req, res, next) {
         // check to see if the user needs to be verified to sign in, and if they are verified
         if ((config.requireAccountVerification || config.requireSecureAccountVerification) &&
             !userInfo.verifiedContactMethods.includes(userInfo.email)) {
-            const err = new APIError('User is not Verified', 'USER_IS_NOT_VERIFIED', httpStatus.FORBIDDEN, true);
+            const err = new APIError('User is not Verified', 'USER_IS_NOT_VERIFIED', httpStatus.FORBIDDEN);
             return next(err);
         }
 
@@ -183,7 +183,7 @@ function resetToken(req, res, next) {
         if (userResult &&
             (requireAccountVerification || requireSecureAccountVerification) &&
             !userResult.isVerified()) {
-            const err = new APIError('User Not Verified or does not exist.', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
+            const err = new APIError('User Not Verified or does not exist.', 'INVALID_EMAIL', httpStatus.BAD_REQUEST);
             return next(err);
         }
         return User.resetPasswordToken(email, 3600)
@@ -246,7 +246,7 @@ function displatchVerificationRequest(req, res, next) {
     const contactMethodVerifyPageUrl = _.get(req, 'body.contactMethodVerifyPageUrl');
 
     if (!email) {
-        const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST, true);
+        const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST);
         return next(err);
     }
     return User.createVerifyAccountToken(email, 3600)
@@ -284,14 +284,14 @@ function getVerifyingUser(req, res, next) {
 
     const token = _.get(req, 'body.token');
     if (!token) {
-        const err = new APIError('Invalid Token', 'INVALID_TOKEN', httpStatus.BAD_REQUEST, true);
+        const err = new APIError('Invalid Token', 'INVALID_TOKEN', httpStatus.BAD_REQUEST);
         return next(err);
     }
 
     return User.getVerifyingUser(token)
         .then((usernameResult) => {
             if (_.isNull(usernameResult)) {
-                const err = new APIError('User not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND, true);
+                const err = new APIError('User not found', 'MISSING_REFRESH_TOKEN', httpStatus.NOT_FOUND);
                 return next(err);
             }
             return res.json({
@@ -322,7 +322,7 @@ function verifyMessagingProtocol(req, res, next) {
     if (config.requireSecureAccountVerification) {
         const password = _.get(req, 'body.password');
         if (!password) {
-            const err = new APIError('No Password provided', 'NO_PASSWORD', httpStatus.BAD_REQUEST, true);
+            const err = new APIError('No Password provided', 'NO_PASSWORD', httpStatus.BAD_REQUEST);
             return next(err);
         }
         return User.secureVerifyUserAccount(token, password)

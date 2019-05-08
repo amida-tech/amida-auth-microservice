@@ -263,7 +263,7 @@ module.exports = (sequelize, DataTypes) => {
                 return this.save().then(() => tokens.token);
             });
     };
-
+    // eslint-disable-next-line max-len
     User.prototype.generateVerifyAccountToken = function generateVerifyAccountToken(email, expTime) {
         return randomBytes(20)
             .then((buf) => {

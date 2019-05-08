@@ -101,17 +101,17 @@ function submitRefreshToken(req, res, next) {
                 scopes: userResult.scopes,
             };
 
-                    const jwtToken = signJWT(userInfo);
+            const jwtToken = signJWT(userInfo);
 
-                    return res.json({
-                        token: jwtToken,
-                        uuid: userResult.uuid,
-                        username: userResult.username,
-                        ttl: config.jwtExpiresIn,
-                    });
-                }).catch(error => next(error))
-        )
-        .catch(error => next(error));
+            return res.json({
+                token: jwtToken,
+                uuid: userResult.uuid,
+                username: userResult.username,
+                ttl: config.jwtExpiresIn,
+            });
+        }).catch(error => next(error))
+    )
+    .catch(error => next(error));
 }
 
 /**
@@ -135,10 +135,9 @@ function rejectRefreshToken(req, res, next) {
         }
         // delete the refresh token
         tokenResult.destroy();
-
-            return res.sendStatus(httpStatus.NO_CONTENT);
-        })
-        .catch(error => next(error));
+        return res.sendStatus(httpStatus.NO_CONTENT);
+    })
+    .catch(error => next(error));
 }
 
 /**
@@ -174,13 +173,13 @@ function updatePassword(req, res, next) {
 function resetToken(req, res, next) {
     const email = _.get(req, 'body.email');
     const resetPageUrl = _.get(req, 'body.resetPageUrl');
-    const {requireAccountVerification, requireSecureAccountVerification}= config
+    const { requireAccountVerification, requireSecureAccountVerification } = config;
 
     if (!email) {
         const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST);
         return next(err);
     }
-    User.findOne({ where: { username: email } }).then(userResult => {
+    User.findOne({ where: { username: email } }).then((userResult) => {
         if (userResult &&
             (requireAccountVerification || requireSecureAccountVerification) &&
             !userResult.isVerified()) {

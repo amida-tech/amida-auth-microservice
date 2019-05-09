@@ -47,7 +47,7 @@ const envVarsSchema = Joi.object({
         .email({ minDomainAtoms: 2 })
         .required()
         .default('admin@example.com')
-        .description('User name of the Seed Admin user. Used in the for seeding process only.'),
+        .description('User name of the Seed Admin user. Used in the seeding process only.'),
     AUTH_SERVICE_SEED_ADMIN_EMAIL: Joi.string()
         .email({ minDomainAtoms: 2 })
         .required()

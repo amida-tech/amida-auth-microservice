@@ -232,11 +232,9 @@ function resetPassword(req, res, next) {
  * @returns {*}
  */
 function displatchVerificationRequest(req, res, next) {
-    // This expects an email, and a page url to construct the verification link. It
-    // uses `createVerifyAccountToken` to populate `messagingProtocol` token,
-    // auth expiration, and provider for a user (unless an invalid email is
-    // provided). Finally it uses nodemailer to dispatch an email with a
-    // verification link to the user.
+    // This expects an email, and a page url to construct the verification link.
+    // It calls `User.contactMethodToVerify` to create the token in the DB.
+    // Then it uses nodemailer to dispatch an email with a verification link to the user.
 
     // TODO: Better handle email construction.
     // TODO: Explore notification-microservice based dispatcing of messages.

@@ -255,7 +255,7 @@ function displatchVerificationRequest(req, res, next) {
             const body = [
                 `${email},`,
                 `An account has been created for you on ${websiteDomainName}.`,
-                `You ${config.requireAccountVerification || config.requireSecureAccountVerification ? 'are required' : 'are recommened'} to verify your email address${config.requireSecureAccountVerification && ' (using your password) in order to continue'}.`,
+                `You ${config.requireAccountVerification || config.requireSecureAccountVerification ? 'are required' : 'are recommened'} to verify your email address${config.requireSecureAccountVerification && ' (using your password)'} before continuing.`,
                 `Please verify your email address by going to the following link: ${verificationLink}`,
                 'If you believe this message was sent in error, please disregard this message.',
             ];

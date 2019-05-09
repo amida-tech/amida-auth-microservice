@@ -189,11 +189,11 @@ function resetToken(req, res, next) {
         return User.resetPasswordToken(email, 3600)
             .then((token) => {
                 const resetLink = generateLink(resetPageUrl, token);
-                const resetDomain = resetPageUrl.replace(/(^\w+:|^)\/\//, '').split('/')[0];
-                const subject = `Reset your password for ${resetDomain}`;
+                const websiteDomainName = resetPageUrl.replace(/(^\w+:|^)\/\//, '').split('/')[0];
+                const subject = `Reset your password for ${websiteDomainName}`;
                 const body = [
                     `${email},`,
-                    `A request to reset your password on ${resetDomain} was recieved.`,
+                    `A request to reset your password on ${websiteDomainName} was recieved.`,
                     `You can reset your account password using the following link: ${resetLink}`,
                     'If you believe this message was sent in error, please disregard this message.',
                 ];
@@ -252,11 +252,11 @@ function displatchVerificationRequest(req, res, next) {
     return User.createVerifyAccountToken(email, 3600)
         .then((token) => {
             const verificationLink = generateLink(contactMethodVerifyPageUrl, token);
-            const verificationDomain = contactMethodVerifyPageUrl.replace(/(^\w+:|^)\/\//, '').split('/')[0];
-            const subject = `Verify your email address for ${verificationDomain}`;
+            const websiteDomainName = contactMethodVerifyPageUrl.replace(/(^\w+:|^)\/\//, '').split('/')[0];
+            const subject = `Verify your email address for ${websiteDomainName}`;
             const body = [
                 `${email},`,
-                `An account has been created for you on ${verificationDomain}.`,
+                `An account has been created for you on ${websiteDomainName}.`,
                 `You ${config.requireAccountVerification || config.requireSecureAccountVerification ? 'are required' : 'are recommened'} to verify your email address${config.requireSecureAccountVerification && ' (using your password) in order to continue'}.`,
                 `Please verify your email address by going to the following link: ${verificationLink}`,
                 'If you believe this message was sent in error, please disregard this message.',

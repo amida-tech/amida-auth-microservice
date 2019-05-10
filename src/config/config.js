@@ -43,11 +43,19 @@ const envVarsSchema = Joi.object({
         .default(false),
     AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES: Joi.bool()
         .default(false),
-    AUTH_SERVICE_SEED_ADMIN_USERNAME: Joi.string()
-        .email({ minDomainAtoms: 2 })
-        .required()
-        .default('admin@example.com')
-        .description('User name of the Seed Admin user. Used in the seeding process only.'),
+    AUTH_SERVICE_SEED_ADMIN_USERNAME: Joi.alternatives([
+        Joi.string()
+            .email({ minDomainAtoms: 2 })
+            .required()
+            .default('admin@example.com')
+            .description('User name of the Seed Admin user. Used in the seeding process only.'),
+        Joi.string()
+            .alphanum()
+            .min(3)
+            .max(30)
+            .required()
+            .default('admin')
+            .description('User name of the Seed Admin user. Used in the seeding process only.')]),
     AUTH_SERVICE_SEED_ADMIN_EMAIL: Joi.string()
         .email({ minDomainAtoms: 2 })
         .required()

@@ -396,7 +396,6 @@ When `true`, creating a new refresh token will not cause all other refresh token
 ##### `AUTH_SERVICE_SEED_ADMIN_USERNAME`
 
 When the service starts, if no users with scope 'admin' exist in the database, one will automatically get created with this username. This is referred to as the "Seed Admin".
-- Per Joi, this must be in the format of an email address.
 
 ##### `AUTH_SERVICE_SEED_ADMIN_EMAIL`
 

@@ -394,13 +394,17 @@ When `false`, then when a user logs in, causing a refresh token to be created, a
 When `true`, creating a new refresh token will not cause all other refresh tokens to be rejected. In practice, this allows a user to have refresh tokens active, potentially on multiple browsers or devices.
 
 ##### `AUTH_SERVICE_SEED_ADMIN_USERNAME`
-The username for an admin that will be place inside the user's table if none exist on startup.
+
+When the service starts, if no users with scope 'admin' exist in the database, one will automatically get created with this username. This is referred to as the "Seed Admin".
 
 ##### `AUTH_SERVICE_SEED_ADMIN_EMAIL`
-The email address of the admin created with `AUTH_SERVICE_SEED_ADMIN_USERNAME`.
+
+The email address of the Seed Admin.
 
 ##### `AUTH_SERVICE_SEED_ADMIN_PASSWORD`
-A password to be used for `AUTH_SERVICE_SEED_ADMIN_USERNAME` in the database. This is not to be placed in any .env files but injected via the command line.
+
+A password (optional) to set for the Seed Admin when it gets created.
+- If this is not specified, then when the Seed Admin is created, a password will get randomly generated, set in the database, and printed to stdout.
 
 ##### `AUTH_SERVICE_PG_HOST`
 

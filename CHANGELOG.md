@@ -14,7 +14,8 @@
   * Logs "operational errors" at the `warn` level and "programmer errors" at the `error` level.
 
 ### Changed
-- `AUTH_SERVICE_SEED_ADMIN_USERNAME`, per Joi validation, must now be an email address.
+- `AUTH_SERVICE_SEED_ADMIN_USERNAME` now supports alphanum and email addresses 
+
 
 ## [2.7.1] -- 2019-05-01
 ### Fixed

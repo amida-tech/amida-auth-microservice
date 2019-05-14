@@ -18,6 +18,11 @@
 - `AUTH_SERVICE_SEED_ADMIN_USERNAME` now supports alphanum and email addresses 
 
 
+## [2.7.2] -- 2019-05-14
+### Fixed
+- Patch for CVE-2019-5021 in `Dockerfile`. `node:8.16.0-alpine` uses a patched version of `alpine`.
+
+
 ## [2.7.1] -- 2019-05-01
 ### Fixed
 - `docker run amidatech/auth-service` threw `Error: Cannot find module 'source-map-support/register'`

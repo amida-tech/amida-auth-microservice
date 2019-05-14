@@ -16,11 +16,7 @@ module.exports = {
             type: Sequelize.ARRAY(Sequelize.STRING), // eslint-disable-line new-cap
             defaultValue: [],
         });
-        await queryInterface.sequelize.query('SELECT * FROM "Users" WHERE "Users"."email" = "username"').then(([results, metadata]) => {
-            results.forEach(async(result) => {
-                await queryInterface.sequelize.query(`UPDATE "Users" SET "verifiedContactMethods" = ARRAY["email"] WHERE "Users"."username" = "Users"."email"`)
-              });
-          });
+        await queryInterface.sequelize.query(`UPDATE "Users" SET "verifiedContactMethods" = ARRAY["email"] WHERE "Users"."username" = "Users"."email"`)
     },
     down: async (queryInterface) => {
         await true

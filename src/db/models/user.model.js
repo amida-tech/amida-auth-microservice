@@ -143,12 +143,6 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     User.createVerifyAccountToken = function createVerifyAccountToken(email, expTime) {
-        // This expects and email, and an expiration time window for storing a
-        // messaging protocol `messagingProtocol` token, auth expiration, and
-        // provider for a user. Users will be asked to validate this token against
-        // the submission of `verifyMessagingProtcolToken` (With or without
-        // credentials)
-
         // QUESTION: Do we want to add some form of rate limiting in this flow?
         return this.find({
             where: {
@@ -264,6 +258,8 @@ module.exports = (sequelize, DataTypes) => {
             });
     };
 
+    // This creates a contact method verification token in the DB based on email and expTime.
+    // eslint-disable-next-line max-len
     User.prototype.generateVerifyAccountToken = function generateVerifyAccountToken(email, expTime) {
         return randomBytes(20)
             .then((buf) => {

@@ -126,7 +126,7 @@ Start server:
 yarn create_db
 
 # Create initial tables and run migrations
-# Only needs to be run on clean builds  
+# Only needs to be run on clean builds
 # or when new migrations are added
 yarn migrate
 
@@ -141,7 +141,7 @@ DEBUG=amida-auth-microservice:* yarn start
 
 ```sh
 # Create tables and run migrations (migrations will
-# be run in chronological order, and only newly  
+# be run in chronological order, and only newly
 # added migrations will be run)
 yarn migrate
 
@@ -356,24 +356,30 @@ The port this server will run on.
 - When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
 
 ##### `AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS` (Deprecated)
+
 - This environment variable is no longer used. Use `AUTH_SERVICE_PUBLIC_REGISTRATION` instead.
 
 ##### `AUTH_SERVICE_PUBLIC_REGISTRATION` (Required) [`false`]
+
 - When `false`, only a user who has `admin` OR a scope defined in `AUTH_SERVICE_REGISTRAR_SCOPES` can create new users.
 - When `true`, anyone can sign up and create a new account.
 
 ##### `AUTH_SERVICE_REGISTRAR_SCOPES`
+
 - Can be undefined *iff* `AUTH_SERVICE_PUBLIC_REGISTRATION` is `true`.
 - Otherwise must be JSON array of strings (Use double quotes!) I.e. `["registrar"]`. Each string is a scope that will be allowed to create users.
   - An empty array `[]` is acceptable and will allow only the `admin` scope to create users.
 
 ##### `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION [`false`]
-- When `true`, a user cannot sign-in without contact method (currently only email) verification
+
+- When `true`, a user cannot sign-in without completing contact method verification process (currently only email is supported).
 
 ##### `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION` [false`]
-- When `true`, a user is required to verify their password in order to verify their contact method (currently only email) 
+
+- When `true`, a user is required to provide their password during the contact method verification process.
 
 ##### `AUTH_SERVICE_JWT_MODE` (Required) [`hmac`]
+
 - When set to `hmac`, json web tokens will use the shared-secret signing strategy, in which case `JWT_SECRET` needs to be specified on and match between this microservice and all other services that integrate with this microservice.
 - When set to `rsa`, json web tokens will use the public/private key pair signing strategy, in which case `JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY` need to be defined.
 
@@ -391,11 +397,13 @@ Time To Live, in seconds, of the JSON web token.
 
 ##### `AUTH_SERVICE_REFRESH_TOKEN_ENABLED` [`false`]
 
-Not fully implemented yet.
+When `false`, only an access token jwt with a set expiration date will be returned from the login endpoint.
+When `true`, refresh tokens will be returned on successful login (in addition to the access token jwt). The refresh token can be used to request a new access token at any time as long as the refresh token being used has not been explicitly rejected. There is an endpoint available to reject existing refresh tokens.
 
 ##### `AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES` [`false`]
 
-Not fully implemented yet.
+When `false`, then when a user logs in, causing a refresh token to be created, all other existing refresh tokens tied to the user's account will be rejected.
+When `true`, creating a new refresh token will not cause all other refresh tokens to be rejected. In practice, this allows a user to have refresh tokens active, potentially on multiple browsers or devices.
 
 ##### `AUTH_SERVICE_SEED_ADMIN_USERNAME`
 The username for an admin that will be place inside the user's table if none exist on startup.

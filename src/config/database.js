@@ -15,13 +15,13 @@ const config = {
 
 if (postgres.sslEnabled) {
     config.ssl = postgres.sslEnabled;
+    config.dialectOptions = {
+        ssl: {
+            rejectUnauthorized: true,
+        },
+    };
     if (postgres.sslCaCert) {
-        config.dialectOptions = {
-            ssl: {
-                ca: postgres.sslCaCert,
-                rejectUnauthorized: true,
-            },
-        };
+        config.dialectOptions.ssl.ca = postgres.sslCaCert;
     }
 }
 

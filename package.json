@@ -22,7 +22,7 @@
     "migrate": "sequelize db:migrate",
     "migrate:undo": "sequelize db:migrate:undo",
     "migrate:undo:all": "sequelize db:migrate:undo:all",
-    "prepublish": "snyk protect",
+    "prepare": "snyk protect",
     "report-coverage": "coveralls < ./coverage/lcov.info",
     "seed": "sequelize db:seed:all",
     "serve": "node dist/index.js",
@@ -89,7 +89,7 @@
     "nyc": "^13.0.0",
     "rimraf": "^2.6.0",
     "sequelize-cli": "^5.4.0",
-    "snyk": "^1.73.0",
+    "snyk": "^1.164.0",
     "supertest": "^3.0.0"
   },
   "snyk": true

@@ -356,7 +356,7 @@ The port this server will run on.
 - When `true`, anyone can sign up and create a new account.
 
 ##### `AUTH_SERVICE_REGISTRAR_SCOPES`
-- Can be undefined *iff* `AUTH_SERVICE_PUBLIC_REGISTRATION` is `true`.
+- Can be undefined *if* `AUTH_SERVICE_PUBLIC_REGISTRATION` is `true`.
 - Otherwise must be JSON array of strings (Use double quotes!) I.e. `["registrar"]`. Each string is a scope that will be allowed to create users.
   - An empty array `[]` is acceptable and will allow only the `admin` scope to create users.
 
@@ -368,9 +368,31 @@ The port this server will run on.
 
 Path on the file system of the JWT private key file.
 
+For example, to generate a private key.
+```
+> echo -e 'y\n' | ssh-keygen -q -t rsa -b 4096 -N "" -f private.key
+```
+
+```
+# .env
+AUTH_SERVICE_JWT_PRIVATE_KEY_PATH=private.key
+```
+
 ##### `AUTH_SERVICE_JWT_PUBLIC_KEY_PATH`
 
 Path on the file system of the JWT public key file.
+
+For example, to generate a public key from a private key.
+
+```
+# openssl version (OpenSSL 1.1.1)
+> openssl rsa -in private.key -pubout -outform PEM -out private.key.pub
+```
+
+```
+# .env
+AUTH_SERVICE_JWT_PUBLIC_KEY_PATH=private.key.pub
+```
 
 ##### `AUTH_SERVICE_JWT_TTL` [`3600`]
 

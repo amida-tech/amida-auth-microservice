@@ -1,44 +1,22 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.13.1
+version: v1.13.5
 ignore: {}
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:debug:20170905':
     - express-actuator > express > finalhandler > debug:
-        patched: '2018-12-11T08:28:40.011Z'
-    - express-actuator > express > serve-static > send > debug:
-        patched: '2018-12-11T08:28:40.011Z'
+        patched: '2019-05-14T18:54:44.149Z'
     - express-actuator > express > send > debug:
-        patched: '2018-12-11T08:28:40.011Z'
+        patched: '2019-05-14T18:54:44.149Z'
+    - express-actuator > express > serve-static > send > debug:
+        patched: '2019-05-14T18:54:44.149Z'
     - express-actuator > express > debug:
-        patched: '2018-12-11T08:28:40.011Z'
-  'npm:hoek:20180212':
-    - passport-jwt > jsonwebtoken > joi > hoek:
-        patched: '2018-12-11T08:28:40.011Z'
-    - express-jwt > jsonwebtoken > joi > topo > hoek:
-        patched: '2018-12-11T08:28:40.011Z'
-    - passport-jwt > jsonwebtoken > joi > topo > hoek:
-        patched: '2018-12-11T08:28:40.011Z'
-    - express-jwt > jsonwebtoken > joi > hoek:
-        patched: '2018-12-11T08:28:40.011Z'
+        patched: '2019-05-14T18:54:44.149Z'
   'npm:mime:20170907':
     - express-actuator > express > serve-static > send > mime:
-        patched: '2018-12-11T08:28:40.011Z'
+        patched: '2019-05-14T18:54:44.149Z'
     - express-actuator > express > send > mime:
-        patched: '2018-12-11T08:28:40.011Z'
+        patched: '2019-05-14T18:54:44.149Z'
   'npm:moment:20170905':
     - express-actuator > moment:
-        patched: '2018-12-11T08:28:40.011Z'
-  'npm:ms:20170412':
-    - express-actuator > express > send > ms:
-        patched: '2018-12-11T08:28:40.011Z'
-    - express-actuator > express > finalhandler > debug > ms:
-        patched: '2018-12-11T08:28:40.011Z'
-    - express-actuator > express > send > debug > ms:
-        patched: '2018-12-11T08:28:40.011Z'
-    - express-actuator > express > serve-static > send > debug > ms:
-        patched: '2018-12-11T08:28:40.011Z'
-    - express-actuator > express > serve-static > send > ms:
-        patched: '2018-12-11T08:28:40.011Z'
-    - express-actuator > express > debug > ms:
-        patched: '2018-12-11T08:28:40.011Z'
+        patched: '2019-05-14T18:02:55.668Z'

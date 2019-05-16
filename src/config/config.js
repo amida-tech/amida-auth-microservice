@@ -46,22 +46,28 @@ const envVarsSchema = Joi.object({
         .default(false),
     AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION: Joi.bool()
         .default(false),
-    AUTH_SERVICE_SEED_ADMIN_USERNAME: Joi.string()
-        .alphanum()
-        .min(3)
-        .max(30)
-        .required()
-        .default('admin')
-        .description('Admin username for seeding only'),
+    AUTH_SERVICE_SEED_ADMIN_USERNAME: Joi.alternatives([
+        Joi.string()
+            .email({ minDomainAtoms: 2 })
+            .required()
+            .default('admin@example.com')
+            .description('User name of the Seed Admin user. Used in the seeding process only.'),
+        Joi.string()
+            .alphanum()
+            .min(3)
+            .max(30)
+            .required()
+            .default('admin')
+            .description('User name of the Seed Admin user. Used in the seeding process only.')]),
     AUTH_SERVICE_SEED_ADMIN_EMAIL: Joi.string()
         .email({ minDomainAtoms: 2 })
         .required()
-        .default('admin@default.com')
-        .description('Admin email for seeding only'),
+        .default('admin@example.com')
+        .description('Email of the Seed Admin user. Used in the seeding process only.'),
     AUTH_SERVICE_SEED_ADMIN_PASSWORD: Joi.string()
         .min(3)
         .max(512)
-        .description('Admin password for seeding only, do not include in .env'),
+        .description('Password of the Seed Admin user. Used in the seeding process only. Optional, and if not specified, a password will get auto-generated and printed to stdout.'),
     AUTH_SERVICE_PG_DB: Joi.string().required()
         .description('Postgres database name'),
     AUTH_SERVICE_PG_PORT: Joi.number()

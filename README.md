@@ -365,8 +365,7 @@ The port this server will run on.
 - When `true`, anyone can sign up and create a new account.
 
 ##### `AUTH_SERVICE_REGISTRAR_SCOPES`
-
-- Can be undefined *iff* `AUTH_SERVICE_PUBLIC_REGISTRATION` is `true`.
+- Can be undefined *if* `AUTH_SERVICE_PUBLIC_REGISTRATION` is `true`.
 - Otherwise must be JSON array of strings (Use double quotes!) I.e. `["registrar"]`. Each string is a scope that will be allowed to create users.
   - An empty array `[]` is acceptable and will allow only the `admin` scope to create users.
 
@@ -387,9 +386,31 @@ The port this server will run on.
 
 Path on the file system of the JWT private key file.
 
+For example, to generate a private key.
+```
+> echo -e 'y\n' | ssh-keygen -q -t rsa -b 4096 -N "" -f private.key
+```
+
+```
+# .env
+AUTH_SERVICE_JWT_PRIVATE_KEY_PATH=private.key
+```
+
 ##### `AUTH_SERVICE_JWT_PUBLIC_KEY_PATH`
 
 Path on the file system of the JWT public key file.
+
+For example, to generate a public key from a private key.
+
+```
+# openssl version (OpenSSL 1.1.1)
+> openssl rsa -in private.key -pubout -outform PEM -out private.key.pub
+```
+
+```
+# .env
+AUTH_SERVICE_JWT_PUBLIC_KEY_PATH=private.key.pub
+```
 
 ##### `AUTH_SERVICE_JWT_TTL` [`3600`]
 
@@ -406,13 +427,17 @@ When `false`, then when a user logs in, causing a refresh token to be created, a
 When `true`, creating a new refresh token will not cause all other refresh tokens to be rejected. In practice, this allows a user to have refresh tokens active, potentially on multiple browsers or devices.
 
 ##### `AUTH_SERVICE_SEED_ADMIN_USERNAME`
-The username for an admin that will be place inside the user's table if none exist on startup.
+
+When the service starts, if no users with scope 'admin' exist in the database, one will automatically get created with this username. This is referred to as the "Seed Admin".
 
 ##### `AUTH_SERVICE_SEED_ADMIN_EMAIL`
-The email address of the admin created with `AUTH_SERVICE_SEED_ADMIN_USERNAME`.
+
+The email address of the Seed Admin.
 
 ##### `AUTH_SERVICE_SEED_ADMIN_PASSWORD`
-A password to be used for `AUTH_SERVICE_SEED_ADMIN_USERNAME` in the database. This is not to be placed in any .env files but injected via the command line.
+
+A password (optional) to set for the Seed Admin when it gets created.
+- If this is not specified, then when the Seed Admin is created, a password will get randomly generated, set in the database, and printed to stdout.
 
 ##### `AUTH_SERVICE_PG_HOST`
 
@@ -437,11 +462,25 @@ Password of postgres user `AUTH_SERVICE_PG_USER`.
 
 ##### `AUTH_SERVICE_PG_SSL_ENABLED` [`false`]
 
-Whether an SSL connection shall be used to connect to postgres.
+Whether an SSL connection shall be used to connect to postgres. If `true`, then `AUTH_SERVICE_PG_CA_CERT` (probably) must be set to a valid value (see nuance about override in description of this variable below).
 
 ##### `AUTH_SERVICE_PG_CA_CERT`
 
-If SSL is enabled with `AUTH_SERVICE_PG_SSL_ENABLED` this can be set to a certificate to override the CAs that are trusted while initiating the SSL connection to postgres. Without this set, Mozilla's list of trusted CAs is used. Note that this variable should contain the certificate itself, not a filename.
+If SSL is enabled with `AUTH_SERVICE_PG_SSL_ENABLED` this can be set to a certificate to override the CAs that are trusted while initiating the SSL connection to postgres. Without this set, Mozilla's list of trusted CAs is used.
+
+Note that this variable should contain the certificate itself, not a filename.
+
+Example usage with AWS RDS
+
+```
+# Download CA cert bundle for AWS RDS
+wget https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem
+```
+
+```
+# Start the server with the AWS RDS cert bundle
+AUTH_SERVICE_PG_CA_CERT=$(cat rds-combined-ca-bundle.pem) yarn start
+```
 
 ## Integration With Facebook for Login
 

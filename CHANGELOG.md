@@ -15,6 +15,15 @@
 - `class:APIError` supports full stack traces, including causal errors.
 - Update `npm:winston` to `^3.2.1` and `npm:winston-json-formatter` to `^0.10.0` for logging bug fixes and formatting features (see https://github.com/amida-tech/winston-json-formatter/pull/5).
   * Logs "operational errors" at the `warn` level and "programmer errors" at the `error` level.
+- PG connection will now fail (and this service will abort) if `AUTH_SERVICE_PG_SSL_ENABLED=true` but `AUTH_SERVICE_PG_CA_CERT` is not set to a valid value.
+
+### Changed
+- `AUTH_SERVICE_SEED_ADMIN_USERNAME` now supports alphanum and email addresses 
+
+
+## [2.7.2] -- 2019-05-14
+### Fixed
+- Patch for CVE-2019-5021 in `Dockerfile`. `node:8.16.0-alpine` uses a patched version of `alpine`.
 
 
 ## [2.7.1] -- 2019-05-01

@@ -268,7 +268,7 @@ function displatchVerificationRequest(req, res, next) {
 }
 
 /**
- * Sends back 200 OK if a contactMethodVerificationToken is created
+ * Sends back 200 OK if a user is found matching the provided verification token
  * @param req
  * @param res
  * @param next
@@ -276,9 +276,7 @@ function displatchVerificationRequest(req, res, next) {
  */
 function getVerifyingUser(req, res, next) {
     // This expects a `contactMethodVerificationToken` token, and returns the username of
-    // the identifying user. Only required if auth-micrservice is configured to
-    // only accept conformMessaingProtocol tokens if they are provided with a
-    // user's login credentials.
+    // the identifying user.
 
     const token = _.get(req, 'body.token');
     if (!token) {
@@ -300,7 +298,6 @@ function getVerifyingUser(req, res, next) {
 }
 
 /**
- * Sends back 200 OK if a contactMethodVerificationToken is created
  * @param req
  * @param res
  * @param next

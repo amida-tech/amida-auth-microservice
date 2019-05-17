@@ -143,7 +143,6 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     User.createVerifyAccountToken = function createVerifyAccountToken(email, expTime) {
-        // QUESTION: Do we want to add some form of rate limiting in this flow?
         return this.find({
             where: {
                 email,
@@ -202,8 +201,7 @@ module.exports = (sequelize, DataTypes) => {
                 const err = new Error('Token not found');
                 return sequelize.Promise.reject(err);
             }
-            const verificationPassword = crypto.pbkdf2Sync(password, Buffer.from(user.salt), 100000, 128, 'sha256').toString('hex');
-            if (user.password === verificationPassword) {
+            if (user.testPassword(password)) {
                 return user.addVerifiedContact(user.contactMethodToVerify);
             }
             const err = new Error('Password does not match.');
@@ -276,22 +274,18 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     User.prototype.addVerifiedContact = function addVerifiedContact(contactMethodToVerify) {
+        this.contactMethodVerificationToken = null;
+        this.contactMethodVerificationTokenExpires = null;
+        this.contactMethodToVerify = null;
+
         if (this.verifiedContactMethods.includes(contactMethodToVerify)) {
             // Handle instances where the user contact already exsits in the list of verified
             // contact methods
-            this.contactMethodVerificationToken = null;
-            this.contactMethodVerificationTokenExpires = null;
-            this.contactMethodToVerify = null;
             return this.save();
         }
-        const authorizedUsers = this.verifiedContactMethods;
-        const authorizedUsersLength = authorizedUsers.push(contactMethodToVerify.toString());
-        if (authorizedUsersLength > 0) {
-            this.verifiedContactMethods = authorizedUsers;
-            this.contactMethodVerificationToken = null;
-            this.contactMethodVerificationTokenExpires = null;
-            this.contactMethodToVerify = null;
-        }
+
+        // eslint-disable-next-line max-len
+        this.verifiedContactMethods = this.verifiedContactMethods.concat([contactMethodToVerify.toString()]);
         return this.save();
     };
 

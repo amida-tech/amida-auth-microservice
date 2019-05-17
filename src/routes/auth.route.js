@@ -34,8 +34,8 @@ router.route('/reset-password/:token')
           authCtrl.resetPassword);
 
 router.route('/dispatch-verification-request')
-    .post(validate(authValidation.displatchVerificationRequest),
-          authCtrl.displatchVerificationRequest);
+    .post(validate(authValidation.dispatchVerificationRequest),
+          authCtrl.dispatchVerificationRequest);
 
 router.route('/get-verifying-user')
     .post(validate(authValidation.getVerifyingUser),

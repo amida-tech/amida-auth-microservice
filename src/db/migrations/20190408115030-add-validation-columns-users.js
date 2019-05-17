@@ -15,7 +15,7 @@ module.exports = {
             type: Sequelize.ARRAY(Sequelize.STRING), // eslint-disable-line new-cap
             defaultValue: [],
         });
-        await queryInterface.sequelize.query(`UPDATE "Users" SET "verifiedContactMethods" = ARRAY["email"]`)
+        await queryInterface.sequelize.query('UPDATE "Users" SET "verifiedContactMethods" = ARRAY["email"]');
     },
     down: async (queryInterface) => {
         await queryInterface.removeColumn('Users', 'contactMethodVerificationToken');

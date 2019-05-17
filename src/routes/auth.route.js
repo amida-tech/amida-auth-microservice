@@ -33,6 +33,18 @@ router.route('/reset-password/:token')
     .post(validate(authValidation.resetPassword), checkPassword,
           authCtrl.resetPassword);
 
+router.route('/dispatch-verification-request')
+    .post(validate(authValidation.displatchVerificationRequest),
+          authCtrl.displatchVerificationRequest);
+
+router.route('/get-verifying-user')
+    .post(validate(authValidation.getVerifyingUser),
+           authCtrl.getVerifyingUser);
+
+router.route('/verify-messaging-protocol')
+    .post(validate(authValidation.verifyMessagingProtocol),
+          authCtrl.verifyMessagingProtocol);
+
 router.route('/facebook')
     .get(passport.authenticate('facebook', {
         session: false,

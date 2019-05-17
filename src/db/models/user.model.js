@@ -71,6 +71,19 @@ module.exports = (sequelize, DataTypes) => {
         resetExpires: {
             type: DataTypes.DATE,
         },
+        contactMethodVerificationToken: {
+            type: DataTypes.STRING,
+        },
+        contactMethodVerificationTokenExpires: {
+            type: DataTypes.DATE,
+        },
+        contactMethodToVerify: {
+            type: DataTypes.STRING,
+        },
+        verifiedContactMethods: {
+            type: DataTypes.ARRAY(DataTypes.STRING),
+            defaultValue: [],
+        },
         provider: {
             type: DataTypes.STRING,
             allowNull: true,
@@ -129,9 +142,82 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
+    User.createVerifyAccountToken = function createVerifyAccountToken(email, expTime) {
+        // QUESTION: Do we want to add some form of rate limiting in this flow?
+        return this.find({
+            where: {
+                email,
+            },
+        })
+        .then((user) => {
+            if (!user) {
+                const err = new Error('Email not found');
+                return sequelize.Promise.reject(err);
+            }
+            // JRB removed protocol, because we can confirm this. Put back it leads to errors.
+            // JRB: This is new
+            return user.generateVerifyAccountToken(email, expTime);
+        });
+    };
+
+    User.getVerifyingUser = function getVerifyingUser(token) {
+        // This expects a `contactMethodVerificationToken`, and provides a user's username.
+        return this.findOne({
+            where: {
+                contactMethodVerificationToken: token,
+            },
+        })
+        .then((user) => {
+            if (!user) {
+                const err = new Error('Token not found');
+                return sequelize.Promise.reject(err);
+            }
+            return user.username;
+        });
+    };
+
+    User.verifyUserAccount = function verifyUserAccount(token) {
+        return this.find({
+            where: {
+                contactMethodVerificationToken: token,
+            },
+        })
+        .then((user) => {
+            if (!user) {
+                const err = new Error('Token not found');
+                return sequelize.Promise.reject(err);
+            }
+            return user.addVerifiedContact(user.contactMethodToVerify);
+        });
+    };
+
+    User.secureVerifyUserAccount = function secureVerifyUserAccount(token, password) {
+        return this.find({
+            where: {
+                contactMethodVerificationToken: token,
+            },
+        })
+        .then((user) => {
+            if (!user) {
+                const err = new Error('Token not found');
+                return sequelize.Promise.reject(err);
+            }
+            const verificationPassword = crypto.pbkdf2Sync(password, Buffer.from(user.salt), 100000, 128, 'sha256').toString('hex');
+            if (user.password === verificationPassword) {
+                return user.addVerifiedContact(user.contactMethodToVerify);
+            }
+            const err = new Error('Password does not match.');
+            return sequelize.Promise.reject(err);
+        });
+    };
+
     // Instance methods
     User.prototype.isAdmin = function isAdmin() {
         return this.scopes.includes('admin');
+    };
+
+    User.prototype.isVerified = function isVerified() {
+        return this.verifiedContactMethods.includes(this.email);
     };
 
     User.prototype.getBasicUserInfo = function getBasicUserInfo() {
@@ -170,6 +256,43 @@ module.exports = (sequelize, DataTypes) => {
                 this.resetExpires = m.format();
                 return this.save().then(() => tokens.token);
             });
+    };
+
+    // This creates a contact method verification token in the DB based on email and expTime.
+    // eslint-disable-next-line max-len
+    User.prototype.generateVerifyAccountToken = function generateVerifyAccountToken(email, expTime) {
+        return randomBytes(20)
+            .then((buf) => {
+                const token = buf.toString('hex');
+                return token;
+            }).then((token) => {
+                this.contactMethodVerificationToken = token;
+                this.contactMethodToVerify = email;
+                const m = moment.utc();
+                m.add(expTime, 'seconds');
+                this.contactMethodVerificationTokenExpires = m.format();
+                return this.save().then(() => token);
+            });
+    };
+
+    User.prototype.addVerifiedContact = function addVerifiedContact(contactMethodToVerify) {
+        if (this.verifiedContactMethods.includes(contactMethodToVerify)) {
+            // Handle instances where the user contact already exsits in the list of verified
+            // contact methods
+            this.contactMethodVerificationToken = null;
+            this.contactMethodVerificationTokenExpires = null;
+            this.contactMethodToVerify = null;
+            return this.save();
+        }
+        const authorizedUsers = this.verifiedContactMethods;
+        const authorizedUsersLength = authorizedUsers.push(contactMethodToVerify.toString());
+        if (authorizedUsersLength > 0) {
+            this.verifiedContactMethods = authorizedUsers;
+            this.contactMethodVerificationToken = null;
+            this.contactMethodVerificationTokenExpires = null;
+            this.contactMethodToVerify = null;
+        }
+        return this.save();
     };
 
     return User;

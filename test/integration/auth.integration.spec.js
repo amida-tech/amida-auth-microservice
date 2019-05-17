@@ -240,7 +240,7 @@ describe('Auth API:', () => {
                     resetPageUrl: common.passwordResetPageUrl,
                 })
                 .expect(httpStatus.OK)
-                .then(res => expect(res.body.token).to.exist)
+                .then(res => expect(res.body.attributes.token).to.exist)
         );
 
         it('should accept the reset token', () =>
@@ -252,7 +252,7 @@ describe('Auth API:', () => {
                 })
                 .expect(httpStatus.OK)
                 .then((res1) => {
-                    resetToken = res1.body.token;
+                    resetToken = res1.body.attributes.token;
                     return request(app).post(`${common.baseURL}/auth/reset-password/${resetToken}`)
                         .send({ password: 'Newerpass123' })
                         .expect(httpStatus.OK)
@@ -269,7 +269,7 @@ describe('Auth API:', () => {
                 })
                 .expect(httpStatus.OK)
                 .then((res1) => {
-                    resetToken = res1.body.token;
+                    resetToken = res1.body.attributes.token;
                     return request(app)
                         .post(`${common.baseURL}/auth/reset-password/${resetToken}`)
                         .send({ password: 'Newerpass123' })

@@ -27,7 +27,6 @@ const envVarsSchema = Joi.object({
         .when('AUTH_SERVICE_PUBLIC_REGISTRATION', {
             is: false,
             then: Joi.required(),
-            otherwise: Joi.forbidden(),
         }),
     AUTH_SERVICE_JWT_MODE: Joi.string().allow(['rsa', 'hmac']).default('hmac')
         .description('Signing algorithm for JWT'),
@@ -42,6 +41,10 @@ const envVarsSchema = Joi.object({
     AUTH_SERVICE_REFRESH_TOKEN_ENABLED: Joi.bool()
         .default(false),
     AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES: Joi.bool()
+        .default(false),
+    AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION: Joi.bool()
+        .default(false),
+    AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION: Joi.bool()
         .default(false),
     AUTH_SERVICE_SEED_ADMIN_USERNAME: Joi.alternatives([
         Joi.string()
@@ -147,6 +150,8 @@ const config = {
     jwtPrivateKeyPath: envVars.AUTH_SERVICE_JWT_PRIVATE_KEY_PATH,
     jwtPublicKeyPath: envVars.AUTH_SERVICE_JWT_PUBLIC_KEY_PATH,
     jwtExpiresIn: envVars.AUTH_SERVICE_JWT_TTL,
+    requireSecureAccountVerification: envVars.AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION,
+    requireAccountVerification: envVars.AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION,
     refreshToken: {
         enabled: envVars.AUTH_SERVICE_REFRESH_TOKEN_ENABLED,
         multipleDevices: envVars.AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES,

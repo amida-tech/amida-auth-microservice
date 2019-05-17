@@ -7,6 +7,7 @@
 - Optional email verification for users
   * When `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION=true`, a user cannot sign-in without email verification
   * When `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION=true`, a user password is required for email verification
+- `logLevelGte()` utility function.
 
 ### Fixed
 - `auth.controller.js:login()` no longer throws duplicate errors for incorrect username or password

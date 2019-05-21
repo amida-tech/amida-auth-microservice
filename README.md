@@ -1,4 +1,5 @@
 # Amida Auth Microservice
+[![Known Vulnerabilities](https://snyk.io/test/github/amida-tech/amida-auth-microservice/badge.svg)](https://snyk.io/test/github/amida-tech/amida-auth-microservice)
 [![dependencies Status](https://david-dm.org/amida-tech/amida-auth-microservice/status.svg)](https://david-dm.org/amida-tech/amida-auth-microservice)
 [![devDependencies Status](https://david-dm.org/amida-tech/amida-auth-microservice/dev-status.svg)](https://david-dm.org/amida-tech/amida-auth-microservice?type=dev)
 [![Jenkins CI](https://jenkins.amida.com/buildStatus/icon?job=Auth%20Microservice%20Unit%20Test/)](https://jenkins.amida.com/job/Auth%20Microservice%20Unit%20Test/)
@@ -125,7 +126,7 @@ Start server:
 yarn create_db
 
 # Create initial tables and run migrations
-# Only needs to be run on clean builds  
+# Only needs to be run on clean builds
 # or when new migrations are added
 yarn migrate
 
@@ -140,7 +141,7 @@ DEBUG=amida-auth-microservice:* yarn start
 
 ```sh
 # Create tables and run migrations (migrations will
-# be run in chronological order, and only newly  
+# be run in chronological order, and only newly
 # added migrations will be run)
 yarn migrate
 
@@ -338,6 +339,12 @@ A description of what the variable is or does.
 
 - Valid values are [winston](https://github.com/winstonjs/winston) logging levels (`error`, `warn`, etc.).
 
+##### `ALWAYS_INCLUDE_ERROR_STACKS` [`false`]
+
+The `APIError` class acts like a call-stackless "operational error" (https://www.joyent.com/node-js/production/design/errors) when called without a causal error as the first argument.
+- When `false`, `APIError`s without a causal error will not have call stacks.
+- When `true`, all `APIError`s will have call stacks.
+
 ##### `JWT_SECRET` (Required)
 
 First, see description of `AUTH_SERVICE_JWT_MODE`. When `AUTH_SERVICE_JWT_MODE=hmac`, this is the shared secret between this service an all services using this service for authentication. Therefore, all other such service must set their `JWT_SECRET` to match this value.
@@ -349,9 +356,11 @@ The port this server will run on.
 - When in development, by default set to `4000`, because other Amida microservices run, by default, on other `400x` ports.
 
 ##### `AUTH_SERVICE_ONLY_ADMIN_CAN_CREATE_USERS` (Deprecated)
+
 - This environment variable is no longer used. Use `AUTH_SERVICE_PUBLIC_REGISTRATION` instead.
 
 ##### `AUTH_SERVICE_PUBLIC_REGISTRATION` (Required) [`false`]
+
 - When `false`, only a user who has `admin` OR a scope defined in `AUTH_SERVICE_REGISTRAR_SCOPES` can create new users.
 - When `true`, anyone can sign up and create a new account.
 
@@ -360,7 +369,16 @@ The port this server will run on.
 - Otherwise must be JSON array of strings (Use double quotes!) I.e. `["registrar"]`. Each string is a scope that will be allowed to create users.
   - An empty array `[]` is acceptable and will allow only the `admin` scope to create users.
 
+##### `AUTH_SERVICE_REQUIRE_ACCOUNT_VERIFICATION [`false`]
+
+- When `true`, a user cannot sign-in without completing contact method verification process (currently only email is supported).
+
+##### `AUTH_SERVICE_REQUIRE_SECURE_ACCOUNT_VERIFICATION` [false`]
+
+- When `true`, a user is required to provide their password during the contact method verification process.
+
 ##### `AUTH_SERVICE_JWT_MODE` (Required) [`hmac`]
+
 - When set to `hmac`, json web tokens will use the shared-secret signing strategy, in which case `JWT_SECRET` needs to be specified on and match between this microservice and all other services that integrate with this microservice.
 - When set to `rsa`, json web tokens will use the public/private key pair signing strategy, in which case `JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY` need to be defined.
 
@@ -400,20 +418,26 @@ Time To Live, in seconds, of the JSON web token.
 
 ##### `AUTH_SERVICE_REFRESH_TOKEN_ENABLED` [`false`]
 
-Not fully implemented yet.
+When `false`, only an access token jwt with a set expiration date will be returned from the login endpoint.
+When `true`, refresh tokens will be returned on successful login (in addition to the access token jwt). The refresh token can be used to request a new access token at any time as long as the refresh token being used has not been explicitly rejected. There is an endpoint available to reject existing refresh tokens.
 
 ##### `AUTH_SERVICE_REFRESH_TOKEN_MULTIPLE_DEVICES` [`false`]
 
-Not fully implemented yet.
+When `false`, then when a user logs in, causing a refresh token to be created, all other existing refresh tokens tied to the user's account will be rejected.
+When `true`, creating a new refresh token will not cause all other refresh tokens to be rejected. In practice, this allows a user to have refresh tokens active, potentially on multiple browsers or devices.
 
 ##### `AUTH_SERVICE_SEED_ADMIN_USERNAME`
-The username for an admin that will be place inside the user's table if none exist on startup.
+
+When the service starts, if no users with scope 'admin' exist in the database, one will automatically get created with this username. This is referred to as the "Seed Admin".
 
 ##### `AUTH_SERVICE_SEED_ADMIN_EMAIL`
-The email address of the admin created with `AUTH_SERVICE_SEED_ADMIN_USERNAME`.
+
+The email address of the Seed Admin.
 
 ##### `AUTH_SERVICE_SEED_ADMIN_PASSWORD`
-A password to be used for `AUTH_SERVICE_SEED_ADMIN_USERNAME` in the database. This is not to be placed in any .env files but injected via the command line.
+
+A password (optional) to set for the Seed Admin when it gets created.
+- If this is not specified, then when the Seed Admin is created, a password will get randomly generated, set in the database, and printed to stdout.
 
 ##### `AUTH_SERVICE_PG_HOST`
 
@@ -438,11 +462,25 @@ Password of postgres user `AUTH_SERVICE_PG_USER`.
 
 ##### `AUTH_SERVICE_PG_SSL_ENABLED` [`false`]
 
-Whether an SSL connection shall be used to connect to postgres.
+Whether an SSL connection shall be used to connect to postgres. If `true`, then `AUTH_SERVICE_PG_CA_CERT` (probably) must be set to a valid value (see nuance about override in description of this variable below).
 
 ##### `AUTH_SERVICE_PG_CA_CERT`
 
-If SSL is enabled with `AUTH_SERVICE_PG_SSL_ENABLED` this can be set to a certificate to override the CAs that are trusted while initiating the SSL connection to postgres. Without this set, Mozilla's list of trusted CAs is used. Note that this variable should contain the certificate itself, not a filename.
+If SSL is enabled with `AUTH_SERVICE_PG_SSL_ENABLED` this can be set to a certificate to override the CAs that are trusted while initiating the SSL connection to postgres. Without this set, Mozilla's list of trusted CAs is used.
+
+Note that this variable should contain the certificate itself, not a filename.
+
+Example usage with AWS RDS
+
+```
+# Download CA cert bundle for AWS RDS
+wget https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem
+```
+
+```
+# Start the server with the AWS RDS cert bundle
+AUTH_SERVICE_PG_CA_CERT=$(cat rds-combined-ca-bundle.pem) yarn start
+```
 
 ## Integration With Facebook for Login
 

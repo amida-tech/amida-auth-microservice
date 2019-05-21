@@ -44,6 +44,23 @@ const authValidation = {
             resetPageUrl: Joi.string().uri().required(),
         },
     },
+    dispatchVerificationRequest: {
+        body: {
+            email: Joi.string().email().required(),
+            contactMethodVerifyPageUrl: Joi.string().uri().required(),
+        },
+    },
+    getVerifyingUser: {
+        body: {
+            token: Joi.string().required(),
+        },
+    },
+    verifyMessagingProtocol: {
+        body: {
+            token: Joi.string().required(),
+            password: Joi.string().allow(null),
+        },
+    },
     resetPassword: {
         body: {
             password: Joi.string().required(),

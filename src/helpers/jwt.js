@@ -19,7 +19,7 @@ module.exports = {
      */
     checkExternalProvider(req, res, next) {
         if (req.user.provider !== null) {
-            const err = new APIError('Cannot call this endpoint for user managed with external auth', 'EXTERNAL_AUTH_USED', httpStatus.FORBIDDEN, true);
+            const err = new APIError('Cannot call this endpoint for user managed with external auth', 'EXTERNAL_AUTH_USED', httpStatus.FORBIDDEN);
             return next(err);
         }
         return next();

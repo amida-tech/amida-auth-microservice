@@ -4,16 +4,21 @@ import config from '../config/config';
 
 module.exports = {
 
-    sendEmail(res, email, text, token, next) {
+    sendEmail(res, email, subject, text, attributes, next) {
         const options = {
             from: util.format('"%s"', config.mailer.fromAddress),
             to: email,
-            subject: 'Password Reset',
+            subject,
             text,
+            // attributes is needed here only for the purpose of testing, use this to pass in
+            // tokens or other values needed for validation from the response.
+            attributes,
         };
         if (config.env === 'test') {
+            // pass anything sent as `attributes` through to the next step in the response body for
+            // testing purposes
             res.status(200).json({
-                token,
+                attributes,
             });
         } else {
             const transporter = nodemailer.createTransport({

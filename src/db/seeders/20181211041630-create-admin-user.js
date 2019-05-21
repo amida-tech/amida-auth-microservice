@@ -21,7 +21,7 @@ module.exports = {
 
         const adminUser = {
             username: 'admin',
-            email: 'admin@default.com',
+            email: 'admin@example.com',
             password: 'admin',
             scopes: ['admin'],
         };

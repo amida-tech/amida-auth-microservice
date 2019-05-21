@@ -54,7 +54,7 @@ describe('Auth API:', () => {
         it('should return 401 error with bad password', () =>
             request(app).post(`${common.baseURL}/auth/login`)
                 .send(common.badPassword)
-                .expect(httpStatus.NOT_FOUND)
+                .expect(httpStatus.UNAUTHORIZED)
                 .then((res) => {
                     expect(res.body.message).to.equal('Incorrect username or password');
                     expect(res.body.code).to.equal('INCORRECT_USERNAME_OR_PASSWORD');
@@ -62,10 +62,10 @@ describe('Auth API:', () => {
                 })
         );
 
-        it('should return 404 when there is no username found', () =>
+        it('should return 401 when there is no username found', () =>
             request(app).post(`${common.baseURL}/auth/login`)
                 .send(common.missingUsername)
-                .expect(httpStatus.NOT_FOUND)
+                .expect(httpStatus.UNAUTHORIZED)
                 .then((res) => {
                     expect(res.body.message).to.equal('Incorrect username or password');
                     expect(res.body.code).to.equal('INCORRECT_USERNAME_OR_PASSWORD');
@@ -240,7 +240,7 @@ describe('Auth API:', () => {
                     resetPageUrl: common.passwordResetPageUrl,
                 })
                 .expect(httpStatus.OK)
-                .then(res => expect(res.body.token).to.exist)
+                .then(res => expect(res.body.attributes.token).to.exist)
         );
 
         it('should accept the reset token', () =>
@@ -252,7 +252,7 @@ describe('Auth API:', () => {
                 })
                 .expect(httpStatus.OK)
                 .then((res1) => {
-                    resetToken = res1.body.token;
+                    resetToken = res1.body.attributes.token;
                     return request(app).post(`${common.baseURL}/auth/reset-password/${resetToken}`)
                         .send({ password: 'Newerpass123' })
                         .expect(httpStatus.OK)
@@ -269,7 +269,7 @@ describe('Auth API:', () => {
                 })
                 .expect(httpStatus.OK)
                 .then((res1) => {
-                    resetToken = res1.body.token;
+                    resetToken = res1.body.attributes.token;
                     return request(app)
                         .post(`${common.baseURL}/auth/reset-password/${resetToken}`)
                         .send({ password: 'Newerpass123' })

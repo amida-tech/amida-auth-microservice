@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.8.0 -- 2019-05-21]
+## [2.8.0] -- 2019-05-21
 ### Added
 - ENV `ALWAYS_INCLUDE_ERROR_STACKS` to include full error stack, including any causal errors.
   * Use with caution in production, because the full stack could leak sensitive information.

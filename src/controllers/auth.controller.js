@@ -179,7 +179,7 @@ function resetToken(req, res, next) {
         const err = new APIError('Invalid email', 'INVALID_EMAIL', httpStatus.BAD_REQUEST);
         return next(err);
     }
-    User.findOne({ where: { username: email } }).then((userResult) => {
+    return User.findOne({ where: { username: email } }).then((userResult) => {
         if (userResult &&
             (requireAccountVerification || requireSecureAccountVerification) &&
             !userResult.isVerified()) {
@@ -203,8 +203,6 @@ function resetToken(req, res, next) {
             })
         .catch(error => next(error));
     });
-
-    return true;
 }
 
 /**
@@ -231,7 +229,7 @@ function resetPassword(req, res, next) {
  * @param next
  * @returns {*}
  */
-function displatchVerificationRequest(req, res, next) {
+function dispatchVerificationRequest(req, res, next) {
     // This expects an email, and a page url to construct the verification link.
     // It calls `User.contactMethodToVerify` to create the token in the DB.
     // Then it uses nodemailer to dispatch an email with a verification link to the user.
@@ -340,7 +338,7 @@ export default {
     updatePassword,
     resetToken,
     resetPassword,
-    displatchVerificationRequest,
+    dispatchVerificationRequest,
     getVerifyingUser,
     verifyMessagingProtocol,
 };

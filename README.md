@@ -246,7 +246,7 @@ docker run -d --name {AUTH_SERVICE_PG_HOST} --network {DOCKER_NETWORK_NAME} \
 postgres:9.6
 ```
 
-3. Create a `.env` file for use by this service's docker container. A good starting point is `.env.production`.
+3. Create a `.env` file for use by this service's docker container. A good starting point is `.env.example`.
 
 4. Start the auth-service container:
 

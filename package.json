@@ -61,7 +61,7 @@
     "pg": "6.1.6",
     "pg-hstore": "2.3.2",
     "rand-token": "^0.4.0",
-    "sequelize": "^4.40.0",
+    "sequelize": "^5.8.11",
     "sequelize-cli": "^5.4.0",
     "source-map-support": "^0.5.12",
     "swagger-stats": "^0.95.6",

@@ -20,3 +20,20 @@ patch:
   'npm:moment:20170905':
     - express-actuator > moment:
         patched: '2019-05-14T18:02:55.668Z'
+  SNYK-JS-LODASH-450202:
+    - lodash:
+        patched: '2019-07-04T05:18:36.861Z'
+    - express-validation > lodash:
+        patched: '2019-07-04T05:18:36.861Z'
+    - express-winston > lodash:
+        patched: '2019-07-04T05:18:36.861Z'
+    - sequelize > lodash:
+        patched: '2019-07-04T05:18:36.861Z'
+    - sequelize-cli > lodash:
+        patched: '2019-07-04T05:18:36.861Z'
+    - winston-json-formatter > lodash:
+        patched: '2019-07-04T05:18:36.861Z'
+    - winston > async > lodash:
+        patched: '2019-07-04T05:18:36.861Z'
+    - winston-json-formatter > winston > async > lodash:
+        patched: '2019-07-04T05:18:36.861Z'

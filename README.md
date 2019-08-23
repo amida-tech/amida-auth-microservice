@@ -180,7 +180,7 @@ yarn test:check-coverage
 
 ./node_modules/.bin/dredd auth-login.apib localhost:4000/api/v2
 
-./node_modules/.bin/dredd list-users.apib localhost:4000/api/v2
+./node_modules/.bin/dredd list-users.apib localhost:4000/api/v2 --hookfiles hooks.js
 ```
 
 ## Lint

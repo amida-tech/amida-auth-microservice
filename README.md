@@ -174,6 +174,15 @@ yarn test:watch
 yarn test:check-coverage
 ```
 
+### Dredd
+```
+./node_modules/.bin/dredd health-check.apib localhost:4000/api/
+
+./node_modules/.bin/dredd auth-login.apib localhost:4000/api/v2
+
+./node_modules/.bin/dredd list-users.apib localhost:4000/api/v2
+```
+
 ## Lint
 
 ```sh

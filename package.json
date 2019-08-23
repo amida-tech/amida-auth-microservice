@@ -41,6 +41,7 @@
     "cookie-parser": "1.4.3",
     "cors": "2.8.1",
     "dotenv": "^4.0.0",
+    "dredd": "false12.0.3",
     "express": "4.16.0",
     "express-actuator": "^1.1.0",
     "express-jwt-permissions": "1.2.1",

@@ -12,7 +12,7 @@ describe('## Misc', () => {
         it('should return OK', () => request(app)
             .get('/api/health-check')
             .expect(httpStatus.OK)
-            .then(res => expect(res.text).to.equal('OK'))
+            .then(res => expect(res.text).to.equal('{"status":"ok"}'))
         );
     });
 

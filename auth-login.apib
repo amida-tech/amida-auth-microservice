@@ -1,0 +1,30 @@
+FORMAT: 1A
+
+# Amida Auth
+This is an API allowing authentication and basic authorization using JSON Web Tokens.
+
+# Group Miscellaneous
+Resources related to utility actions, such as health checks.
+
+# Group Auth
+Resources related to authentication, such as login and password changes.
+
+## Login [/auth/login]
+
+### Authenticate For JWT [POST]
+
++ Request (application/json; charset=utf-8)
+
+        {
+            "username": "admin",
+            "password": "admin"
+        }
+
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {
+                "token": "<token>",
+                "username": "admin"
+            }

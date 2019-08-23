@@ -9,7 +9,7 @@ const baseURL = `/v${version}`;
 
 /** GET /health-check - Check service health */
 router.get('/health-check', (req, res) =>
-  res.send('OK')
+  res.json({ status: 'ok' })
 );
 
 // mount routes

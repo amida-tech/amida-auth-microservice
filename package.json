@@ -22,7 +22,7 @@
     "migrate": "sequelize db:migrate",
     "migrate:undo": "sequelize db:migrate:undo",
     "migrate:undo:all": "sequelize db:migrate:undo:all",
-    "prepare": "snyk protect",
+    "prepare": "npm run snyk-protect && snyk protect",
     "report-coverage": "coveralls < ./coverage/lcov.info",
     "seed": "sequelize db:seed:all",
     "serve": "node dist/index.js",
@@ -32,7 +32,8 @@
     "test:check-coverage": "yarn test:coverage && nyc check-coverage",
     "test:coverage": "cross-env NODE_ENV=test nyc mocha --opts .mocharc",
     "test:docker": "docker-compose -f docker-compose.test.yml up --abort-on-container-exit",
-    "test:watch": "yarn test --watch"
+    "test:watch": "yarn test --watch",
+    "snyk-protect": "snyk protect"
   },
   "dependencies": {
     "bluebird": "3.4.6",
@@ -67,7 +68,8 @@
     "swagger-stats": "^0.95.6",
     "uuid": "3.1.0",
     "winston": "^3.2.1",
-    "winston-json-formatter": "^0.10.0"
+    "winston-json-formatter": "^0.10.0",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",
@@ -89,7 +91,6 @@
     "nodemon": "^1.18.0",
     "nyc": "^13.0.0",
     "rimraf": "^2.6.0",
-    "snyk": "^1.164.0",
     "supertest": "^3.0.0"
   },
   "snyk": true
